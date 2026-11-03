@@ -1,0 +1,112 @@
+/* Design tokens from the "Decision log" handoff. Amber is the only accent:
+   use it for status and change, never decoration. */
+:root {
+  color-scheme: light;
+  --bg: #F9FAFB;
+  --ink: #15191E;
+  --muted: #5F646A;
+  --line: #DDE0E3;
+  --hover: #F4F5F7;
+  --surface: #FFFFFF;
+  --code-bg: #F4F5F7;
+  --amber: #E18528;
+  --amber-tint: #FEEBD6;
+  --amber-ink: #964D09;
+
+  --sans: 'Instrument Sans Variable', system-ui, sans-serif;
+  --mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+  --reading: var(--sans); /* swap to Source Serif 4 if chosen */
+
+  --gutter: clamp(16px, 4vw, 48px);
+  --section: clamp(56px, 7vw, 88px);
+  --pane-gap: clamp(40px, 6vw, 96px);
+  --id-col: clamp(44px, 6vw, 72px);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0D1013; --ink: #EDEFF1; --muted: #9A9FA5; --line: #2A2E33;
+  --hover: #161A1E; --surface: #14171C; --code-bg: #14171C;
+  --amber: #F4A34B; --amber-tint: #402712; --amber-ink: #FAB36D;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0D1013; --ink: #EDEFF1; --muted: #9A9FA5; --line: #2A2E33;
+    --hover: #161A1E; --surface: #14171C; --code-bg: #14171C;
+    --amber: #F4A34B; --amber-tint: #402712; --amber-ink: #FAB36D;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.5 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, p, ol, ul, dl, dd { margin: 0; }
+p { text-wrap: pretty; }
+a { color: inherit; }
+a:hover { color: var(--amber-ink); }
+:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+button { font: inherit; color: inherit; }
+
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 var(--gutter); }
+
+/* Shared components */
+.mono-label {
+  font: 11px var(--mono); text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--muted);
+}
+.mono-meta { font: 12px var(--mono); color: var(--muted); }
+
+.pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 8px; border-radius: 999px;
+  background: var(--amber-tint); color: var(--amber-ink);
+  font: 12px var(--mono);
+}
+.pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--amber); }
+
+.section-head {
+  display: flex; align-items: baseline; gap: 14px;
+  padding-top: 14px; border-top: 1px solid var(--ink);
+}
+.section-head .num { font: 12px var(--mono); color: var(--muted); }
+
+.pdo { padding-top: 10px; border-top: 2px solid var(--ink); }
+.pdo p { margin-top: 6px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 44px; padding: 0 16px; border-radius: 8px;
+  font: 600 15px/1.2 var(--sans); text-decoration: none; cursor: pointer;
+}
+.btn-primary { background: var(--ink); color: var(--bg); border: 0; }
+.btn-primary:hover { color: var(--bg); opacity: 0.88; }
+.btn-secondary { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn-secondary:hover { color: var(--ink); border-color: var(--ink); }
+
+.h1 {
+  font-weight: 500; font-stretch: 92%; letter-spacing: -0.028em; text-wrap: balance;
+}
+
+/* Two-pane layout used by Home and company pages */
+.panes {
+  display: flex; flex-wrap: wrap; align-items: flex-start;
+  gap: var(--pane-gap); padding-top: clamp(32px, 6vw, 80px);
+}
+.pane-pitch { flex: 0 1 400px; }
+.pane-main { flex: 999 1 480px; min-width: 0; }
+
+.facts { margin-top: 28px; border-top: 1px solid var(--line); }
+.facts > div {
+  display: grid; grid-template-columns: 76px 1fr; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 15px;
+}
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }

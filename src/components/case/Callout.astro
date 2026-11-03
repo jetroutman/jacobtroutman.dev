@@ -1,0 +1,14 @@
+---
+interface Props { label: string; title: string }
+const { label, title } = Astro.props;
+---
+<aside class="callout">
+  <p class="mono-label">{label}</p>
+  <h3>{title}</h3>
+  <div><slot /></div>
+</aside>
+<style>
+  .callout { margin-top: 32px; padding-top: 14px; border-top: 2px solid var(--ink); }
+  h3 { margin-top: 6px; font-size: 19px; font-weight: 600; }
+  div { margin-top: 8px; font: 18px/1.65 var(--reading); }
+</style>

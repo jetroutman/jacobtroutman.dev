@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /for/
+Sitemap: https://jacobtroutman.dev/sitemap-index.xml

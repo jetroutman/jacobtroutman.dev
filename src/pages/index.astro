@@ -1,0 +1,108 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import StatusMeta from '../components/StatusMeta.astro';
+import Pdo from '../components/Pdo.astro';
+import { site } from '../site';
+
+const cases = (await getCollection('cases')).sort((a, b) => a.data.order - b.data.order);
+---
+<Base title={site.name}>
+  <main class="panes">
+    <div class="pane-pitch">
+      <p class="avail mono-meta"><span class="dot"></span>Open to new roles</p>
+      {/* TODO(Jacob): headline is the designer's draft. Rewrite or approve. */}
+      <h1 class="h1 home-h1">I design software for the moment something goes wrong.</h1>
+      <p class="sub">Senior full-stack .NET engineer.</p>
+      <dl class="facts">
+        <div><dt class="mono-label">Stack</dt><dd>C#, .NET, Blazor</dd></div>
+        <div><dt class="mono-label">Cloud</dt><dd>Azure</dd></div>
+        <div><dt class="mono-label">Focus</dt><dd>APIs, design systems</dd></div>
+      </dl>
+      <div class="actions">
+        <a class="btn btn-primary" style="padding:10px 16px" href={site.resume}>Résumé (PDF)</a>
+        <a class="btn btn-secondary" href={`mailto:${site.email}`}>Email me</a>
+      </div>
+    </div>
+
+    <div class="pane-main">
+      <div class="log-head"><span class="mono-label">ID</span><span class="mono-label" style="color:var(--ink)">Decision log</span></div>
+      {cases.map(({ id, data }) => (
+        <details class="log-row">
+          <summary>
+            <span class="id">{data.id}</span>
+            <span class="main">
+              <span class="title">{data.title}</span>
+              <StatusMeta status={data.status} stack={data.stack} />
+            </span>
+            <span class="toggle" aria-hidden="true"></span>
+          </summary>
+          <div class="panel">
+            <span></span>
+            <div>
+              <Pdo tldr={data.tldr} />
+              <div class="row-actions">
+                {data.published
+                  ? <a class="btn btn-primary open" href={`/case/${id}/`}>Open the case file →</a>
+                  : <span class="mono-meta">Case file coming soon</span>}
+                {data.app && <a class="btn btn-secondary open" href={data.app}>Try the app</a>}
+                {data.published && <span class="mono-meta">{data.readMinutes} min read</span>}
+              </div>
+            </div>
+          </div>
+        </details>
+      ))}
+
+      <div class="cards">
+        <a class="card" href="/pocket-log/">
+          <span class="card-top"><span class="mono-label">App</span><span aria-hidden="true">→</span></span>
+          <span class="card-title">Pocket Log</span>
+          <span class="card-desc">My bowling analytics app, built on my own league data. Browse it read-only, or try the sandbox.</span>
+        </a>
+        <a class="card" href="#">
+          <span class="card-top"><span class="mono-label">Notes · coming soon</span><span aria-hidden="true">→</span></span>
+          <span class="card-title">How I build with AI</span>
+          <span class="card-desc">Where AI speeds me up, where I don't trust it, and how I check its work.</span>
+        </a>
+      </div>
+    </div>
+  </main>
+</Base>
+
+<style>
+  .avail { display: flex; align-items: center; gap: 8px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); }
+  .home-h1 { margin-top: 18px; font-size: clamp(34px, 4vw, 52px); line-height: 1.04; }
+  .sub { margin-top: 18px; font-size: 18px; line-height: 1.45; color: var(--muted); }
+
+  .log-head, .log-row summary, .panel {
+    display: grid; grid-template-columns: var(--id-col) 1fr 28px; column-gap: clamp(8px, 1.5vw, 16px);
+  }
+  .log-head { grid-template-columns: var(--id-col) 1fr; padding-bottom: 10px; border-bottom: 1px solid var(--ink); }
+  .log-row { border-bottom: 1px solid var(--line); }
+  .log-row summary { padding: 20px 0; cursor: pointer; list-style: none; }
+  .log-row summary::-webkit-details-marker { display: none; }
+  .log-row summary:hover { background: var(--hover); }
+  .id { font: 12px var(--mono); color: var(--muted); padding-top: 4px; }
+  .main { display: flex; flex-direction: column; gap: 10px; }
+  .title { font-size: clamp(17px, 1.6vw, 19px); line-height: 1.4; font-weight: 500; text-wrap: pretty; }
+  .toggle {
+    width: 28px; height: 28px; border: 1px solid var(--line); border-radius: 50%;
+    display: grid; place-items: center; font: 14px var(--mono); color: var(--muted);
+  }
+  .toggle::after { content: "+"; }
+  .log-row[open] .toggle::after { content: "−"; }
+  .panel { grid-template-columns: var(--id-col) 1fr; padding-bottom: 24px; }
+  .row-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 20px; }
+  .open { padding: 9px 14px; font-size: 14px; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 48px; }
+  .card {
+    display: flex; flex-direction: column; gap: 6px; padding: 20px; text-decoration: none;
+    border: 1px solid var(--line); border-radius: 12px; background: var(--surface);
+  }
+  .card:hover { color: var(--ink); border-color: var(--ink); }
+  .card-top { display: flex; justify-content: space-between; }
+  .card-title { margin-top: 18px; font-size: 21px; font-weight: 600; letter-spacing: -0.01em; }
+  .card-desc { font-size: 15px; line-height: 1.5; color: var(--muted); }
+</style>

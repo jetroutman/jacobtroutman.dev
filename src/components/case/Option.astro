@@ -1,0 +1,19 @@
+---
+interface Props { label: string; verdict?: string; title: string; chosen?: boolean }
+const { label, verdict, title, chosen = false } = Astro.props;
+---
+<div class="option" class:list={{ chosen }}>
+  <div class="top">
+    <span class="mono-label">{label}</span>
+    {chosen ? <span class="pill">Chosen</span> : <span class="mono-label">{verdict}</span>}
+  </div>
+  <h3>{title}</h3>
+  <p><slot /></p>
+</div>
+<style>
+  .option { display: flex; flex-direction: column; gap: 8px; padding: 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+  .option.chosen { border: 2px solid var(--ink); padding: 17px; }
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  h3 { font-size: 18px; font-weight: 600; line-height: 1.3; }
+  p { font-size: 16px; line-height: 1.55; }
+</style>

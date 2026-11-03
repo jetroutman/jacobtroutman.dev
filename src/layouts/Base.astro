@@ -1,0 +1,98 @@
+---
+import '@fontsource-variable/instrument-sans/standard.css';
+import '@fontsource-variable/jetbrains-mono/wght.css';
+import '../styles/global.css';
+import { site } from '../site';
+
+interface Props {
+  title: string;
+  description?: string;
+  noindex?: boolean;
+  /** Replaces the footer's right-hand note (used on company pages). */
+  footerNote?: string;
+}
+const { title, description = site.description, noindex = false, footerNote } = Astro.props;
+const fullTitle = title === site.name ? title : `${title} · ${site.name}`;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline>
+      try {
+        const t = localStorage.getItem('jt-theme');
+        if (t === 'light' || t === 'dark') {
+          document.documentElement.dataset.theme = t;
+          document.documentElement.style.colorScheme = t;
+        }
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="site-header">
+        <a class="name" href="/">{site.name}</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>Dark mode</button>
+      </header>
+
+      <slot />
+
+      <footer class="site-footer" class:list={{ note: !!footerNote }}>
+        {footerNote && <span>{footerNote}</span>}
+        <nav aria-label="Contact">
+          <a href={`mailto:${site.email}`}>Email</a>
+          <a href={site.linkedin}>LinkedIn</a>
+          <a href={site.github}>GitHub</a>
+          <a href={site.resume}>Résumé (PDF)</a>
+        </nav>
+        {!footerNote && <span>Updated {site.updated}</span>}
+      </footer>
+    </div>
+
+    <script is:inline>
+      (() => {
+        const btn = document.querySelector('[data-theme-toggle]');
+        const root = document.documentElement;
+        const current = () =>
+          root.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        const label = () => { btn.textContent = current() === 'dark' ? 'Light mode' : 'Dark mode'; };
+        label();
+        btn.addEventListener('click', () => {
+          const next = current() === 'dark' ? 'light' : 'dark';
+          root.dataset.theme = next;
+          root.style.colorScheme = next;
+          try { localStorage.setItem('jt-theme', next); } catch {}
+          label();
+        });
+      })();
+    </script>
+  </body>
+</html>
+
+<style>
+  .site-header {
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+    padding: 16px 0; border-bottom: 1px solid var(--line);
+  }
+  .name { font-size: 15px; font-weight: 600; letter-spacing: -0.005em; text-decoration: none; }
+  .theme-toggle {
+    position: relative; cursor: pointer;
+    border: 1px solid var(--line); background: var(--surface); border-radius: 999px;
+    padding: 6px 12px; font: 12px var(--mono);
+  }
+  .theme-toggle:hover { border-color: var(--ink); }
+  .theme-toggle::before { content: ""; position: absolute; inset: -8px -4px; }
+
+  .site-footer {
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px;
+    margin-top: clamp(56px, 9vw, 112px); padding: 20px 0 40px;
+    border-top: 1px solid var(--line); font: 12px var(--mono); color: var(--muted);
+  }
+  .site-footer nav { display: flex; flex-wrap: wrap; gap: 6px 20px; }
+  .site-footer a { text-decoration: none; }
+</style>

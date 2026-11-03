@@ -1,0 +1,122 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { site } from '../../site';
+
+export async function getStaticPaths() {
+  // Drafts build in dev only, so a half-written page can't ship.
+  const pages = await getCollection('companies', (c) => import.meta.env.DEV || !c.data.draft);
+  return pages.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { data } = Astro.props.entry;
+const cases = Object.fromEntries((await getCollection('cases')).map((c) => [c.data.id, c]));
+---
+<Base
+  title={`Why I fit ${data.company}`}
+  noindex
+  footerNote={`Unlisted page for ${data.company}. Not linked from the rest of the site.`}
+>
+  <main class="panes">
+    <div class="pane-pitch pitch">
+      <div class="sticky">
+        <p class="mono-meta"><span class="chip">Unlisted</span> Prepared for {data.company} · {data.date}</p>
+        <h1 class="h1">Why I fit {data.company}</h1>
+        <p class="role">{data.role}</p>
+        <div class="actions">
+          <a class="btn btn-primary" href={`mailto:${site.email}`}>Email me</a>
+          <a class="btn btn-secondary" href={site.resume}>Résumé (PDF)</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pane-main">
+      <section>
+        <div class="section-head"><span class="num">01</span><h2>The 30-second summary</h2></div>
+        <p class="statement">{data.summary}</p>
+        <div class="matrix">
+          <div class="mrow mhead"><span class="mono-label">Your posting asks for</span><span class="mono-label">Where I've done it</span></div>
+          {data.requirements.map((r) => (
+            <div class="mrow"><span>{r.need}</span><span class="ids">{r.cases.map((c) => <a class="idchip" href={cases[c]?.data.published ? `/case/${cases[c].id}/` : undefined}>{c}</a>)}</span></div>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head"><span class="num">02</span><h2>My evidence</h2></div>
+        <div class="evidence">
+          {data.evidence.map((e) => {
+            const c = cases[e.case];
+            if (!c) return null;
+            return (
+              <a class="ev" href={c.data.published ? `/case/${c.id}/` : '/'}>
+                <span class="mono-meta">{c.data.id}</span>
+                <span class="ev-main">
+                  <span class="ev-title">{c.data.title}</span>
+                  <span class="ev-rel"><strong>For {data.company}:</strong> {e.relevance}</span>
+                  <span class="mono-meta">Case file · {c.data.readMinutes} min · {c.data.stack.join(' · ')}</span>
+                </span>
+                <span class="mono-meta" aria-hidden="true">→</span>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head"><span class="num">03</span><h2>First 90 days</h2></div>
+        <div class="plan">
+          {data.plan.map((p) => (
+            <div class="phase">
+              <p class="mono-label">{p.days}</p>
+              <h3>{p.title}</h3>
+              <ul>{p.items.map((i) => <li>{i}</li>)}</ul>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head"><span class="num">04</span><h2>My questions for you</h2></div>
+        <ol class="questions">
+          {data.questions.map((q, i) => <li><span class="q">Q{i + 1}</span><span>{q}</span></li>)}
+        </ol>
+      </section>
+    </div>
+  </main>
+</Base>
+
+<style>
+  .pitch { flex-basis: 380px; }
+  @media (min-width: 1040px) { .sticky { position: sticky; top: 32px; } }
+  .chip { border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px; margin-right: 6px; }
+  h1 { margin-top: 18px; font-size: clamp(36px, 4.4vw, 56px); line-height: 1.02; }
+  .role { margin-top: 16px; font-size: 18px; line-height: 1.45; color: var(--muted); }
+
+  section + section { margin-top: var(--section); }
+  h2 { font-size: clamp(22px, 2.2vw, 28px); font-weight: 600; line-height: 1.2; letter-spacing: -0.015em; }
+  .statement { margin-top: 20px; max-width: 34em; font-size: clamp(20px, 2vw, 24px); line-height: 1.4; font-weight: 500; }
+
+  .matrix { margin-top: 28px; }
+  .mrow { display: grid; grid-template-columns: 1.3fr 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 16px; line-height: 1.4; }
+  .mhead { padding-top: 0; border-bottom-color: var(--ink); }
+  .ids { display: flex; flex-wrap: wrap; gap: 6px; }
+  .idchip { font: 12px var(--mono); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; text-decoration: none; }
+
+  .ev { display: grid; grid-template-columns: clamp(44px, 6vw, 64px) 1fr auto; gap: 12px; padding: 20px 0; border-bottom: 1px solid var(--line); text-decoration: none; }
+  .ev:hover { background: var(--hover); color: var(--ink); }
+  .ev-main { display: flex; flex-direction: column; gap: 8px; }
+  .ev-title { font-size: clamp(17px, 1.6vw, 19px); font-weight: 500; line-height: 1.4; }
+  .ev-rel { font-size: 16px; line-height: 1.5; color: var(--muted); }
+  .ev-rel strong { color: var(--ink); font-weight: 600; }
+
+  .plan { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px 28px; margin-top: 24px; }
+  .phase { padding-top: 12px; border-top: 2px solid var(--ink); }
+  .phase h3 { margin-top: 6px; font-size: 19px; font-weight: 600; }
+  .phase ul { list-style: none; padding: 0; margin-top: 10px; display: flex; flex-direction: column; gap: 10px; font-size: 15px; line-height: 1.5; }
+  .phase li::before { content: "– "; font-family: var(--mono); color: var(--muted); }
+
+  .questions { list-style: none; padding: 0; margin-top: 8px; }
+  .questions li { display: grid; grid-template-columns: var(--id-col) 1fr; padding: 18px 0; border-bottom: 1px solid var(--line); font-size: clamp(18px, 1.8vw, 21px); line-height: 1.4; font-weight: 500; }
+  .q { font: 12px var(--mono); color: var(--amber-ink); padding-top: 6px; }
+</style>
