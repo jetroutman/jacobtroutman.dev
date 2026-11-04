@@ -5,8 +5,9 @@ import { site } from '../../site';
 import QuestTracker from '../../components/QuestTracker.astro';
 
 export async function getStaticPaths() {
-  // Drafts build in dev only, so a half-written page can't ship.
-  const pages = await getCollection('companies', (c) => import.meta.env.DEV || !c.data.draft);
+  // Drafts build in dev and in PR preview builds (PUBLIC_DRAFTS), never in production.
+  const showDrafts = import.meta.env.DEV || import.meta.env.PUBLIC_DRAFTS === 'true';
+  const pages = await getCollection('companies', (c) => showDrafts || !c.data.draft);
   return pages.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
 }
 
