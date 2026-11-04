@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Why I fit · Jacob Troutman</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wdth,wght@0,75..100,400..700;1,75..100,400..700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+html,body{margin:0}
+*,*::before,*::after{box-sizing:border-box}
+body{-webkit-font-smoothing:antialiased}
+a{color:inherit}
+a:hover{color:light-dark(oklch(0.5 0.12 55),oklch(0.82 0.12 65))}
+</style>
+</helmet>
+<div style="{{ scheme }}">
+<div ref="{{ rootRef }}" style="container-type:inline-size; min-height:100vh; background:light-dark(oklch(0.985 0.002 250), oklch(0.17 0.008 255)); color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255)); font-family:'Instrument Sans', system-ui, sans-serif; font-size:16px;">
+<div style="max-width:1240px; margin:0 auto; padding:0 clamp(16px, 4cqw, 48px);">
+
+  <header style="display:flex; justify-content:space-between; align-items:center; gap:16px; padding:16px 0; border-bottom:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255));">
+    <a href="Home-1b-DecisionLog.dc.html" style="font-size:15px; font-weight:600; letter-spacing:-0.005em; text-decoration:none; color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));">Jacob Troutman</a>
+    <button type="button" onClick="{{ flipTheme }}" style="position:relative; appearance:none; border:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); background:light-dark(oklch(1 0 0), oklch(0.205 0.01 255)); color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255)); border-radius:999px; padding:6px 12px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; cursor:pointer;" style-hover="border-color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));" style-before="content:''; position:absolute; inset:-8px -4px;">{{ themeLabel }} mode</button>
+  </header>
+
+  <main style="display:flex; flex-wrap:wrap; gap:clamp(40px, 6cqw, 96px); padding-top:clamp(32px, 6cqw, 80px);">
+
+    <section style="flex:0 1 380px; min-width:0;">
+      <div style="{{ pane }}">
+        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">
+          <span style="padding:2px 8px; border:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); border-radius:999px;">Unlisted</span>
+          <span>Prepared for {{ company }} · Oct 2026</span>
+        </div>
+        <h1 style="margin:18px 0 0; font-size:clamp(36px, 4.4cqw, 56px); line-height:1.02; font-weight:500; font-stretch:92%; letter-spacing:-0.028em; text-wrap:balance;">Why I fit {{ company }}</h1>
+        <p style="margin:16px 0 0; font-size:18px; line-height:1.45; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255)); text-wrap:pretty;">For the Senior .NET Engineer role on your payments platform team.</p>
+        <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:28px;">
+          <a href="#email" style="display:inline-flex; align-items:center; min-height:44px; padding:0 16px; border-radius:8px; background:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255)); color:light-dark(oklch(0.985 0.002 250), oklch(0.17 0.008 255)); font-size:15px; font-weight:600; text-decoration:none;" style-hover="color:light-dark(oklch(0.985 0.002 250), oklch(0.17 0.008 255)); opacity:0.88;">Email me</a>
+          <a href="#resume" style="display:inline-flex; align-items:center; min-height:44px; padding:0 15px; border-radius:8px; border:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255)); font-size:15px; font-weight:600; text-decoration:none;" style-hover="border-color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255)); color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));">Résumé (PDF)</a>
+        </div>
+      </div>
+    </section>
+
+    <div style="flex:999 1 480px; min-width:0; display:flex; flex-direction:column; gap:clamp(56px, 7cqw, 88px);">
+
+      <section>
+        <div style="display:flex; align-items:baseline; gap:14px; padding-top:14px; border-top:1px solid light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));">
+          <span style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">01</span>
+          <h2 style="margin:0; font-size:clamp(22px, 2.2cqw, 28px); line-height:1.2; font-weight:600; letter-spacing:-0.015em;">The 30-second summary</h2>
+        </div>
+        <p style="margin:20px 0 0; max-width:34em; font-size:clamp(20px, 2cqw, 24px); line-height:1.4; font-weight:500; letter-spacing:-0.01em; text-wrap:pretty;">You're hiring a senior .NET engineer to build payment services on Azure. That's the work I do now: C# services for point-of-sale software, designed around what happens when a step fails.</p>
+        <div style="margin-top:28px;">
+          <div style="display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:12px; padding-bottom:8px; border-bottom:1px solid light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255)); font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">
+            <span>Your posting asks for</span><span>Where I've done it</span>
+          </div>
+          <div style="display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:12px; align-items:center; padding:12px 0; border-bottom:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255));">
+            <span style="font-size:16px; line-height:1.4;">C# and .NET services</span>
+            <span style="display:flex; flex-wrap:wrap; gap:6px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px;"><span style="padding:2px 8px; border:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); border-radius:6px;">DR-01</span><span style="padding:2px 8px; border:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); border-radius:6px;">DR-02</span></span>
+          </div>
+          <div style="display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:12px; align-items:center; padding:12px 0; border-bottom:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255));">
+            <span style="font-size:16px; line-height:1.4;">Blazor front ends</span>
+            <span style="display:flex; flex-wrap:wrap; gap:6px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px;"><span style="padding:2px 8px; border:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); border-radius:6px;">DR-03</span></span>
+          </div>
+          <div style="display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:12px; align-items:center; padding:12px 0; border-bottom:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255));">
+            <span style="font-size:16px; line-height:1.4;">Azure</span>
+            <span style="display:flex; flex-wrap:wrap; gap:6px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px;"><span style="padding:2px 8px; border:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); border-radius:6px;">DR-01</span><span style="padding:2px 8px; border:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); border-radius:6px;">DR-03</span></span>
+          </div>
+          <div style="display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:12px; align-items:center; padding:12px 0; border-bottom:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255));">
+            <span style="font-size:16px; line-height:1.4;">API design</span>
+            <span style="display:flex; flex-wrap:wrap; gap:6px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px;"><span style="padding:2px 8px; border:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); border-radius:6px;">DR-01</span><span style="padding:2px 8px; border:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); border-radius:6px;">DR-02</span></span>
+          </div>
+          <div style="display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:12px; align-items:center; padding:12px 0; border-bottom:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255));">
+            <span style="font-size:16px; line-height:1.4;">Shipping LLM features</span>
+            <span style="display:flex; flex-wrap:wrap; gap:6px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px;"><span style="padding:2px 8px; border:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); border-radius:6px;">DR-03</span></span>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div style="display:flex; align-items:baseline; gap:14px; padding-top:14px; border-top:1px solid light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));">
+          <span style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">02</span>
+          <h2 style="margin:0; font-size:clamp(22px, 2.2cqw, 28px); line-height:1.2; font-weight:600; letter-spacing:-0.015em;">My evidence</h2>
+        </div>
+        <div style="margin-top:8px;">
+          <a href="#" style="display:grid; grid-template-columns:clamp(44px, 6cqw, 64px) minmax(0,1fr) auto; gap:0 clamp(8px, 1.5cqw, 16px); padding:20px 0; border-bottom:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); text-decoration:none; color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));" style-hover="background:light-dark(oklch(0.97 0.003 250), oklch(0.215 0.01 255)); color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));">
+            <span style="padding-top:4px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">DR-01</span>
+            <span style="display:flex; flex-direction:column; gap:8px; min-width:0;">
+              <span style="font-size:clamp(17px, 1.6cqw, 19px); line-height:1.4; font-weight:500; text-wrap:pretty;">Designed a POS notification service with three urgency levels, adopted as the team's standard</span>
+              <span style="font-size:16px; line-height:1.5; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255)); text-wrap:pretty;"><span style="font-weight:600; color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));">For {{ company }}:</span> your platform sends alerts with very different stakes. This is how I made sure the urgent ones get seen.</span>
+              <span style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">Case file · 8 min · C# · APIs · Azure</span>
+            </span>
+            <span style="padding:2px 4px 0 12px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:16px; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">→</span>
+          </a>
+          <a href="Case-File.dc.html" style="display:grid; grid-template-columns:clamp(44px, 6cqw, 64px) minmax(0,1fr) auto; gap:0 clamp(8px, 1.5cqw, 16px); padding:20px 0; border-bottom:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); text-decoration:none; color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));" style-hover="background:light-dark(oklch(0.97 0.003 250), oklch(0.215 0.01 255)); color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));">
+            <span style="padding-top:4px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">DR-02</span>
+            <span style="display:flex; flex-direction:column; gap:8px; min-width:0;">
+              <span style="font-size:clamp(17px, 1.6cqw, 19px); line-height:1.4; font-weight:500; text-wrap:pretty;">Redesigned money-order printing so a failed print refunds the customer automatically</span>
+              <span style="font-size:16px; line-height:1.5; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255)); text-wrap:pretty;"><span style="font-weight:600; color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));">For {{ company }}:</span> payments fail halfway through. This is how I handle a step that fails after the customer has paid.</span>
+              <span style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">Case file · 10 min · C# · .NET · APIs</span>
+            </span>
+            <span style="padding:2px 4px 0 12px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:16px; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">→</span>
+          </a>
+          <a href="#" style="display:grid; grid-template-columns:clamp(44px, 6cqw, 64px) minmax(0,1fr) auto; gap:0 clamp(8px, 1.5cqw, 16px); padding:20px 0; border-bottom:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); text-decoration:none; color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));" style-hover="background:light-dark(oklch(0.97 0.003 250), oklch(0.215 0.01 255)); color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));">
+            <span style="padding-top:4px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">DR-03</span>
+            <span style="display:flex; flex-direction:column; gap:8px; min-width:0;">
+              <span style="font-size:clamp(17px, 1.6cqw, 19px); line-height:1.4; font-weight:500; text-wrap:pretty;">Shipped a user-facing LLM feature: Pocket Log, a bowling analytics app</span>
+              <span style="font-size:16px; line-height:1.5; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255)); text-wrap:pretty;"><span style="font-weight:600; color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));">For {{ company }}:</span> how I ship an LLM feature to real users, and what I keep out of the model.</span>
+              <span style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">Case file · 7 min · Blazor · Azure · LLM</span>
+            </span>
+            <span style="padding:2px 4px 0 12px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:16px; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">→</span>
+          </a>
+        </div>
+      </section>
+
+      <section>
+        <div style="display:flex; align-items:baseline; gap:14px; padding-top:14px; border-top:1px solid light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));">
+          <span style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">03</span>
+          <h2 style="margin:0; font-size:clamp(22px, 2.2cqw, 28px); line-height:1.2; font-weight:600; letter-spacing:-0.015em;">First 90 days</h2>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:24px 28px; margin-top:24px;">
+          <div style="padding-top:12px; border-top:2px solid light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));">
+            <div style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">Days 1–30</div>
+            <div style="margin-top:6px; font-size:19px; font-weight:600;">Learn</div>
+            <ul style="margin:12px 0 0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px;">
+              <li style="display:flex; gap:10px; font-size:15px; line-height:1.5;"><span style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">–</span><span>Ship a small fix to production in the first two weeks.</span></li>
+              <li style="display:flex; gap:10px; font-size:15px; line-height:1.5;"><span style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">–</span><span>Read the incident history for the services I'll own.</span></li>
+              <li style="display:flex; gap:10px; font-size:15px; line-height:1.5;"><span style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">–</span><span>Shadow on-call before joining the rotation.</span></li>
+            </ul>
+          </div>
+          <div style="padding-top:12px; border-top:2px solid light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));">
+            <div style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">Days 31–60</div>
+            <div style="margin-top:6px; font-size:19px; font-weight:600;">Contribute</div>
+            <ul style="margin:12px 0 0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px;">
+              <li style="display:flex; gap:10px; font-size:15px; line-height:1.5;"><span style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">–</span><span>Take one feature from design review to release.</span></li>
+              <li style="display:flex; gap:10px; font-size:15px; line-height:1.5;"><span style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">–</span><span>Write a decision record for it that the team can review.</span></li>
+            </ul>
+          </div>
+          <div style="padding-top:12px; border-top:2px solid light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));">
+            <div style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">Days 61–90</div>
+            <div style="margin-top:6px; font-size:19px; font-weight:600;">Own</div>
+            <ul style="margin:12px 0 0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px;">
+              <li style="display:flex; gap:10px; font-size:15px; line-height:1.5;"><span style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">–</span><span>Join the on-call rotation for my services.</span></li>
+              <li style="display:flex; gap:10px; font-size:15px; line-height:1.5;"><span style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">–</span><span>Propose one improvement, with the trade-offs written down.</span></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div style="display:flex; align-items:baseline; gap:14px; padding-top:14px; border-top:1px solid light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));">
+          <span style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">04</span>
+          <h2 style="margin:0; font-size:clamp(22px, 2.2cqw, 28px); line-height:1.2; font-weight:600; letter-spacing:-0.015em;">My questions for you</h2>
+        </div>
+        <ol style="margin:8px 0 0; padding:0; list-style:none;">
+          <li style="display:grid; grid-template-columns:clamp(44px, 6cqw, 64px) minmax(0,1fr); gap:0 clamp(8px, 1.5cqw, 16px); padding:18px 0; border-bottom:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255));">
+            <span style="padding-top:5px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; color:light-dark(oklch(0.5 0.12 55), oklch(0.82 0.12 65));">Q1</span>
+            <span style="font-size:clamp(18px, 1.8cqw, 21px); line-height:1.4; font-weight:500; text-wrap:pretty;">What does a bad day look like for the services this role owns?</span>
+          </li>
+          <li style="display:grid; grid-template-columns:clamp(44px, 6cqw, 64px) minmax(0,1fr); gap:0 clamp(8px, 1.5cqw, 16px); padding:18px 0; border-bottom:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255));">
+            <span style="padding-top:5px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; color:light-dark(oklch(0.5 0.12 55), oklch(0.82 0.12 65));">Q2</span>
+            <span style="font-size:clamp(18px, 1.8cqw, 21px); line-height:1.4; font-weight:500; text-wrap:pretty;">How does the team write down and review design decisions?</span>
+          </li>
+          <li style="display:grid; grid-template-columns:clamp(44px, 6cqw, 64px) minmax(0,1fr); gap:0 clamp(8px, 1.5cqw, 16px); padding:18px 0; border-bottom:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255));">
+            <span style="padding-top:5px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; color:light-dark(oklch(0.5 0.12 55), oklch(0.82 0.12 65));">Q3</span>
+            <span style="font-size:clamp(18px, 1.8cqw, 21px); line-height:1.4; font-weight:500; text-wrap:pretty;">Where do you plan to use LLMs, and where have you decided not to?</span>
+          </li>
+          <li style="display:grid; grid-template-columns:clamp(44px, 6cqw, 64px) minmax(0,1fr); gap:0 clamp(8px, 1.5cqw, 16px); padding:18px 0; border-bottom:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255));">
+            <span style="padding-top:5px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; color:light-dark(oklch(0.5 0.12 55), oklch(0.82 0.12 65));">Q4</span>
+            <span style="font-size:clamp(18px, 1.8cqw, 21px); line-height:1.4; font-weight:500; text-wrap:pretty;">Six months in, what would tell you this hire worked?</span>
+          </li>
+        </ol>
+      </section>
+    </div>
+  </main>
+
+  <footer style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px 24px; margin-top:clamp(56px, 9cqw, 112px); padding:20px 0 40px; border-top:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">
+    <span>Unlisted page for {{ company }}. Not linked from the rest of the site.</span>
+    <nav style="display:flex; flex-wrap:wrap; gap:6px 20px;">
+      <a href="#email" style="text-decoration:none;">Email</a>
+      <a href="https://www.linkedin.com/in/jacob-troutman" style="text-decoration:none;">LinkedIn</a>
+      <a href="https://github.com/jetroutman" style="text-decoration:none;">GitHub</a>
+      <a href="#resume" style="text-decoration:none;">Résumé (PDF)</a>
+    </nav>
+  </footer>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;system&quot;,&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;system&quot;,&quot;tsType&quot;:&quot;'system' | 'light' | 'dark'&quot;},&quot;company&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Contoso&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { theme: null, sysDark: false, stored: null, wide: false };
+  rootRef = React.createRef();
+  componentDidMount() {
+    this.mq = window.matchMedia('(prefers-color-scheme: dark)');
+    this.onMq = () => this.setState({ sysDark: this.mq.matches });
+    this.onMq();
+    this.mq.addEventListener('change', this.onMq);
+    try { this.setState({ stored: localStorage.getItem('jt-theme') }); } catch (e) {}
+    this.ro = new ResizeObserver(es => {
+      const wide = es[0].contentRect.width >= 1040;
+      if (wide !== this.state.wide) this.setState({ wide });
+    });
+    if (this.rootRef.current) this.ro.observe(this.rootRef.current);
+  }
+  componentWillUnmount() {
+    if (this.mq) this.mq.removeEventListener('change', this.onMq);
+    if (this.ro) this.ro.disconnect();
+  }
+  componentDidUpdate(prev) {
+    if (prev.theme !== this.props.theme && this.state.theme) this.setState({ theme: null });
+  }
+  renderVals() {
+    const forced = this.props.theme && this.props.theme !== 'system' ? this.props.theme : null;
+    const theme = this.state.theme || forced || this.state.stored || 'system';
+    const dark = theme === 'dark' || (theme === 'system' && this.state.sysDark);
+    const company = String(this.props.company ?? 'Contoso').trim() || 'Contoso';
+    return {
+      scheme: { colorScheme: theme === 'system' ? 'light dark' : theme },
+      themeLabel: dark ? 'Light' : 'Dark',
+      flipTheme: () => { const t = dark ? 'light' : 'dark'; try { localStorage.setItem('jt-theme', t); } catch (e) {} this.setState({ theme: t, stored: t }); },
+      rootRef: this.rootRef,
+      company,
+      pane: this.state.wide ? { position: 'sticky', top: 32 } : {}
+    };
+  }
+}
+</script>
+</body>
+</html>

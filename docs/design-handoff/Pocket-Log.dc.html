@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Pocket Log · Jacob Troutman</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wdth,wght@0,75..100,400..700;1,75..100,400..700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+html,body{margin:0}
+*,*::before,*::after{box-sizing:border-box}
+body{-webkit-font-smoothing:antialiased}
+a{color:inherit}
+a:hover{color:light-dark(oklch(0.5 0.12 55),oklch(0.82 0.12 65))}
+</style>
+</helmet>
+<div style="{{ scheme }}">
+<div style="container-type:inline-size; min-height:100vh; background:light-dark(oklch(0.985 0.002 250), oklch(0.17 0.008 255)); color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255)); font-family:'Instrument Sans', system-ui, sans-serif; font-size:16px;">
+<div style="max-width:1240px; margin:0 auto; padding:0 clamp(16px, 4cqw, 48px);">
+
+  <header style="display:flex; justify-content:space-between; align-items:center; gap:16px; padding:16px 0; border-bottom:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255));">
+    <a href="Home-1b-DecisionLog.dc.html" style="font-size:15px; font-weight:600; letter-spacing:-0.005em; text-decoration:none; color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));">Jacob Troutman</a>
+    <button type="button" onClick="{{ flipTheme }}" style="position:relative; appearance:none; border:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); background:light-dark(oklch(1 0 0), oklch(0.205 0.01 255)); color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255)); border-radius:999px; padding:6px 12px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; cursor:pointer;" style-hover="border-color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));" style-before="content:''; position:absolute; inset:-8px -4px;">{{ themeLabel }} mode</button>
+  </header>
+
+  <div style="padding-top:clamp(28px, 5cqw, 56px);">
+    <nav aria-label="Breadcrumb" style="display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">
+      <a href="Home-1b-DecisionLog.dc.html" style="text-decoration:none;">← Decision log</a>
+      <span aria-hidden="true">/</span>
+      <span>Pocket Log</span>
+    </nav>
+    <div style="display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:16px 40px; margin-top:clamp(20px, 3cqw, 32px);">
+      <div style="flex:1 1 420px; min-width:0;">
+        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px 12px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">
+          <span style="display:inline-flex; align-items:center; gap:6px; padding:2px 8px; border-radius:999px; background:light-dark(oklch(0.95 0.035 70), oklch(0.3 0.05 60)); color:light-dark(oklch(0.5 0.12 55), oklch(0.82 0.12 65));"><span style="width:6px; height:6px; border-radius:50%; background:light-dark(oklch(0.7 0.15 60), oklch(0.78 0.14 65));"></span>Live</span>
+          <span>Blazor · Azure · LLM</span>
+        </div>
+        <h1 style="margin:12px 0 0; font-size:clamp(34px, 4.4cqw, 52px); line-height:1.02; font-weight:500; font-stretch:92%; letter-spacing:-0.028em;">Pocket Log</h1>
+        <p style="margin:12px 0 0; max-width:36em; font-size:17px; line-height:1.5; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255)); text-wrap:pretty;">My bowling analytics app, running on my league's real data. Browse it read-only, or try the sandbox.</p>
+      </div>
+      <a href="#" style="display:inline-flex; align-items:center; gap:10px; min-height:44px; padding:0 15px; border-radius:8px; border:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255)); font-size:15px; font-weight:600; text-decoration:none;" style-hover="border-color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255)); color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));">Read the case file <span style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; font-weight:400; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">DR-03</span></a>
+    </div>
+  </div>
+
+  <sc-if value="{{ real }}" hint-placeholder-val="{{ true }}">
+    <div style="position:sticky; top:8px; z-index:10; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px 16px; margin-top:clamp(24px, 4cqw, 40px); padding:10px 10px 10px 16px; border:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); border-radius:12px; background:light-dark(oklch(1 0 0), oklch(0.205 0.01 255));">
+      <div style="display:flex; align-items:center; gap:10px; flex:1 1 260px; min-width:0;">
+        <span style="flex:0 0 8px; height:8px; border-radius:50%; background:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));"></span>
+        <span role="status" style="font-size:16px; font-weight:500; line-height:1.4;">Viewing Jacob's real league data (read-only)</span>
+      </div>
+      <div role="group" aria-label="Data mode" style="display:inline-flex; padding:3px; border:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); border-radius:999px; background:light-dark(oklch(0.985 0.002 250), oklch(0.17 0.008 255));">
+        <button type="button" aria-pressed="true" style="position:relative; min-height:36px; padding:0 14px; border:0; border-radius:999px; background:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255)); color:light-dark(oklch(0.985 0.002 250), oklch(0.17 0.008 255)); font-family:'Instrument Sans', system-ui, sans-serif; font-size:14px; font-weight:600; cursor:default;" style-before="content:''; position:absolute; inset:-7px 0;">Real data</button>
+        <button type="button" onClick="{{ toSandbox }}" aria-pressed="false" style="position:relative; min-height:36px; padding:0 14px; border:0; border-radius:999px; background:transparent; color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255)); font-family:'Instrument Sans', system-ui, sans-serif; font-size:14px; font-weight:600; cursor:pointer;" style-hover="background:light-dark(oklch(0.97 0.003 250), oklch(0.215 0.01 255));" style-before="content:''; position:absolute; inset:-7px 0;">Sandbox</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ sandbox }}" hint-placeholder-val="{{ false }}">
+    <div style="position:sticky; top:8px; z-index:10; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px 16px; margin-top:clamp(24px, 4cqw, 40px); padding:10px 10px 10px 16px; border:1px solid light-dark(oklch(0.7 0.15 60), oklch(0.78 0.14 65)); border-radius:12px; background:light-dark(oklch(0.95 0.035 70), oklch(0.3 0.05 60));">
+      <div style="display:flex; align-items:center; gap:10px; flex:1 1 260px; min-width:0;">
+        <span style="flex:0 0 8px; height:8px; border-radius:50%; background:light-dark(oklch(0.7 0.15 60), oklch(0.78 0.14 65));"></span>
+        <span role="status" style="font-size:16px; font-weight:500; line-height:1.4;">Sandbox: your changes stay in your browser</span>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px;">
+        <span style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; color:light-dark(oklch(0.5 0.12 55), oklch(0.82 0.12 65));">{{ changesLabel }}</span>
+        <button type="button" onClick="{{ reset }}" style="position:relative; min-height:36px; padding:0 14px; border:1px solid light-dark(oklch(0.7 0.15 60), oklch(0.78 0.14 65)); border-radius:8px; background:light-dark(oklch(1 0 0), oklch(0.205 0.01 255)); color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255)); font-family:'Instrument Sans', system-ui, sans-serif; font-size:14px; font-weight:600; cursor:pointer;" style-hover="border-color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));" style-before="content:''; position:absolute; inset:-7px 0;">Reset</button>
+        <div role="group" aria-label="Data mode" style="display:inline-flex; padding:3px; border:1px solid light-dark(oklch(0.7 0.15 60), oklch(0.78 0.14 65)); border-radius:999px; background:light-dark(oklch(0.985 0.002 250), oklch(0.17 0.008 255));">
+          <button type="button" onClick="{{ toReal }}" aria-pressed="false" style="position:relative; min-height:36px; padding:0 14px; border:0; border-radius:999px; background:transparent; color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255)); font-family:'Instrument Sans', system-ui, sans-serif; font-size:14px; font-weight:600; cursor:pointer;" style-hover="background:light-dark(oklch(0.97 0.003 250), oklch(0.215 0.01 255));" style-before="content:''; position:absolute; inset:-7px 0;">Real data</button>
+          <button type="button" aria-pressed="true" style="position:relative; min-height:36px; padding:0 14px; border:0; border-radius:999px; background:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255)); color:light-dark(oklch(0.985 0.002 250), oklch(0.17 0.008 255)); font-family:'Instrument Sans', system-ui, sans-serif; font-size:14px; font-weight:600; cursor:default;" style-before="content:''; position:absolute; inset:-7px 0;">Sandbox</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <div style="margin-top:12px; border:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); border-radius:12px; background:light-dark(oklch(1 0 0), oklch(0.205 0.01 255)); overflow:hidden;">
+    <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:6px 16px; padding:10px 16px; border-bottom:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">
+      <span>Stand-in · the Pocket Log app mounts here</span>
+      <span>{{ sourceLabel }}</span>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:28px; max-width:820px; padding:clamp(16px, 3cqw, 32px);">
+      <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:baseline; gap:6px 16px;">
+        <h2 style="margin:0; font-size:22px; font-weight:600; letter-spacing:-0.01em;">Tuesday league</h2>
+        <span style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">Fall 2026 · {{ nightsLabel }}</span>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(96px, 1fr)); gap:12px 20px;">
+        <div style="padding-top:10px; border-top:2px solid light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));">
+          <div style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">Average</div>
+          <div style="margin-top:4px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:28px; font-weight:500; font-variant-numeric:tabular-nums;">{{ avg }}</div>
+        </div>
+        <div style="padding-top:10px; border-top:2px solid light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));">
+          <div style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">High game</div>
+          <div style="margin-top:4px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:28px; font-weight:500; font-variant-numeric:tabular-nums;">{{ hiGame }}</div>
+        </div>
+        <div style="padding-top:10px; border-top:2px solid light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));">
+          <div style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">High series</div>
+          <div style="margin-top:4px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:28px; font-weight:500; font-variant-numeric:tabular-nums;">{{ hiSeries }}</div>
+        </div>
+      </div>
+      <div>
+        <div style="display:grid; grid-template-columns:minmax(56px, 1.3fr) repeat(3, minmax(44px, 1fr)) minmax(52px, 1fr); gap:8px; padding-bottom:8px; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">
+          <span>Night</span>
+          <span style="padding-right:9px; text-align:right;">G1</span>
+          <span style="padding-right:9px; text-align:right;">G2</span>
+          <span style="padding-right:9px; text-align:right;">G3</span>
+          <span style="text-align:right;">Series</span>
+        </div>
+        <sc-for list="{{ rows }}" as="r" hint-placeholder-count="5">
+          <div style="display:grid; grid-template-columns:minmax(56px, 1.3fr) repeat(3, minmax(44px, 1fr)) minmax(52px, 1fr); gap:8px; align-items:center; padding:4px 0; border-top:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255));">
+            <span style="font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:13px; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">{{ r.night }}</span>
+            <input type="text" inputMode="numeric" aria-label="{{ r.c1.label }}" value="{{ r.c1.v }}" onChange="{{ r.c1.on }}" disabled="{{ r.ro }}" style="{{ r.c1.style }}">
+            <input type="text" inputMode="numeric" aria-label="{{ r.c2.label }}" value="{{ r.c2.v }}" onChange="{{ r.c2.on }}" disabled="{{ r.ro }}" style="{{ r.c2.style }}">
+            <input type="text" inputMode="numeric" aria-label="{{ r.c3.label }}" value="{{ r.c3.v }}" onChange="{{ r.c3.on }}" disabled="{{ r.ro }}" style="{{ r.c3.style }}">
+            <span style="text-align:right; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:15px; font-weight:500; font-variant-numeric:tabular-nums;">{{ r.series }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <sc-if value="{{ sandbox }}" hint-placeholder-val="{{ false }}">
+        <button type="button" onClick="{{ addNight }}" style="align-self:flex-start; min-height:44px; padding:0 16px; border:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); border-radius:8px; background:transparent; color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255)); font-family:'Instrument Sans', system-ui, sans-serif; font-size:15px; font-weight:600; cursor:pointer;" style-hover="border-color:light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255));">+ Add a night</button>
+      </sc-if>
+      <sc-if value="{{ real }}" hint-placeholder-val="{{ true }}">
+        <p style="margin:0; font-size:15px; line-height:1.5; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">Switch to Sandbox to edit scores or add a night.</p>
+      </sc-if>
+    </div>
+  </div>
+  <p style="margin:14px 0 0; max-width:72ch; font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; line-height:1.6; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">Sandbox data is saved in this browser's local storage and never sent anywhere. Reset restores my real data.</p>
+
+  <footer style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px 24px; margin-top:clamp(56px, 9cqw, 112px); padding:20px 0 40px; border-top:1px solid light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255)); font-family:'JetBrains Mono', ui-monospace, Menlo, monospace; font-size:12px; color:light-dark(oklch(0.5 0.012 255), oklch(0.7 0.01 255));">
+    <nav style="display:flex; flex-wrap:wrap; gap:6px 20px;">
+      <a href="#email" style="text-decoration:none;">Email</a>
+      <a href="https://www.linkedin.com/in/jacob-troutman" style="text-decoration:none;">LinkedIn</a>
+      <a href="https://github.com/jetroutman" style="text-decoration:none;">GitHub</a>
+      <a href="#resume" style="text-decoration:none;">Résumé (PDF)</a>
+    </nav>
+    <span>Updated Oct 2026</span>
+  </footer>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;system&quot;,&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;system&quot;,&quot;tsType&quot;:&quot;'system' | 'light' | 'dark'&quot;},&quot;mode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;real&quot;,&quot;sandbox&quot;],&quot;default&quot;:&quot;real&quot;,&quot;tsType&quot;:&quot;'real' | 'sandbox'&quot;}}">
+class Component extends DCLogic {
+  base = [
+    { night: 'Oct 27', g: ['214', '188', '201'] },
+    { night: 'Oct 20', g: ['176', '205', '192'] },
+    { night: 'Oct 13', g: ['223', '168', '187'] },
+    { night: 'Oct 6', g: ['190', '199', '156'] },
+    { night: 'Sep 29', g: ['207', '182', '214'] }
+  ];
+  storeKey = 'jt-pocketlog-sandbox';
+  state = { theme: null, sysDark: false, stored: null, mode: null, rows: null, flash: false };
+  componentDidMount() {
+    this.mq = window.matchMedia('(prefers-color-scheme: dark)');
+    this.onMq = () => this.setState({ sysDark: this.mq.matches });
+    this.onMq();
+    this.mq.addEventListener('change', this.onMq);
+    try { this.setState({ stored: localStorage.getItem('jt-theme') }); } catch (e) {}
+    try {
+      const saved = JSON.parse(localStorage.getItem(this.storeKey) || 'null');
+      if (Array.isArray(saved)) this.setState({ rows: saved });
+    } catch (e) {}
+  }
+  componentWillUnmount() {
+    if (this.mq) this.mq.removeEventListener('change', this.onMq);
+    clearTimeout(this.ft);
+  }
+  componentDidUpdate(prev) {
+    if (prev.theme !== this.props.theme && this.state.theme) this.setState({ theme: null });
+    if (prev.mode !== this.props.mode && this.state.mode) this.setState({ mode: null });
+  }
+  sandboxRows() { return this.state.rows || this.base.map(r => ({ night: r.night, g: r.g.slice() })); }
+  save(rows) {
+    this.setState({ rows, flash: false });
+    try { localStorage.setItem(this.storeKey, JSON.stringify(rows)); } catch (e) {}
+  }
+  edit(i, k, raw) {
+    let v = String(raw).replace(/\D/g, '').slice(0, 3);
+    if (v !== '' && Number(v) > 300) v = '300';
+    this.save(this.sandboxRows().map((r, j) => (j === i ? { ...r, g: r.g.map((x, m) => (m === k ? v : x)) } : r)));
+  }
+  addNight() {
+    const rows = this.sandboxRows();
+    const added = rows.filter(r => r.added).length;
+    const night = new Date(2026, 9, 27 + 7 * (added + 1)).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    this.save([{ night, g: ['', '', ''], added: true }, ...rows]);
+  }
+  reset() {
+    try { localStorage.removeItem(this.storeKey); } catch (e) {}
+    clearTimeout(this.ft);
+    this.setState({ rows: null, flash: true });
+    this.ft = setTimeout(() => this.setState({ flash: false }), 2400);
+  }
+  renderVals() {
+    const forced = this.props.theme && this.props.theme !== 'system' ? this.props.theme : null;
+    const theme = this.state.theme || forced || this.state.stored || 'system';
+    const dark = theme === 'dark' || (theme === 'system' && this.state.sysDark);
+    const mode = this.state.mode || (this.props.mode === 'sandbox' ? 'sandbox' : 'real');
+    const sandbox = mode === 'sandbox';
+    const fg = 'light-dark(oklch(0.21 0.012 255), oklch(0.95 0.004 255))';
+    const bg = 'light-dark(oklch(0.985 0.002 250), oklch(0.17 0.008 255))';
+    const ln = 'light-dark(oklch(0.905 0.005 255), oklch(0.3 0.01 255))';
+    const ad = 'light-dark(oklch(0.7 0.15 60), oklch(0.78 0.14 65))';
+    const ab = 'light-dark(oklch(0.95 0.035 70), oklch(0.3 0.05 60))';
+    const mono = "'JetBrains Mono', ui-monospace, Menlo, monospace";
+    const cell = (edit, changed) => ({
+      width: '100%', minWidth: 0, height: 44, padding: '0 8px', borderRadius: 6,
+      border: `1px solid ${edit ? (changed ? ad : ln) : 'transparent'}`,
+      background: edit ? (changed ? ab : bg) : 'transparent',
+      color: fg, WebkitTextFillColor: fg, opacity: 1,
+      fontFamily: mono, fontSize: 15, textAlign: 'right', fontVariantNumeric: 'tabular-nums'
+    });
+    const baseBy = Object.fromEntries(this.base.map(r => [r.night, r.g]));
+    const rows = sandbox ? this.sandboxRows() : this.base;
+    let changes = 0;
+    const view = rows.map((r, i) => {
+      const b = r.added ? null : baseBy[r.night];
+      if (sandbox && !b) changes += 1;
+      const cells = r.g.map((v, k) => {
+        if (sandbox && b && v !== b[k]) changes += 1;
+        const changed = sandbox && (b ? v !== b[k] : v !== '');
+        return { v, label: `${r.night}, game ${k + 1}`, style: cell(sandbox, changed), on: e => { if (sandbox) this.edit(i, k, e.target.value); } };
+      });
+      const n = r.g.map(x => parseInt(x, 10));
+      return { night: r.night, c1: cells[0], c2: cells[1], c3: cells[2], ro: !sandbox, series: n.every(x => !isNaN(x)) ? String(n.reduce((a, x) => a + x, 0)) : '—' };
+    });
+    const games = rows.flatMap(r => r.g.map(x => parseInt(x, 10))).filter(x => !isNaN(x));
+    const series = view.map(r => parseInt(r.series, 10)).filter(x => !isNaN(x));
+    return {
+      scheme: { colorScheme: theme === 'system' ? 'light dark' : theme },
+      themeLabel: dark ? 'Light' : 'Dark',
+      flipTheme: () => { const t = dark ? 'light' : 'dark'; try { localStorage.setItem('jt-theme', t); } catch (e) {} this.setState({ theme: t, stored: t }); },
+      real: !sandbox,
+      sandbox,
+      toReal: () => this.setState({ mode: 'real' }),
+      toSandbox: () => this.setState({ mode: 'sandbox' }),
+      reset: () => this.reset(),
+      addNight: () => this.addNight(),
+      rows: view,
+      avg: games.length ? String(Math.floor(games.reduce((a, x) => a + x, 0) / games.length)) : '—',
+      hiGame: games.length ? String(Math.max(...games)) : '—',
+      hiSeries: series.length ? String(Math.max(...series)) : '—',
+      nightsLabel: `${rows.length} nights`,
+      sourceLabel: sandbox ? 'Data: this browser' : 'Data: league snapshot',
+      changesLabel: this.state.flash ? "Reset to Jacob's data" : changes === 0 ? 'No changes' : changes === 1 ? '1 change' : `${changes} changes`
+    };
+  }
+}
+</script>
+</body>
+</html>
