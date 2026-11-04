@@ -10,8 +10,17 @@ tldr:
   problem: "The new POS needed one way to get a cashier's attention, and some notifications need an answer while others don't."
   decision: "A hybrid: severity picks the transport (RPC for blocking, pub/sub for inform), and category only sets the look."
   outcome: "The team adopted it, adding notification types stayed easy, and later hardware flows like POS reboot reuse it for verification."
-todo:
-  - "Confirm 'adopted as the team's standard' is accurate, or soften the title."
+teaser: "Not every notification deserves an answer."
+quiz:
+  question: "Some POS notifications need the cashier's answer and some don't. How would you send them between services over MQTT?"
+  options:
+    - label: "Send everything over pub/sub"
+      reply: "Fire and forget is simple and fast for a heads-up, but nothing waits for the cashier's answer on the blocking ones."
+    - label: "Send everything over RPC"
+      reply: "Right for blocking notifications, but making every heads-up wait for a reply is heavy."
+    - label: "Let severity pick the transport"
+      chosen: true
+      reply: "That's the hybrid we adopted. Blocking notifications go over RPC and wait; informational ones are published. Category only sets the look."
 ---
 import Section from '../../components/case/Section.astro';
 import Parts from '../../components/case/Parts.astro';
