@@ -1,4 +1,4 @@
-// Site-wide facts. TODO(Jacob): add the résumé at public/resume.pdf.
+// Site-wide facts.
 export const site = {
   name: 'Jacob Troutman',
   description: 'Senior full-stack .NET engineer. C#, Blazor, Azure, APIs, design systems.',

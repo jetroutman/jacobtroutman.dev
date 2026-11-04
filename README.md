@@ -22,7 +22,7 @@ npm run build    # production build into dist/
 - A case file with `published: false` shows on Home but has no page yet.
 - `todo:` lists claims to confirm. They show only in `npm run dev`.
 - Company pages with `draft: true` build in dev only. Give real ones an unguessable slug. They're `noindex`, left out of the sitemap, and blocked in `robots.txt`.
-- Put the résumé at `public/resume.pdf`.
+- The résumé PDF is `public/resume.pdf`, built from `resume/resume.html` (see `resume/README.md`).
 
 ## Deploy
 
