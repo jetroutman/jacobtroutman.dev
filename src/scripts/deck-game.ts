@@ -3,7 +3,7 @@
  *
  * Deck: tracks the current slide, marks slides seen after a short dwell, drives the
  * progress bar, and unlocks the final note once every slide has been seen.
- * Game (on by default, obvious off switch): log-style achievement toasts, cursor
+ * Game (on by default, obvious off switch): game-style achievement pops, cursor
  * distance in bowling lanes, hidden achievements, "What would you do?" prompts,
  * and a run summary the reader can email to Jacob.
  */
@@ -73,7 +73,7 @@ export function initDeck(deck: HTMLElement) {
       const flip = b.querySelector('[data-game-flip]');
       if (flip) flip.textContent = gameOn ? 'off' : 'on';
     }
-    if (!gameOn) { panel.hidden = true; unlockNote(false); for (const q of $$('[data-quiz]')) q.classList.add('answered'); }
+    if (!gameOn) { queue.length = 0; displayCount = got.size; panel.hidden = true; unlockNote(false); for (const q of $$('[data-quiz]')) q.classList.add('answered'); }
     else for (const q of $$<HTMLElement>('[data-quiz]')) q.classList.toggle('answered', q.dataset.quiz! in st.answers);
     renderHud();
   };
@@ -85,26 +85,89 @@ export function initDeck(deck: HTMLElement) {
   });
 
   // ---------- toasts + achievements ----------
-  const toast = (tag: string, title: string, desc: string) => {
-    if (!gameOn) return;
-    const t = document.createElement('div');
-    t.className = 'toast';
-    t.innerHTML = `<p class="toast-tag"></p><p class="toast-title"></p><p class="toast-desc"></p>`;
-    t.querySelector('.toast-tag')!.textContent = `[${tag}]`;
-    t.querySelector('.toast-title')!.textContent = title;
-    t.querySelector('.toast-desc')!.textContent = desc;
-    t.addEventListener('click', () => t.remove());
+  // Achievement pop: one at a time, top-center. It drops in, the badge pops with a
+  // ring and a shine sweeps across, then it flies into the Achievements counter,
+  // which bumps and ticks up. Reduced motion: a plain fade, same timing.
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const queue: Ach[] = [];
+  let showing = false;
+  let displayCount = got.size; // what the HUD shows; ticks up when a pop lands
+  let firstPop = got.size === 0;
+
+  const hudTarget = () => {
+    const b = document.querySelector<HTMLElement>('.deckbar [data-ach-open]');
+    return b && b.offsetParent ? b : null;
+  };
+  const bumpHud = () => {
+    displayCount = Math.min(displayCount + 1, got.size);
+    renderHud();
+    const b = hudTarget();
+    if (b && !reduced) b.animate(
+      [{ transform: 'scale(1)' }, { transform: 'scale(1.22)', borderColor: 'var(--amber)' }, { transform: 'scale(1)' }],
+      { duration: 420, easing: 'cubic-bezier(.3,1.6,.5,1)' });
+    b?.classList.add('flash'); setTimeout(() => b?.classList.remove('flash'), 900);
+  };
+
+  const pop = (a: Ach) => {
+    const n = ACHIEVEMENTS.indexOf(a) + 1;
+    const t = document.createElement('button');
+    t.type = 'button';
+    t.className = `pop${a.hidden ? ' secret' : ''}`;
+    t.setAttribute('aria-label', `${a.hidden ? 'Secret found' : 'Achievement unlocked'}: ${a.title}. ${a.desc}`);
+    t.innerHTML = `<span class="pop-badge"><span></span></span><span class="pop-body"><span class="pop-tag"></span><span class="pop-title"></span><span class="pop-desc"></span><span class="pop-hint"></span></span><span class="pop-shine" aria-hidden="true"></span>`;
+    t.querySelector('.pop-badge span')!.textContent = a.hidden ? '?' : String(n).padStart(2, '0');
+    t.querySelector('.pop-tag')!.textContent = a.hidden ? 'Secret found' : 'Achievement unlocked';
+    t.querySelector('.pop-title')!.textContent = a.title;
+    t.querySelector('.pop-desc')!.textContent = a.desc;
+    t.querySelector('.pop-hint')!.textContent = firstPop
+      ? `${got.size} of ${ACHIEVEMENTS.length} found. Your trophies live up top ↗`
+      : `${got.size - (queue.length)} of ${ACHIEVEMENTS.length} found`;
+    firstPop = false;
+    t.addEventListener('click', () => { panel.hidden = false; renderPanel(); finish(); });
     toasts.append(t);
-    while (toasts.children.length > 3) toasts.firstElementChild!.remove();
-    setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 300); }, 4200);
+
+    let done = false;
+    const finish = () => {
+      if (done) return; done = true;
+      const target = hudTarget();
+      if (!reduced && target) {
+        const from = t.getBoundingClientRect(), to = target.getBoundingClientRect();
+        const dx = to.left + to.width / 2 - (from.left + from.width / 2);
+        const dy = to.top + to.height / 2 - (from.top + from.height / 2);
+        t.animate(
+          [{ transform: 'none', opacity: 1 }, { transform: `translate(${dx}px, ${dy}px) scale(0.12)`, opacity: 0.2 }],
+          { duration: 520, easing: 'cubic-bezier(.6,0,.4,1)', fill: 'forwards' },
+        ).finished.then(() => { t.remove(); bumpHud(); next(); });
+      } else {
+        t.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, fill: 'forwards' })
+          .finished.then(() => { t.remove(); bumpHud(); next(); });
+      }
+    };
+    if (reduced) t.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200 });
+    else {
+      t.animate(
+        [{ transform: 'translateY(-40px) scale(0.85)', opacity: 0 }, { transform: 'translateY(6px) scale(1.04)', opacity: 1, offset: 0.65 }, { transform: 'none', opacity: 1 }],
+        { duration: 520, easing: 'cubic-bezier(.2,.9,.3,1)' });
+      t.querySelector('.pop-badge')!.animate(
+        [{ transform: 'scale(0) rotate(-30deg)' }, { transform: 'scale(1.3) rotate(8deg)', offset: 0.6 }, { transform: 'none' }],
+        { duration: 640, delay: 140, easing: 'cubic-bezier(.3,1.5,.5,1)', fill: 'backwards' });
+    }
+    setTimeout(finish, a.hidden ? 3600 : 3000);
+  };
+  const next = () => {
+    const a = queue.shift();
+    if (!a || !gameOn) { showing = false; return; }
+    showing = true;
+    pop(a);
   };
 
   const unlock = (id: string) => {
     if (!gameOn || got.has(id)) return;
     const a = ACHIEVEMENTS.find((x) => x.id === id)!;
     got.add(id); st.ach = [...got]; save();
-    toast(a.hidden ? 'SECRET FOUND' : 'ACHIEVEMENT', a.title, a.desc);
-    renderHud(); renderPanel(); renderSummary();
+    queue.push(a);
+    if (!showing) next();
+    renderPanel(); renderSummary();
   };
 
   const renderPanel = () => {
@@ -128,7 +191,7 @@ export function initDeck(deck: HTMLElement) {
   const lanes = () => meters() / LANE_M;
 
   const renderHud = () => {
-    for (const el of $$('[data-ach-count]')) el.textContent = `${got.size}/${ACHIEVEMENTS.length}`;
+    for (const el of $$('[data-ach-count]')) el.textContent = `${displayCount}/${ACHIEVEMENTS.length}`;
     const d = document.querySelector('[data-dist]');
     if (d) d.textContent = `${lanes().toFixed(2)} lanes`;
   };

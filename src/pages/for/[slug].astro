@@ -275,18 +275,42 @@ const pad = (n: number) => String(n).padStart(2, '0');
   .stats dd { margin: 4px 0 0; font: 500 22px var(--mono); font-variant-numeric: tabular-nums; }
   .privacy { margin-top: 14px; }
 
-  .toasts { position: fixed; right: 16px; bottom: 16px; z-index: 50; display: flex; flex-direction: column; gap: 8px; width: min(340px, calc(100vw - 32px)); pointer-events: none; }
-  :global(.toast) {
-    pointer-events: auto; cursor: pointer; padding: 12px 14px; border-radius: 10px;
-    background: var(--ink); color: var(--bg); border-left: 3px solid var(--amber);
-    animation: toast-in 220ms ease-out;
+  /* Achievement pop: top-center, game-style. */
+  .toasts { position: fixed; z-index: 60; top: 58px; left: 50%; transform: translateX(-50%); width: min(440px, calc(100vw - 24px)); pointer-events: none; }
+  :global(.pop) {
+    pointer-events: auto; position: relative; overflow: hidden; width: 100%; cursor: pointer; text-align: left;
+    display: grid; grid-template-columns: 56px 1fr; gap: 14px; align-items: center;
+    padding: 14px 18px 14px 14px; border: 0; border-radius: 16px;
+    background: var(--ink); color: var(--bg); font: inherit;
+    box-shadow: 0 0 0 1px var(--amber), 0 18px 48px -12px rgb(0 0 0 / 0.45);
   }
-  :global(.toast.out) { opacity: 0; transform: translateY(6px); transition: opacity 250ms, transform 250ms; }
-  :global(.toast-tag) { font: 11px var(--mono); letter-spacing: 0.08em; color: var(--amber); }
-  :global(.toast-title) { margin-top: 2px; font-size: 15px; font-weight: 600; }
-  :global(.toast-desc) { margin-top: 2px; font-size: 13px; opacity: 0.8; }
-  @keyframes toast-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-  @media (prefers-reduced-motion: reduce) { :global(.toast) { animation: none; } :global(.toast.out) { transition: none; } }
+  :global(.pop-badge) {
+    position: relative; width: 56px; height: 56px; border-radius: 50%;
+    display: grid; place-items: center; background: var(--amber); color: #15191E;
+    font: 600 18px var(--mono);
+  }
+  :global(.pop-badge)::after {
+    content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--amber);
+    animation: pop-ring 1100ms ease-out 300ms both;
+  }
+  :global(.pop-body) { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  :global(.pop-tag) { font: 11px var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); }
+  :global(.pop-title) { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; }
+  :global(.pop-desc) { font-size: 14px; opacity: 0.85; line-height: 1.4; }
+  :global(.pop-hint) { margin-top: 4px; font: 11px var(--mono); opacity: 0.65; }
+  :global(.pop-shine) {
+    position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.22) 50%, transparent 65%);
+    transform: translateX(-120%); animation: pop-shine 900ms ease-out 380ms forwards;
+  }
+  :global(.pop.secret) { background: var(--amber); color: #15191E; box-shadow: 0 0 0 1px var(--amber), 0 18px 48px -12px rgb(0 0 0 / 0.45); }
+  :global(.pop.secret .pop-badge) { background: #15191E; color: var(--amber); }
+  :global(.pop.secret .pop-badge)::after { border-color: #15191E; }
+  :global(.pop.secret .pop-tag) { color: #15191E; font-weight: 600; }
+  @keyframes pop-ring { from { transform: scale(0.9); opacity: 1; } to { transform: scale(1.7); opacity: 0; } }
+  @keyframes pop-shine { to { transform: translateX(120%); } }
+  @media (prefers-reduced-motion: reduce) { :global(.pop-badge)::after, :global(.pop-shine) { animation: none; display: none; } }
+  .hud-btn:global(.flash) { border-color: var(--amber); background: var(--amber-tint); color: var(--amber-ink); transition: background 300ms, color 300ms; }
 
   .ach-panel {
     position: fixed; z-index: 40; top: 52px; right: 16px; width: min(360px, calc(100vw - 32px));
