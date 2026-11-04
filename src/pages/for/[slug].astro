@@ -1,8 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import StatusMeta from '../../components/StatusMeta.astro';
 import { site } from '../../site';
-import QuestTracker from '../../components/QuestTracker.astro';
 
 export async function getStaticPaths() {
   // Drafts build in dev and in PR preview builds (PUBLIC_DRAFTS), never in production.
@@ -12,137 +12,302 @@ export async function getStaticPaths() {
 }
 
 const { data, id: slug } = Astro.props.entry;
-const steps = [
-  { id: 'summary', label: 'The 30-second summary' },
-  { id: 'evidence', label: 'My evidence' },
-  { id: 'plan', label: 'First 90 days' },
-  { id: 'questions', label: 'My questions for you' },
-];
 const cases = Object.fromEntries((await getCollection('cases')).map((c) => [c.data.id, c]));
+const evidence = data.evidence.filter((e) => cases[e.case]);
+
+/*
+ * The page is a deck: one section per screen, snapped with native CSS scroll-snap
+ * (no scroll hijacking). Gamification: a progress bar pinned to the top, sections
+ * that reveal as they arrive, and a final note that unlocks once every slide is seen.
+ * Without JS it is a plain, fully visible page.
+ */
+const slides = [
+  { id: 'intro', label: 'Intro' },
+  { id: 'fit', label: 'What you asked for' },
+  ...evidence.map((_, i) => ({ id: `evidence-${i + 1}`, label: `Evidence ${i + 1} of ${evidence.length}` })),
+  { id: 'plan', label: 'First 90 days' },
+  { id: 'questions', label: 'My questions' },
+  ...(data.bonus ? [{ id: 'note', label: data.bonus.label }] : []),
+];
+const pad = (n: number) => String(n).padStart(2, '0');
 ---
 <Base
   title={`Why I fit ${data.company}`}
   noindex
   footerNote={`Unlisted page for ${data.company}. Not linked from the rest of the site.`}
 >
-  <main class="panes">
-    <div class="pane-pitch pitch">
-      <div class="sticky">
-        <p class="mono-meta"><span class="chip">Unlisted</span> Prepared for {data.company} · {data.date}</p>
-        <h1 class="h1">Why I fit {data.company}</h1>
-        <p class="role">{data.role}</p>
-        <div class="actions">
+  <script is:inline>document.documentElement.classList.add('deck-js');</script>
+
+  <div class="deck" data-deck={slug}>
+    <nav class="deckbar" aria-label="Sections">
+      <span class="mono-meta bar-title">Why I fit {data.company}</span>
+      <ol class="segs">
+        {slides.map((s, i) => (
+          <li><a class="seg" href={`#${s.id}`} data-seg={s.id} aria-label={`${pad(i + 1)}: ${s.label}`}><span></span></a></li>
+        ))}
+      </ol>
+      <span class="mono-meta bar-pos" aria-live="polite"><span data-pos>01</span> / {pad(slides.length)} · <span data-label>Intro</span></span>
+    </nav>
+
+    <section id="intro" class="slide intro" data-slide>
+      <div class="inner">
+        <p class="mono-meta reveal"><span class="chip">Unlisted</span> Prepared for {data.company} · {data.date}</p>
+        <h1 class="h1 reveal">Why I fit {data.company}</h1>
+        <p class="role reveal">{data.role}</p>
+        <p class="statement reveal">{data.summary}</p>
+        <div class="actions reveal">
           <a class="btn btn-primary" href={`mailto:${site.email}`}>Email me</a>
           <a class="btn btn-secondary" href={site.resume}>Résumé (PDF)</a>
         </div>
-        {data.quest && <QuestTracker slug={slug} steps={steps} hasBonus={!!data.bonus} />}
+        <p class="mono-meta hint reveal" aria-hidden="true">Scroll to see the case ↓</p>
       </div>
-    </div>
+    </section>
 
-    <div class="pane-main">
-      <section id="summary">
-        <div class="section-head"><span class="num">01</span><h2>The 30-second summary</h2></div>
-        <p class="statement">{data.summary}</p>
-        <div class="matrix">
+    <section id="fit" class="slide" data-slide>
+      <div class="inner">
+        <div class="section-head reveal"><span class="num">01</span><h2>What you asked for</h2></div>
+        <div class="matrix reveal">
           <div class="mrow mhead"><span class="mono-label">Your posting asks for</span><span class="mono-label">Where I've done it</span></div>
           {data.requirements.map((r) => (
-            <div class="mrow"><span>{r.need}</span><span class="ids">{r.cases.map((c) => <a class="idchip" href={cases[c]?.data.published ? `/case/${cases[c].id}/` : undefined}>{c}</a>)}</span></div>
+            <div class="mrow"><span>{r.need}</span><span class="ids">{r.cases.map((c) => (
+              cases[c]?.data.published
+                ? <a class="idchip" href={`/case/${cases[c].id}/`}>{c}</a>
+                : <a class="idchip" href={`#evidence-${evidence.findIndex((e) => e.case === c) + 1}`}>{c}</a>
+            ))}</span></div>
           ))}
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section id="evidence">
-        <div class="section-head"><span class="num">02</span><h2>My evidence</h2></div>
-        <div class="evidence">
-          {data.evidence.map((e) => {
-            const c = cases[e.case];
-            if (!c) return null;
-            return (
-              <a class="ev" href={c.data.published ? `/case/${c.id}/` : '/'}>
-                <span class="mono-meta">{c.data.id}</span>
-                <span class="ev-main">
-                  <span class="ev-title">{c.data.title}</span>
-                  <span class="ev-rel"><strong>For {data.company}:</strong> {e.relevance}</span>
-                  <span class="mono-meta">Case file · {c.data.readMinutes} min · {c.data.stack.join(' · ')}</span>
-                </span>
-                <span class="mono-meta" aria-hidden="true">→</span>
-              </a>
-            );
-          })}
-        </div>
-      </section>
+    {evidence.map((e, i) => {
+      const c = cases[e.case];
+      return (
+        <section id={`evidence-${i + 1}`} class="slide" data-slide>
+          <div class="inner">
+            <div class="section-head reveal"><span class="num">02</span><h2>My evidence</h2><span class="mono-meta count">{i + 1} of {evidence.length}</span></div>
+            <div class="ev">
+              <p class="ev-id reveal">{c.data.id}</p>
+              <h3 class="ev-title reveal">{c.data.title}</h3>
+              <div class="reveal ev-meta"><StatusMeta status={c.data.status} stack={c.data.stack} /></div>
+              <p class="ev-rel reveal"><strong>For {data.company}:</strong> {e.relevance}</p>
+              <div class="ev-pdo reveal">
+                <div class="pdo"><p class="mono-label">Problem</p><p>{c.data.tldr.problem}</p></div>
+                <div class="pdo"><p class="mono-label">Decision</p><p>{c.data.tldr.decision}</p></div>
+                <div class="pdo"><p class="mono-label">Outcome</p><p>{c.data.tldr.outcome}</p></div>
+              </div>
+              <div class="reveal ev-cta">
+                {c.data.published
+                  ? <a class="btn btn-primary" href={`/case/${c.id}/`}>Open the case file →</a>
+                  : <span class="mono-meta">Full case file coming soon</span>}
+                {c.data.published && <span class="mono-meta">{c.data.readMinutes} min read</span>}
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    })}
 
-      <section id="plan">
-        <div class="section-head"><span class="num">03</span><h2>First 90 days</h2></div>
+    <section id="plan" class="slide" data-slide>
+      <div class="inner">
+        <div class="section-head reveal"><span class="num">03</span><h2>First 90 days</h2></div>
         <div class="plan">
           {data.plan.map((p) => (
-            <div class="phase">
+            <div class="phase reveal">
               <p class="mono-label">{p.days}</p>
               <h3>{p.title}</h3>
-              <ul>{p.items.map((i) => <li>{i}</li>)}</ul>
+              <ul>{p.items.map((it) => <li>{it}</li>)}</ul>
             </div>
           ))}
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section id="questions">
-        <div class="section-head"><span class="num">04</span><h2>My questions for you</h2></div>
+    <section id="questions" class="slide" data-slide>
+      <div class="inner">
+        <div class="section-head reveal"><span class="num">04</span><h2>My questions for you</h2></div>
         <ol class="questions">
-          {data.questions.map((q, i) => <li><span class="q">Q{i + 1}</span><span>{q}</span></li>)}
+          {data.questions.map((q, i) => <li class="reveal"><span class="q">Q{i + 1}</span><span>{q}</span></li>)}
         </ol>
-      </section>
+      </div>
+    </section>
 
-      {data.bonus && (
-        <aside class="bonus" data-bonus>
-          <p class="mono-label bonus-label">Unlocked · {data.bonus.label}</p>
-          <h3>{data.bonus.title}</h3>
-          <p>{data.bonus.body}</p>
-        </aside>
-      )}
-    </div>
-  </main>
+    {data.bonus && (
+      <section id="note" class="slide" data-slide data-note>
+        <div class="inner">
+          <div class="section-head reveal"><span class="num">05</span><h2>One more thing</h2></div>
+          <div class="locked reveal" data-locked hidden>
+            <p class="mono-label">Locked · {data.bonus.label}</p>
+            <p class="locked-title">A note written for {data.company}</p>
+            <p class="locked-body">It opens once you've seen every section. <span data-left></span></p>
+          </div>
+          <aside class="bonus reveal" data-bonus>
+            <p class="mono-label bonus-label">Unlocked · {data.bonus.label}</p>
+            <h3>{data.bonus.title}</h3>
+            <p>{data.bonus.body}</p>
+            <div class="actions"><a class="btn btn-primary" href={`mailto:${site.email}`}>Let's talk</a></div>
+          </aside>
+        </div>
+      </section>
+    )}
+  </div>
 </Base>
 
+<script>
+  const deck = document.querySelector<HTMLElement>('[data-deck]');
+  if (deck) {
+    const key = `jt-deck-${deck.dataset.deck}`;
+    const slides = [...deck.querySelectorAll<HTMLElement>('[data-slide]')];
+    const required = slides.filter((s) => !s.hasAttribute('data-note')).map((s) => s.id);
+    const segs = new Map([...deck.querySelectorAll<HTMLAnchorElement>('[data-seg]')].map((a) => [a.dataset.seg!, a]));
+    const pos = deck.querySelector('[data-pos]')!;
+    const label = deck.querySelector('[data-label]')!;
+    const locked = deck.querySelector<HTMLElement>('[data-locked]');
+    const bonus = deck.querySelector<HTMLElement>('[data-bonus]');
+    const left = deck.querySelector('[data-left]');
+
+    let seen = new Set<string>();
+    try { seen = new Set(JSON.parse(localStorage.getItem(key) || '[]')); } catch {}
+    let unlocked = required.every((id) => seen.has(id));
+    if (locked && bonus && !unlocked) { locked.hidden = false; bonus.hidden = true; }
+
+    const update = (current: HTMLElement) => {
+      const i = slides.indexOf(current);
+      pos.textContent = String(i + 1).padStart(2, '0');
+      label.textContent = segs.get(current.id)?.getAttribute('aria-label')?.replace(/^\d+: /, '') ?? '';
+      for (const [id, a] of segs) {
+        a.classList.toggle('done', seen.has(id));
+        a.classList.toggle('current', id === current.id);
+        id === current.id ? a.setAttribute('aria-current', 'step') : a.removeAttribute('aria-current');
+      }
+      const remaining = required.filter((id) => !seen.has(id)).length;
+      if (left) left.textContent = remaining ? `${remaining} to go.` : '';
+      if (!unlocked && remaining === 0 && locked && bonus) {
+        unlocked = true;
+        locked.hidden = true;
+        bonus.hidden = false;
+        bonus.classList.add('fresh');
+      }
+    };
+
+    // A slide counts as seen only after the reader stays on it, so jumping or
+    // flicking past slides (or the smooth scroll of a jump) doesn't unlock the note.
+    const DWELL = 700;
+    const timers = new Map<HTMLElement, number>();
+    let current = slides[0];
+    const markSeen = (slide: HTMLElement) => {
+      if (seen.has(slide.id)) return;
+      seen.add(slide.id);
+      try { localStorage.setItem(key, JSON.stringify([...seen])); } catch {}
+      update(current);
+    };
+
+    for (const s of slides) if (seen.has(s.id)) s.classList.add('shown');
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        const slide = e.target as HTMLElement;
+        if (e.isIntersecting) {
+          current = slide;
+          slide.classList.add('shown');
+          update(slide);
+          timers.set(slide, window.setTimeout(() => markSeen(slide), DWELL));
+        } else {
+          clearTimeout(timers.get(slide));
+        }
+      }
+    }, { threshold: 0.5 });
+    slides.forEach((s) => io.observe(s));
+    update(current);
+  }
+</script>
+
 <style>
-  .pitch { flex-basis: 380px; }
-  @media (min-width: 1040px) { .sticky { position: sticky; top: 32px; } }
+  /* Snap only on this page. Mandatory on roomy screens, proximity where slides may outgrow the screen. */
+  :global(html:has(.deck)) { scroll-snap-type: y mandatory; scroll-padding-top: var(--bar-h); --bar-h: 44px; }
+  @media (max-height: 700px), (max-width: 700px) { :global(html:has(.deck)) { scroll-snap-type: y proximity; } }
+  @media (prefers-reduced-motion: reduce) { :global(html:has(.deck)) { scroll-snap-type: y proximity; } }
+  :global(html:has(.deck) .site-header) { scroll-snap-align: start; }
+  :global(html:has(.deck) .site-footer) { scroll-snap-align: end; }
+
+  .deckbar {
+    position: sticky; top: 0; z-index: 20; height: var(--bar-h);
+    display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px;
+    margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter);
+    background: var(--bg); border-bottom: 1px solid var(--line);
+  }
+  .segs { list-style: none; margin: 0; padding: 0; display: flex; gap: 4px; }
+  .segs li { flex: 1; }
+  .seg { position: relative; display: block; padding: 10px 0; }
+  .seg span { display: block; height: 4px; border-radius: 999px; background: var(--line); transition: background 200ms ease-out; }
+  .seg.done span { background: var(--amber); }
+  .seg.current span { background: var(--ink); }
+  .seg:hover span { background: var(--muted); }
+  .bar-pos { white-space: nowrap; }
+  @media (max-width: 700px) { .bar-title { display: none; } .deckbar { grid-template-columns: 1fr auto; } }
+
+  .slide {
+    min-height: calc(100svh - var(--bar-h)); scroll-snap-align: start;
+    display: grid; align-content: center; padding: clamp(40px, 6vh, 72px) 0;
+  }
+  .inner { width: 100%; max-width: 980px; }
+  .intro .inner { max-width: 820px; }
+
+  /* Reveal: content rises in when its slide arrives, then stays. */
+  :global(.deck-js) .reveal { opacity: 0; transform: translateY(14px); transition: opacity 420ms ease-out, transform 420ms ease-out; }
+  :global(.deck-js) .shown .reveal { opacity: 1; transform: none; }
+  .shown .reveal:nth-child(2) { transition-delay: 60ms; }
+  .shown .reveal:nth-child(3) { transition-delay: 120ms; }
+  .shown .reveal:nth-child(4) { transition-delay: 180ms; }
+  .shown .reveal:nth-child(5) { transition-delay: 240ms; }
+  .shown .reveal:nth-child(n+6) { transition-delay: 300ms; }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.deck-js) .reveal { transform: none; transition: opacity 200ms linear; transition-delay: 0ms !important; }
+  }
+
   .chip { border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px; margin-right: 6px; }
-  h1 { margin-top: 18px; font-size: clamp(36px, 4.4vw, 56px); line-height: 1.02; }
+  h1 { margin-top: 18px; font-size: clamp(40px, 6vw, 76px); line-height: 1; }
   .role { margin-top: 16px; font-size: 18px; line-height: 1.45; color: var(--muted); }
+  .statement { margin-top: 28px; max-width: 32em; font-size: clamp(20px, 2.2vw, 26px); line-height: 1.4; font-weight: 500; }
+  .hint { margin-top: clamp(32px, 6vh, 64px); }
 
-  section + section { margin-top: var(--section); }
-  h2 { font-size: clamp(22px, 2.2vw, 28px); font-weight: 600; line-height: 1.2; letter-spacing: -0.015em; }
-  .statement { margin-top: 20px; max-width: 34em; font-size: clamp(20px, 2vw, 24px); line-height: 1.4; font-weight: 500; }
+  h2 { font-size: clamp(24px, 2.6vw, 34px); font-weight: 600; line-height: 1.2; letter-spacing: -0.015em; }
+  .section-head .count { margin-left: auto; }
 
-  .matrix { margin-top: 28px; }
-  .mrow { display: grid; grid-template-columns: 1.3fr 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 16px; line-height: 1.4; }
+  .matrix { margin-top: 32px; }
+  .mrow { display: grid; grid-template-columns: 1.3fr 1fr; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); font-size: clamp(16px, 1.6vw, 19px); line-height: 1.4; }
   .mhead { padding-top: 0; border-bottom-color: var(--ink); }
   .ids { display: flex; flex-wrap: wrap; gap: 6px; }
-  .idchip { font: 12px var(--mono); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; text-decoration: none; }
+  .idchip { font: 12px var(--mono); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; text-decoration: none; align-self: center; }
+  .idchip:hover { border-color: var(--ink); color: var(--ink); }
 
-  .ev { display: grid; grid-template-columns: clamp(44px, 6vw, 64px) 1fr auto; gap: 12px; padding: 20px 0; border-bottom: 1px solid var(--line); text-decoration: none; }
-  .ev:hover { background: var(--hover); color: var(--ink); }
-  .ev-main { display: flex; flex-direction: column; gap: 8px; }
-  .ev-title { font-size: clamp(17px, 1.6vw, 19px); font-weight: 500; line-height: 1.4; }
-  .ev-rel { font-size: 16px; line-height: 1.5; color: var(--muted); }
+  .ev { margin-top: 32px; }
+  .ev-id { font: 500 clamp(28px, 4vw, 44px) var(--mono); color: var(--amber-ink); }
+  .ev-title { margin-top: 8px; max-width: 22em; font-size: clamp(24px, 3vw, 38px); line-height: 1.15; font-weight: 500; letter-spacing: -0.02em; text-wrap: balance; }
+  .ev-meta { margin-top: 16px; }
+  .ev-rel { margin-top: 20px; max-width: 40em; font-size: 18px; line-height: 1.5; color: var(--muted); }
   .ev-rel strong { color: var(--ink); font-weight: 600; }
+  .ev-pdo { margin-top: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px 24px; }
+  .ev-pdo p:not(.mono-label) { font-size: 15px; line-height: 1.5; }
+  .ev-cta { margin-top: 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
 
-  .plan { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px 28px; margin-top: 24px; }
+  .plan { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px 28px; margin-top: 32px; }
   .phase { padding-top: 12px; border-top: 2px solid var(--ink); }
-  .phase h3 { margin-top: 6px; font-size: 19px; font-weight: 600; }
-  .phase ul { list-style: none; padding: 0; margin-top: 10px; display: flex; flex-direction: column; gap: 10px; font-size: 15px; line-height: 1.5; }
+  .phase h3 { margin-top: 6px; font-size: 22px; font-weight: 600; }
+  .phase ul { list-style: none; padding: 0; margin-top: 12px; display: flex; flex-direction: column; gap: 10px; font-size: 16px; line-height: 1.5; }
   .phase li::before { content: "– "; font-family: var(--mono); color: var(--muted); }
 
-  .questions { list-style: none; padding: 0; margin-top: 8px; }
-  .questions li { display: grid; grid-template-columns: var(--id-col) 1fr; padding: 18px 0; border-bottom: 1px solid var(--line); font-size: clamp(18px, 1.8vw, 21px); line-height: 1.4; font-weight: 500; }
-  .q { font: 12px var(--mono); color: var(--amber-ink); padding-top: 6px; }
-  section { scroll-margin-top: 24px; }
+  .questions { list-style: none; padding: 0; margin-top: 16px; }
+  .questions li { display: grid; grid-template-columns: var(--id-col) 1fr; padding: 20px 0; border-bottom: 1px solid var(--line); font-size: clamp(19px, 2.2vw, 26px); line-height: 1.35; font-weight: 500; }
+  .q { font: 12px var(--mono); color: var(--amber-ink); padding-top: 8px; }
 
-  .bonus { margin-top: var(--section); padding: clamp(18px, 2.4vw, 28px); border: 1px solid var(--amber); border-radius: 12px; background: var(--amber-tint); }
+  .locked, .bonus { margin-top: 32px; padding: clamp(20px, 3vw, 36px); border-radius: 12px; }
+  .locked { border: 1px dashed var(--line); background: var(--surface); }
+  .locked-title { margin-top: 10px; font-size: clamp(22px, 2.4vw, 28px); font-weight: 600; color: var(--muted); }
+  .locked-body { margin-top: 8px; font-size: 17px; color: var(--muted); }
+  .bonus { border: 1px solid var(--amber); background: var(--amber-tint); }
   .bonus-label { color: var(--amber-ink); }
-  .bonus h3 { margin-top: 8px; font-size: 21px; font-weight: 600; letter-spacing: -0.01em; }
-  .bonus p:not(.mono-label) { margin-top: 10px; font-size: 17px; line-height: 1.6; }
-  .bonus:global(.fresh) { animation: unlock 400ms ease-out; }
-  @keyframes unlock { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-  @media (prefers-reduced-motion: reduce) { .bonus:global(.fresh) { animation: none; } }
+  .bonus h3 { margin-top: 10px; font-size: clamp(22px, 2.6vw, 32px); font-weight: 600; letter-spacing: -0.015em; line-height: 1.2; }
+  .bonus > p:not(.mono-label) { margin-top: 12px; max-width: 40em; font-size: 18px; line-height: 1.6; }
+  .bonus.fresh { animation: unlock 500ms ease-out; }
+  @keyframes unlock { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .bonus.fresh { animation: none; } }
 </style>

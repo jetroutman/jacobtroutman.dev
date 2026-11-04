@@ -34,8 +34,7 @@ const companies = defineCollection({
     plan: z.array(z.object({ days: z.string(), title: z.string(), items: z.array(z.string()) })),
     questions: z.array(z.string()),
     draft: z.boolean().default(false),    // drafts are not built in production
-    quest: z.boolean().default(true),     // show the "Your tour" progress tracker
-    /** Revealed when the reader finishes the tour. Must be true, specific to this company, and worth finding. */
+    /** Final slide; unlocks once the reader has seen every other slide. Must be true, specific to this company, and worth finding. */
     bonus: z.object({ label: z.string(), title: z.string(), body: z.string() }).optional(),
   }),
 });
