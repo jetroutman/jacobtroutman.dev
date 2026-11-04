@@ -18,6 +18,10 @@ plan:
   - { days: "Days 1–30", title: "Learn", items: ["Ship a small fix to production in the first two weeks.", "Read the incident history for the services I'll own."] }
   - { days: "Days 31–60", title: "Contribute", items: ["Take one feature from design review to release.", "Write a decision record for it that the team can review."] }
   - { days: "Days 61–90", title: "Own", items: ["Join the on-call rotation for my services.", "Propose one improvement, with the trade-offs written down."] }
+bonus:
+  label: "Day-one idea"
+  title: "The first thing I'd look at in your payments flow"
+  body: "Replace with one specific, true idea for this company, drawn from the posting and Jacob's own experience. It rewards the reader who finished the tour, so make it worth finding."
 questions:
   - "What does a bad day look like for the services this role owns?"
   - "How does the team write down and review design decisions?"

@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { site } from '../../site';
+import QuestTracker from '../../components/QuestTracker.astro';
 
 export async function getStaticPaths() {
   // Drafts build in dev only, so a half-written page can't ship.
@@ -9,7 +10,13 @@ export async function getStaticPaths() {
   return pages.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
 }
 
-const { data } = Astro.props.entry;
+const { data, id: slug } = Astro.props.entry;
+const steps = [
+  { id: 'summary', label: 'The 30-second summary' },
+  { id: 'evidence', label: 'My evidence' },
+  { id: 'plan', label: 'First 90 days' },
+  { id: 'questions', label: 'My questions for you' },
+];
 const cases = Object.fromEntries((await getCollection('cases')).map((c) => [c.data.id, c]));
 ---
 <Base
@@ -27,11 +34,12 @@ const cases = Object.fromEntries((await getCollection('cases')).map((c) => [c.da
           <a class="btn btn-primary" href={`mailto:${site.email}`}>Email me</a>
           <a class="btn btn-secondary" href={site.resume}>Résumé (PDF)</a>
         </div>
+        {data.quest && <QuestTracker slug={slug} steps={steps} hasBonus={!!data.bonus} />}
       </div>
     </div>
 
     <div class="pane-main">
-      <section>
+      <section id="summary">
         <div class="section-head"><span class="num">01</span><h2>The 30-second summary</h2></div>
         <p class="statement">{data.summary}</p>
         <div class="matrix">
@@ -42,7 +50,7 @@ const cases = Object.fromEntries((await getCollection('cases')).map((c) => [c.da
         </div>
       </section>
 
-      <section>
+      <section id="evidence">
         <div class="section-head"><span class="num">02</span><h2>My evidence</h2></div>
         <div class="evidence">
           {data.evidence.map((e) => {
@@ -63,7 +71,7 @@ const cases = Object.fromEntries((await getCollection('cases')).map((c) => [c.da
         </div>
       </section>
 
-      <section>
+      <section id="plan">
         <div class="section-head"><span class="num">03</span><h2>First 90 days</h2></div>
         <div class="plan">
           {data.plan.map((p) => (
@@ -76,12 +84,20 @@ const cases = Object.fromEntries((await getCollection('cases')).map((c) => [c.da
         </div>
       </section>
 
-      <section>
+      <section id="questions">
         <div class="section-head"><span class="num">04</span><h2>My questions for you</h2></div>
         <ol class="questions">
           {data.questions.map((q, i) => <li><span class="q">Q{i + 1}</span><span>{q}</span></li>)}
         </ol>
       </section>
+
+      {data.bonus && (
+        <aside class="bonus" data-bonus>
+          <p class="mono-label bonus-label">Unlocked · {data.bonus.label}</p>
+          <h3>{data.bonus.title}</h3>
+          <p>{data.bonus.body}</p>
+        </aside>
+      )}
     </div>
   </main>
 </Base>
@@ -119,4 +135,13 @@ const cases = Object.fromEntries((await getCollection('cases')).map((c) => [c.da
   .questions { list-style: none; padding: 0; margin-top: 8px; }
   .questions li { display: grid; grid-template-columns: var(--id-col) 1fr; padding: 18px 0; border-bottom: 1px solid var(--line); font-size: clamp(18px, 1.8vw, 21px); line-height: 1.4; font-weight: 500; }
   .q { font: 12px var(--mono); color: var(--amber-ink); padding-top: 6px; }
+  section { scroll-margin-top: 24px; }
+
+  .bonus { margin-top: var(--section); padding: clamp(18px, 2.4vw, 28px); border: 1px solid var(--amber); border-radius: 12px; background: var(--amber-tint); }
+  .bonus-label { color: var(--amber-ink); }
+  .bonus h3 { margin-top: 8px; font-size: 21px; font-weight: 600; letter-spacing: -0.01em; }
+  .bonus p:not(.mono-label) { margin-top: 10px; font-size: 17px; line-height: 1.6; }
+  .bonus:global(.fresh) { animation: unlock 400ms ease-out; }
+  @keyframes unlock { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .bonus:global(.fresh) { animation: none; } }
 </style>
