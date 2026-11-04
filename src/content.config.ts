@@ -17,7 +17,8 @@ const cases = defineCollection({
     order: z.number(),
     app: z.string().optional(),           // link for "Try the app"
     published: z.boolean().default(true), // false = listed on Home, no case page yet
-    /** "What would you do?" prompt on company pages. Options must be ones Jacob actually weighed. */
+    teaser: z.string().optional(),        // one playful, true line shown on company-page evidence slides
+    /** "What would you have done?" prompt on company pages. Options must be ones Jacob actually weighed. */
     quiz: z.object({
       question: z.string(),
       options: z.array(z.object({ label: z.string(), reply: z.string(), chosen: z.boolean().default(false) })).min(2),

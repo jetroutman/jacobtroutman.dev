@@ -10,6 +10,7 @@ tldr:
   problem: "Printing a money order is slow and can fail partway. The old flow waited on the printer and had no clean way back from a failed print."
   decision: "Run it as a saga: totaling continues while printing runs asynchronously, and a failed print triggers its own refund transaction."
   outcome: "A failed print now refunds the customer automatically, verified on real money-order hardware."
+teaser: "The time a printer tried to keep a customer's money."
 quiz:
   question: "A money order can fail to print after the customer has paid. How would you structure the flow?"
   options:

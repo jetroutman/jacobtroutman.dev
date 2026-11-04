@@ -11,18 +11,18 @@
 type Ach = { id: string; title: string; desc: string; hidden?: boolean };
 
 const ACHIEVEMENTS: Ach[] = [
-  { id: 'start', title: 'Press play', desc: 'Moved past the intro.' },
-  { id: 'evidence', title: 'Evidence locker', desc: 'Saw every piece of evidence.' },
-  { id: 'call', title: 'Made a call', desc: 'Answered a "What would you do?"' },
-  { id: 'deep', title: 'Deep diver', desc: 'Opened a full case file.' },
-  { id: 'complete', title: 'Run complete', desc: 'Saw every slide.' },
-  { id: 'strike', title: 'Strike', desc: 'Moved the cursor one bowling lane (18.3 m).' },
-  { id: 'same', title: 'Great minds', desc: 'Picked the same option Jacob did.', hidden: true },
-  { id: 'back', title: 'Second look', desc: 'Scrolled back to an earlier slide.', hidden: true },
-  { id: 'theme', title: 'Night vision', desc: 'Switched the theme.', hidden: true },
-  { id: 'console', title: 'Under the hood', desc: 'Found the console and ran jacob.hire().', hidden: true },
-  { id: 'konami', title: 'Old school', desc: '↑ ↑ ↓ ↓ ← → ← → B A', hidden: true },
-  { id: 'return', title: 'Back again', desc: 'Came back for another visit.', hidden: true },
+  { id: 'start', title: 'Press play', desc: 'You scrolled. Bold opening move.' },
+  { id: 'evidence', title: 'Evidence locker', desc: 'Every exhibit, examined.' },
+  { id: 'call', title: 'Made a call', desc: 'You weighed in on a real decision I made.' },
+  { id: 'deep', title: 'Deep diver', desc: 'You opened a full case file. Respect.' },
+  { id: 'complete', title: 'Run complete', desc: 'You saw every slide. Thanks for sticking around.' },
+  { id: 'strike', title: 'Strike', desc: 'Your cursor just bowled a full 60 ft lane.' },
+  { id: 'same', title: 'Great minds', desc: 'You picked what I actually shipped.', hidden: true },
+  { id: 'back', title: 'Second look', desc: 'You went back for another look. I do that too.', hidden: true },
+  { id: 'theme', title: 'Night vision', desc: 'You found the light switch.', hidden: true },
+  { id: 'console', title: 'Under the hood', desc: 'You opened the console. Of course you did.', hidden: true },
+  { id: 'konami', title: 'Old school', desc: '↑ ↑ ↓ ↓ ← → ← → B A. You remembered.', hidden: true },
+  { id: 'return', title: 'Back again', desc: 'You came back. I\'ll take it.', hidden: true },
 ];
 
 const LANE_M = 18.288; // 60 ft
@@ -146,7 +146,7 @@ export function initDeck(deck: HTMLElement) {
     if (reduced) t.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200 });
     else {
       t.animate(
-        [{ transform: 'translateY(-40px) scale(0.85)', opacity: 0 }, { transform: 'translateY(6px) scale(1.04)', opacity: 1, offset: 0.65 }, { transform: 'none', opacity: 1 }],
+        [{ transform: 'translateY(48px) scale(0.85)', opacity: 0 }, { transform: 'translateY(-6px) scale(1.04)', opacity: 1, offset: 0.65 }, { transform: 'none', opacity: 1 }],
         { duration: 520, easing: 'cubic-bezier(.2,.9,.3,1)' });
       t.querySelector('.pop-badge')!.animate(
         [{ transform: 'scale(0) rotate(-30deg)' }, { transform: 'scale(1.3) rotate(8deg)', offset: 0.6 }, { transform: 'none' }],
@@ -258,7 +258,7 @@ export function initDeck(deck: HTMLElement) {
       id === current.id ? a.setAttribute('aria-current', 'step') : a.removeAttribute('aria-current');
     }
     const remaining = required.filter((id) => !seen.has(id)).length;
-    if (left) left.textContent = remaining ? `${remaining} to go.` : '';
+    if (left) left.textContent = remaining ? `${remaining} ${remaining === 1 ? 'slide' : 'slides'} to go.` : '';
     if (!unlocked && remaining === 0) {
       unlocked = true;
       if (gameOn) { unlockNote(true); unlock('complete'); }
@@ -326,9 +326,9 @@ export function initDeck(deck: HTMLElement) {
   });
 
   (window as unknown as { jacob: object }).jacob = {
-    hire() { unlock('console'); return gameOn ? 'Achievement unlocked: Under the hood. The email button is on the last slide.' : 'Turn the game back on first.'; },
+    hire() { unlock('console'); return gameOn ? 'Achievement unlocked: Under the hood. My email button is on the last slide.' : 'Turn the game back on first.'; },
   };
-  console.log('%cHey, engineer.%c Looking under the hood? Type jacob.hire() for an achievement.',
+  console.log('%cHey, you opened the console.%c Type jacob.hire() and I\'ll make it worth your while.',
     'font: 600 14px system-ui; color: #E18528', 'font: 13px system-ui');
 
   // Visits (once per browser session)
