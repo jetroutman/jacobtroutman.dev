@@ -24,9 +24,9 @@ npm run build    # production build into dist/
 - Company pages with `draft: true` build in dev only. Give real ones an unguessable slug. They're `noindex`, left out of the sitemap, and blocked in `robots.txt`.
 - Put the résumé at `public/resume.pdf`.
 
-## Deploy (one time)
+## Deploy
 
-1. Azure portal → Create **Static Web App**, plan **Free**, source **Other**.
-2. Copy its deployment token into the repo secret `AZURE_STATIC_WEB_APPS_API_TOKEN`.
-3. Push to `main`. `.github/workflows/azure-static-web-apps.yml` builds and deploys.
-4. Static Web App → **Custom domains** → add `jacobtroutman.dev` and follow the DNS records it gives you.
+1. Azure Static Web App `PersonalSite` (Free) is linked to this repo.
+2. Azure added the secret `AZURE_STATIC_WEB_APPS_API_TOKEN_WHITE_SKY_0DFC3C010` itself.
+3. Push to `main`: Actions builds with Node 22 (`.nvmrc`) and uploads `dist/`. Azure does not build.
+4. Static Web App → **Custom domains** → `jacobtroutman.dev` (done).
