@@ -9,7 +9,7 @@ const cases = defineCollection({
   schema: z.object({
     id: z.string(),                       // "DR-02"
     title: z.string(),                    // the Home proof line, verbatim
-    status: z.enum(['Adopted', 'Shipped', 'Live', 'In progress']),
+    status: z.enum(['Adopted', 'Piloted', 'Shipped', 'Live', 'In progress']),
     stack: z.array(z.string()),
     readMinutes: z.number(),
     role: z.string(),
