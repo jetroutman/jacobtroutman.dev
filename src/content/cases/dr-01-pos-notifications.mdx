@@ -3,19 +3,75 @@ id: DR-01
 title: "Designed a POS notification service with three urgency levels, adopted as the team's standard"
 status: Adopted
 stack: ["C#", ".NET", "MQTT"]
-readMinutes: 6
+readMinutes: 5
 role: Senior developer
 order: 1
-published: false
 tldr:
-  problem: "The new POS needed one way to get a cashier's attention, from a heads-up to stopping every register."
-  decision: "One notification service where every message carries a severity: inform, block one register, or block the whole POS."
-  outcome: "The team adopted a hybrid of my two designs. Later hardware flows, like POS reboot, reuse it for verification."
+  problem: "The new POS needed one way to get a cashier's attention, and some notifications need an answer while others don't."
+  decision: "A hybrid: severity picks the transport (RPC for blocking, pub/sub for inform), and category only sets the look."
+  outcome: "The team adopted it, adding notification types stayed easy, and later hardware flows like POS reboot reuse it for verification."
 todo:
-  - "Name the two designs you presented to the tech leads."
   - "Confirm 'adopted as the team's standard' is accurate, or soften the title."
-  - "Add one measurable outcome."
-  - "Write the full case file body (Context through interviewer notes)."
 ---
+import Section from '../../components/case/Section.astro';
+import Parts from '../../components/case/Parts.astro';
+import Options from '../../components/case/Options.astro';
+import Option from '../../components/case/Option.astro';
+import Callout from '../../components/case/Callout.astro';
+import Interviewer from '../../components/case/Interviewer.astro';
 
-{/* Body not written yet. Copy the section structure from dr-02-money-orders.mdx. */}
+<Section id="context" n="01" title="Context" lede="A convenience-store chain was replacing its monolithic point-of-sale system with microservices.">
+
+The services talk over MQTT, using both pub/sub and RPC topics. I was a senior developer on a team of about 15, consulting through Momentum3. The system was greenfield, and I designed its notification service.
+
+<Parts items={[
+  ['Conductor', 'Coordinates a sale and sends notifications to the UI.'],
+  ['Transaction', 'Owns the sale, and so where it lives.'],
+  ['Hardware', 'Drives the store hardware.'],
+  ['UI', 'Shows the notification and collects the cashier\'s answer.'],
+]} />
+
+</Section>
+
+<Section id="problem" n="02" title="Problem" lede="Notifications travel between the conductor and the UI, and they don't all behave the same way.">
+
+Some events only need a heads-up. Others must stop a single register, and a few must stop the whole POS until someone answers. Those blocking ones need a reply from the cashier, so the sender has to wait for it. The informational ones don't.
+
+</Section>
+
+<Section id="options" n="03" title="Options" lede="I presented two approaches to the tech leads, split by how a notification moves over MQTT.">
+
+<Options>
+  <Option label="Option A" verdict="Combined" title="Everything over pub/sub">Fire and forget. Simple and fast for informational messages, but nothing waits for the cashier's answer.</Option>
+  <Option label="Option B" verdict="Combined" title="Everything over RPC">Every notification waits for a reply. Right for blocking messages, but heavy for a simple heads-up.</Option>
+</Options>
+
+</Section>
+
+<Section id="decision" n="04" title="Decision" lede="The team adopted a hybrid that separates what a notification does from how it looks.">
+
+1. **Severity picks the transport.** Blocking notifications (block one register, block the whole POS) go over RPC and wait for an answer. Informational ones go over pub/sub.
+2. **Category only sets the look,** such as color and position on screen.
+3. Because the two are separate, a notification's look and its behavior can change without touching each other.
+
+<Callout label="What changed later" title="Position moved from the UI to the backend">
+The plan was for the UI to set where a notification appears. It moved to the backend, because the backend owns where the transaction lives, and that decides where the notification should show.
+</Callout>
+
+</Section>
+
+<Section id="outcome" n="05" title="Outcome" lede="The design held up as the POS grew.">
+
+Adding new notification types stayed easy. The same service later carried hardware flows I built, such as POS reboot and stop POS, which use a notification for verification instead of a password.
+
+</Section>
+
+<Section id="interviewer" n="06" title="What I'd tell an interviewer">
+
+<Interviewer points={[
+  ['Split behavior from look.', 'Severity decides what a notification does and how it travels. Category decides how it looks. Each can change on its own.'],
+  ['Match the transport to the need for an answer.', 'If someone has to respond, use RPC and wait. If not, publish it and move on.'],
+  ['Be willing to move ownership.', 'Position started in the UI and moved to the backend once it was clear the backend owned the information it depended on.'],
+]} />
+
+</Section>

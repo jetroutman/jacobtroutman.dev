@@ -12,7 +12,6 @@ tldr:
   outcome: "A failed print now refunds the customer automatically, verified on real money-order hardware."
 todo:
   - "Decide whether to name the client or keep 'a convenience-store chain'."
-  - "Add one measurable outcome (rollout stage, defects caught in the lab)."
   - "Optional: add a short, simplified code sample you can defend line by line."
 ---
 import Section from '../../components/case/Section.astro';
@@ -65,7 +64,9 @@ I planned tests for all prints failing (refund, no details recorded), all succee
 
 <Section id="outcome" n="05" title="Outcome" lede="A failed print now refunds the customer automatically, in the same flow.">
 
-Money orders shipped with configurable limits, no refunds after printing, employee-ID verification, and fees as sub-line items.
+Money orders were built and verified in the store lab with configurable limits, no refunds after printing, employee-ID verification, and fees as sub-line items.
+
+The whole team, including the product owner, signed off on it in a demo. I picked up the saga pattern from the fuel service, and after money orders, the boot-up and checkout flows used it too.
 
 </Section>
 
