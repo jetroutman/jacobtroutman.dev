@@ -10,6 +10,14 @@ tldr:
   problem: "Printing a money order is slow and can fail partway. The old flow waited on the printer and had no clean way back from a failed print."
   decision: "Run it as a saga: totaling continues while printing runs asynchronously, and a failed print triggers its own refund transaction."
   outcome: "A failed print now refunds the customer automatically, verified on real money-order hardware."
+quiz:
+  question: "A money order can fail to print after the customer has paid. How would you structure the flow?"
+  options:
+    - label: "Keep printing inside the transaction and handle failures there"
+      reply: "It's the smallest change, but the register still blocks while it prints, and every failure still runs through the happy path."
+    - label: "Split it into steps that each recover on their own"
+      chosen: true
+      reply: "I ran it as a saga. Totaling keeps going while printing runs asynchronously, and a failed print triggers its own refund transaction."
 todo:
   - "Decide whether to name the client or keep 'a convenience-store chain'."
   - "Add one measurable outcome (rollout stage, defects caught in the lab)."

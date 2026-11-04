@@ -38,15 +38,19 @@ const pad = (n: number) => String(n).padStart(2, '0');
 >
   <script is:inline>document.documentElement.classList.add('deck-js');</script>
 
-  <div class="deck" data-deck={slug}>
+  <div class="deck" data-deck={slug} data-company={data.company}>
     <nav class="deckbar" aria-label="Sections">
-      <span class="mono-meta bar-title">Why I fit {data.company}</span>
       <ol class="segs">
         {slides.map((s, i) => (
           <li><a class="seg" href={`#${s.id}`} data-seg={s.id} aria-label={`${pad(i + 1)}: ${s.label}`}><span></span></a></li>
         ))}
       </ol>
-      <span class="mono-meta bar-pos" aria-live="polite"><span data-pos>01</span> / {pad(slides.length)} · <span data-label>Intro</span></span>
+      <span class="mono-meta bar-pos" aria-live="polite"><span data-pos>01</span> / {pad(slides.length)}<span class="bar-label"> · <span data-label>Intro</span></span></span>
+      <div class="hud">
+        <span class="mono-meta hud-game dist" title="Cursor distance, in 60 ft bowling lanes"><span data-dist-label>Cursor</span> <span data-dist>0.00 lanes</span></span>
+        <button type="button" class="hud-btn hud-game" data-ach-open aria-expanded="false" aria-controls="ach-panel">Achievements <span data-ach-count>0/12</span></button>
+        <button type="button" class="hud-btn game-toggle" data-game-toggle aria-pressed="true">Game <span data-game-state>on</span></button>
+      </div>
     </nav>
 
     <section id="intro" class="slide intro" data-slide>
@@ -60,6 +64,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
           <a class="btn btn-secondary" href={site.resume}>Résumé (PDF)</a>
         </div>
         <p class="mono-meta hint reveal" aria-hidden="true">Scroll to see the case ↓</p>
+        <p class="game-note reveal">This page is a small game: achievements, a few secrets, a locked note at the end. <button type="button" class="link-btn" data-game-toggle aria-pressed="true">Turn the game <span data-game-flip>off</span></button></p>
       </div>
     </section>
 
@@ -71,7 +76,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
           {data.requirements.map((r) => (
             <div class="mrow"><span>{r.need}</span><span class="ids">{r.cases.map((c) => (
               cases[c]?.data.published
-                ? <a class="idchip" href={`/case/${cases[c].id}/`}>{c}</a>
+                ? <a class="idchip" href={`/case/${cases[c].id}/`} data-case-link>{c}</a>
                 : <a class="idchip" href={`#evidence-${evidence.findIndex((e) => e.case === c) + 1}`}>{c}</a>
             ))}</span></div>
           ))}
@@ -82,7 +87,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
     {evidence.map((e, i) => {
       const c = cases[e.case];
       return (
-        <section id={`evidence-${i + 1}`} class="slide" data-slide>
+        <section id={`evidence-${i + 1}`} class="slide" data-slide data-evidence>
           <div class="inner">
             <div class="section-head reveal"><span class="num">02</span><h2>My evidence</h2><span class="mono-meta count">{i + 1} of {evidence.length}</span></div>
             <div class="ev">
@@ -90,14 +95,38 @@ const pad = (n: number) => String(n).padStart(2, '0');
               <h3 class="ev-title reveal">{c.data.title}</h3>
               <div class="reveal ev-meta"><StatusMeta status={c.data.status} stack={c.data.stack} /></div>
               <p class="ev-rel reveal"><strong>For {data.company}:</strong> {e.relevance}</p>
-              <div class="ev-pdo reveal">
-                <div class="pdo"><p class="mono-label">Problem</p><p>{c.data.tldr.problem}</p></div>
-                <div class="pdo"><p class="mono-label">Decision</p><p>{c.data.tldr.decision}</p></div>
-                <div class="pdo"><p class="mono-label">Outcome</p><p>{c.data.tldr.outcome}</p></div>
-              </div>
+              {c.data.quiz ? (
+                <div class="quiz reveal" data-quiz={c.data.id}>
+                  <div class="pdo"><p class="mono-label">Problem</p><p>{c.data.tldr.problem}</p></div>
+                  <div class="ask">
+                    <p class="mono-label ask-label">What would you do?</p>
+                    <p class="ask-q">{c.data.quiz.question}</p>
+                    <div class="opts">
+                      {c.data.quiz.options.map((o, oi) => (
+                        <button type="button" class="opt" data-option={oi} data-chosen={o.chosen ? '' : undefined}>
+                          <span class="opt-key">{String.fromCharCode(65 + oi)}</span><span>{o.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                    {c.data.quiz.options.map((o, oi) => (
+                      <p class="reply" data-reply={oi} hidden><span class="mono-label">{o.chosen ? 'Same call I made' : 'Here is why I didn\'t'}</span> {o.reply}</p>
+                    ))}
+                  </div>
+                  <div class="ev-pdo after">
+                    <div class="pdo"><p class="mono-label">Decision</p><p>{c.data.tldr.decision}</p></div>
+                    <div class="pdo"><p class="mono-label">Outcome</p><p>{c.data.tldr.outcome}</p></div>
+                  </div>
+                </div>
+              ) : (
+                <div class="ev-pdo reveal">
+                  <div class="pdo"><p class="mono-label">Problem</p><p>{c.data.tldr.problem}</p></div>
+                  <div class="pdo"><p class="mono-label">Decision</p><p>{c.data.tldr.decision}</p></div>
+                  <div class="pdo"><p class="mono-label">Outcome</p><p>{c.data.tldr.outcome}</p></div>
+                </div>
+              )}
               <div class="reveal ev-cta">
                 {c.data.published
-                  ? <a class="btn btn-primary" href={`/case/${c.id}/`}>Open the case file →</a>
+                  ? <a class="btn btn-primary" href={`/case/${c.id}/`} data-case-link>Open the case file →</a>
                   : <span class="mono-meta">Full case file coming soon</span>}
                 {c.data.published && <span class="mono-meta">{c.data.readMinutes} min read</span>}
               </div>
@@ -146,78 +175,37 @@ const pad = (n: number) => String(n).padStart(2, '0');
             <p>{data.bonus.body}</p>
             <div class="actions"><a class="btn btn-primary" href={`mailto:${site.email}`}>Let's talk</a></div>
           </aside>
+          <div class="summary reveal hud-game" data-summary>
+            <p class="mono-label">Run summary</p>
+            <dl class="stats">
+              <div><dt class="mono-label">Achievements</dt><dd data-s-ach>0 / 12</dd></div>
+              <div><dt class="mono-label">Distance</dt><dd data-s-dist>0.0 m</dd></div>
+              <div><dt class="mono-label">Bowling lanes</dt><dd data-s-lanes>0.00 lanes</dd></div>
+              <div><dt class="mono-label">Time</dt><dd data-s-time>0m 00s</dd></div>
+              <div><dt class="mono-label">Slides</dt><dd data-s-slides>0 / {slides.length}</dd></div>
+            </dl>
+            <div class="actions">
+              <a class="btn btn-primary" data-mail={site.email} href={`mailto:${site.email}`}>Email Jacob your score</a>
+              <button type="button" class="btn btn-secondary" data-copy>Copy score</button>
+            </div>
+            <p class="mono-meta privacy">Everything here is counted in your browser. Nothing is sent anywhere unless you send it.</p>
+          </div>
         </div>
       </section>
     )}
   </div>
+
+  <div class="toasts" data-toasts aria-live="polite"></div>
+  <div class="ach-panel" id="ach-panel" data-ach-panel hidden role="dialog" aria-label="Achievements">
+    <div class="ach-head"><span class="mono-label" style="color:var(--ink)">Achievements</span><span class="mono-meta" data-ach-hidden></span><button type="button" class="hud-btn" data-ach-close>Close</button></div>
+    <ol class="ach-list" data-ach-list></ol>
+  </div>
 </Base>
 
 <script>
+  import { initDeck } from '../../scripts/deck-game';
   const deck = document.querySelector<HTMLElement>('[data-deck]');
-  if (deck) {
-    const key = `jt-deck-${deck.dataset.deck}`;
-    const slides = [...deck.querySelectorAll<HTMLElement>('[data-slide]')];
-    const required = slides.filter((s) => !s.hasAttribute('data-note')).map((s) => s.id);
-    const segs = new Map([...deck.querySelectorAll<HTMLAnchorElement>('[data-seg]')].map((a) => [a.dataset.seg!, a]));
-    const pos = deck.querySelector('[data-pos]')!;
-    const label = deck.querySelector('[data-label]')!;
-    const locked = deck.querySelector<HTMLElement>('[data-locked]');
-    const bonus = deck.querySelector<HTMLElement>('[data-bonus]');
-    const left = deck.querySelector('[data-left]');
-
-    let seen = new Set<string>();
-    try { seen = new Set(JSON.parse(localStorage.getItem(key) || '[]')); } catch {}
-    let unlocked = required.every((id) => seen.has(id));
-    if (locked && bonus && !unlocked) { locked.hidden = false; bonus.hidden = true; }
-
-    const update = (current: HTMLElement) => {
-      const i = slides.indexOf(current);
-      pos.textContent = String(i + 1).padStart(2, '0');
-      label.textContent = segs.get(current.id)?.getAttribute('aria-label')?.replace(/^\d+: /, '') ?? '';
-      for (const [id, a] of segs) {
-        a.classList.toggle('done', seen.has(id));
-        a.classList.toggle('current', id === current.id);
-        id === current.id ? a.setAttribute('aria-current', 'step') : a.removeAttribute('aria-current');
-      }
-      const remaining = required.filter((id) => !seen.has(id)).length;
-      if (left) left.textContent = remaining ? `${remaining} to go.` : '';
-      if (!unlocked && remaining === 0 && locked && bonus) {
-        unlocked = true;
-        locked.hidden = true;
-        bonus.hidden = false;
-        bonus.classList.add('fresh');
-      }
-    };
-
-    // A slide counts as seen only after the reader stays on it, so jumping or
-    // flicking past slides (or the smooth scroll of a jump) doesn't unlock the note.
-    const DWELL = 700;
-    const timers = new Map<HTMLElement, number>();
-    let current = slides[0];
-    const markSeen = (slide: HTMLElement) => {
-      if (seen.has(slide.id)) return;
-      seen.add(slide.id);
-      try { localStorage.setItem(key, JSON.stringify([...seen])); } catch {}
-      update(current);
-    };
-
-    for (const s of slides) if (seen.has(s.id)) s.classList.add('shown');
-    const io = new IntersectionObserver((entries) => {
-      for (const e of entries) {
-        const slide = e.target as HTMLElement;
-        if (e.isIntersecting) {
-          current = slide;
-          slide.classList.add('shown');
-          update(slide);
-          timers.set(slide, window.setTimeout(() => markSeen(slide), DWELL));
-        } else {
-          clearTimeout(timers.get(slide));
-        }
-      }
-    }, { threshold: 0.5 });
-    slides.forEach((s) => io.observe(s));
-    update(current);
-  }
+  if (deck) initDeck(deck);
 </script>
 
 <style>
@@ -241,8 +229,78 @@ const pad = (n: number) => String(n).padStart(2, '0');
   .seg.done span { background: var(--amber); }
   .seg.current span { background: var(--ink); }
   .seg:hover span { background: var(--muted); }
+  .deckbar { grid-template-columns: 1fr auto auto; }
   .bar-pos { white-space: nowrap; }
-  @media (max-width: 700px) { .bar-title { display: none; } .deckbar { grid-template-columns: 1fr auto; } }
+  .hud { display: flex; align-items: center; gap: 8px; }
+  .hud-btn {
+    position: relative; cursor: pointer; white-space: nowrap;
+    border: 1px solid var(--line); background: var(--surface); border-radius: 999px;
+    padding: 4px 10px; font: 12px var(--mono); color: var(--ink);
+  }
+  .hud-btn::before { content: ""; position: absolute; inset: -8px -2px; }
+  .hud-btn:hover { border-color: var(--ink); }
+  .game-toggle[aria-pressed="true"] { border-color: var(--amber); background: var(--amber-tint); color: var(--amber-ink); }
+  .dist { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  @media (max-width: 900px) { .bar-label, .dist { display: none; } }
+  @media (max-width: 520px) { .bar-pos { display: none; } .deckbar { grid-template-columns: 1fr auto; gap: 10px; } }
+  :global(.game-off) .hud-game { display: none !important; }
+
+  .game-note { margin-top: 14px; font-size: 14px; color: var(--muted); }
+  .link-btn { border: 0; background: none; padding: 0; font: inherit; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .link-btn:hover { color: var(--amber-ink); }
+
+  .quiz { margin-top: 24px; display: grid; gap: 20px; }
+  .ask { padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+  .ask-label { color: var(--amber-ink); }
+  .ask-q { margin-top: 8px; font-size: 19px; font-weight: 600; line-height: 1.35; }
+  .opts { margin-top: 14px; display: grid; gap: 8px; }
+  .opt {
+    display: flex; gap: 12px; align-items: flex-start; text-align: left; cursor: pointer;
+    min-height: 44px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg);
+    font-size: 16px; line-height: 1.4;
+  }
+  .opt:hover:not(:disabled) { border-color: var(--ink); }
+  .opt:disabled { cursor: default; opacity: 0.55; }
+  .opt.picked { opacity: 1; border: 2px solid var(--amber); padding: 9px 13px; background: var(--amber-tint); }
+  .opt-key { font: 12px/1.9 var(--mono); color: var(--muted); }
+  .reply { margin-top: 14px; font-size: 16px; line-height: 1.55; }
+  .reply .mono-label { display: block; margin-bottom: 4px; color: var(--amber-ink); }
+  .quiz .after { display: none; }
+  .quiz.answered .after { display: grid; }
+  :global(.game-off) .ask { display: none; }
+  :global(.game-off) .quiz .after { display: grid; }
+
+  .summary { margin-top: 20px; padding: clamp(18px, 2.4vw, 28px); border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+  .stats { margin-top: 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 14px 20px; }
+  .stats dd { margin: 4px 0 0; font: 500 22px var(--mono); font-variant-numeric: tabular-nums; }
+  .privacy { margin-top: 14px; }
+
+  .toasts { position: fixed; right: 16px; bottom: 16px; z-index: 50; display: flex; flex-direction: column; gap: 8px; width: min(340px, calc(100vw - 32px)); pointer-events: none; }
+  :global(.toast) {
+    pointer-events: auto; cursor: pointer; padding: 12px 14px; border-radius: 10px;
+    background: var(--ink); color: var(--bg); border-left: 3px solid var(--amber);
+    animation: toast-in 220ms ease-out;
+  }
+  :global(.toast.out) { opacity: 0; transform: translateY(6px); transition: opacity 250ms, transform 250ms; }
+  :global(.toast-tag) { font: 11px var(--mono); letter-spacing: 0.08em; color: var(--amber); }
+  :global(.toast-title) { margin-top: 2px; font-size: 15px; font-weight: 600; }
+  :global(.toast-desc) { margin-top: 2px; font-size: 13px; opacity: 0.8; }
+  @keyframes toast-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { :global(.toast) { animation: none; } :global(.toast.out) { transition: none; } }
+
+  .ach-panel {
+    position: fixed; z-index: 40; top: 52px; right: 16px; width: min(360px, calc(100vw - 32px));
+    max-height: calc(100svh - 72px); overflow: auto; padding: 14px 16px;
+    border: 1px solid var(--line); border-radius: 12px; background: var(--surface);
+  }
+  .ach-head { display: flex; align-items: center; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--ink); }
+  .ach-head [data-ach-hidden] { margin-left: auto; }
+  .ach-list { list-style: none; margin: 0; padding: 0; }
+  .ach-list :global(li) { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .ach-list :global(.ach-title) { font-size: 15px; font-weight: 600; }
+  .ach-list :global(.ach-desc) { margin-top: 2px; font-size: 13px; color: var(--muted); }
+  .ach-list :global(li.todo .ach-title) { color: var(--muted); }
+  .ach-list :global(li.got .ach-title)::before { content: "✓ "; color: var(--amber-ink); font-family: var(--mono); }
 
   .slide {
     min-height: calc(100svh - var(--bar-h)); scroll-snap-align: start;
