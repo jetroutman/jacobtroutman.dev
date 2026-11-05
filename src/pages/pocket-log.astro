@@ -15,37 +15,61 @@ import Base from '../layouts/Base.astro';
 
   <div class="banner" data-banner data-mode="real">
     <p role="status" class="status"><span class="dot"></span><span data-status>Viewing Jacob's real league data (read-only)</span></p>
-    <div class="seg" role="group" aria-label="Data mode">
-      <button type="button" data-set="real" aria-pressed="true">Real data</button>
-      <button type="button" data-set="sandbox" aria-pressed="false">Sandbox</button>
+    <div class="controls">
+      <button type="button" class="reset" data-reset hidden>Reset sandbox</button>
+      <div class="seg" role="group" aria-label="Data mode">
+        <button type="button" data-set="real" aria-pressed="true">Real data</button>
+        <button type="button" data-set="sandbox" aria-pressed="false">Sandbox</button>
+      </div>
     </div>
   </div>
 
   <div class="frame">
-    <div class="strip"><span class="mono-label">Stand-in · the Pocket Log app mounts here</span><span class="mono-label" data-source>Data: league snapshot</span></div>
-    <div class="placeholder">
-      {/* TODO: replace with the Pocket Log island. It owns the banner state (real | sandbox). */}
-      <p>The app is being ported from its prototype. Real data and sandbox modes arrive with it.</p>
-    </div>
+    <div class="strip"><span class="mono-label">Pocket Log · phone-first, works best on mobile</span><span class="mono-label" data-source>Data: league snapshot</span></div>
+    <iframe class="app" data-app src="/pocket-log/app/?mode=real" title="Pocket Log app" loading="eager"></iframe>
   </div>
-  <p class="mono-meta foot">Sandbox data is saved in this browser's local storage and never sent anywhere. Reset restores my real data.</p>
+  <p class="mono-meta foot">Sandbox data is saved in this browser's local storage and never sent anywhere. Reset restores my real data. Live AI coaching isn't on the site yet; the coaching you see is what the app wrote for my real league nights.</p>
 </Base>
 
 <script>
   const banner = document.querySelector<HTMLElement>('[data-banner]')!;
   const status = document.querySelector('[data-status]')!;
   const source = document.querySelector('[data-source]')!;
+  const frame = document.querySelector<HTMLIFrameElement>('[data-app]')!;
+  const reset = document.querySelector<HTMLButtonElement>('[data-reset]')!;
   const buttons = [...banner.querySelectorAll<HTMLButtonElement>('[data-set]')];
-  function set(mode: string) {
+  let mode = 'real';
+  function set(next: string, push = true) {
+    mode = next;
     banner.dataset.mode = mode;
     status.textContent = mode === 'sandbox'
       ? 'Sandbox: your changes stay in your browser'
       : "Viewing Jacob's real league data (read-only)";
     source.textContent = mode === 'sandbox' ? 'Data: this browser' : 'Data: league snapshot';
+    reset.hidden = mode !== 'sandbox';
     for (const b of buttons) b.setAttribute('aria-pressed', String(b.dataset.set === mode));
+    frame.src = `/pocket-log/app/?mode=${mode}`;
+    if (push) history.replaceState(null, '', mode === 'sandbox' ? '?mode=sandbox' : location.pathname);
   }
-  buttons.forEach((b) => b.addEventListener('click', () => set(b.dataset.set!)));
-  if (new URLSearchParams(location.search).get('mode') === 'sandbox') set('sandbox');
+  buttons.forEach((b) => b.addEventListener('click', () => { if (b.dataset.set !== mode) set(b.dataset.set!); }));
+  reset.addEventListener('click', () => {
+    try { localStorage.removeItem('pocketlog.sandbox.v1'); } catch {}
+    frame.src = `/pocket-log/app/?mode=sandbox&r=${Date.now()}`;
+  });
+  if (new URLSearchParams(location.search).get('mode') === 'sandbox') set('sandbox', false);
+
+  // Messages from the embedded app: its height, "scroll to top" on tab change, and read-only nudges.
+  addEventListener('message', (e) => {
+    if (e.origin !== location.origin || e.source !== frame.contentWindow || e.data?.src !== 'pocket-log') return;
+    if (e.data.type === 'height') frame.style.height = `${Math.max(480, e.data.h)}px`;
+    if (e.data.type === 'top') {
+      const top = frame.getBoundingClientRect().top + scrollY - banner.offsetHeight - 24;
+      if (scrollY > top) scrollTo({ top });
+    }
+    if (e.data.type === 'readonly') {
+      banner.classList.remove('nudge'); void banner.offsetWidth; banner.classList.add('nudge');
+    }
+  });
 </script>
 
 <style>
@@ -77,6 +101,15 @@ import Base from '../layouts/Base.astro';
 
   .frame { margin-top: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; }
   .strip { display: flex; justify-content: space-between; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--line); }
-  .placeholder { padding: 48px 16px; text-align: center; color: var(--muted); }
+  .app { display: block; width: 100%; height: 900px; border: 0; background: transparent; }
+  .controls { display: flex; align-items: center; gap: 8px; }
+  .reset {
+    min-height: 36px; padding: 0 12px; border: 1px solid var(--amber); border-radius: 999px;
+    background: transparent; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .reset:hover { background: var(--hover); }
+  .banner.nudge { animation: nudge 0.5s ease; }
+  @keyframes nudge { 0%, 100% { transform: none; } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+  @media (prefers-reduced-motion: reduce) { .banner.nudge { animation: none; outline: 2px solid var(--amber); } }
   .foot { margin-top: 14px; }
 </style>

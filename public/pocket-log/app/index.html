@@ -1,0 +1,1260 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Pocket Log</title>
+<meta name="robots" content="noindex">
+<script>
+/* jacobtroutman.dev embed bridge: theme follows the site, height and scroll are handed to the parent page. */
+(function(){
+  const root=document.documentElement;
+  const theme=()=>{try{const t=localStorage.getItem('jt-theme');if(t)root.dataset.theme=t;else delete root.dataset.theme}catch(e){}};
+  theme();addEventListener('storage',e=>{if(e.key==='jt-theme')theme()});
+  const embedded=window.parent!==window;
+  window.plPost=m=>{if(embedded)parent.postMessage({src:'pocket-log',...m},location.origin)};
+  if(embedded){
+    const send=()=>plPost({type:'height',h:Math.ceil(document.documentElement.scrollHeight)});
+    addEventListener('load',send);new ResizeObserver(send).observe(document.documentElement);
+    const sc=window.scrollTo.bind(window);window.scrollTo=(...a)=>{plPost({type:'top'});sc(...a)};
+  }
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap">
+<style>
+/* Layout: one phone-width column. Sticky brand + tabs, a classic scoresheet strip, then stacked working cards. */
+:root{
+  --bg:#F2F3F7; --panel:#FFFFFF; --chip:#EEF0F5; --ink:#141A2B; --muted:#5A6377; --line:#DCE0E9;
+  --lane:#E8D2AC; --lane-line:#CDB083; --gutter:#B6BDCB; --pin:#FFFFFF; --pin-stroke:#A1A9BA; --pin-down:#E3E6EE;
+  --accent:#D3243B; --accent-ink:#FFFFFF; --ball:#3C4BC6; --hl:#FFF3D1;
+  --ok:#1D7F54; --ok-bg:#E1F3EA; --warn:#9A6210; --warn-bg:#FBEFD7; --bad:#B8262E; --bad-bg:#FCE6E6;
+  --display:"Bowlby One","Arial Black",Impact,system-ui,sans-serif;
+  --body:"Barlow Semi Condensed","Arial Narrow","Roboto Condensed",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D111D; --panel:#161B2C; --chip:#20263A; --ink:#E9ECF4; --muted:#9AA3B8; --line:#2A3149;
+  --lane:#5B4731; --lane-line:#7A6142; --gutter:#2D3450; --pin:#F3F4F8; --pin-stroke:#6C7491; --pin-down:#262C42;
+  --accent:#F2475D; --accent-ink:#FFFFFF; --ball:#8E98FF; --hl:#2C2717;
+  --ok:#57CB94; --ok-bg:#12301F; --warn:#E6B35E; --warn-bg:#33270F; --bad:#F27D7D; --bad-bg:#3A1717; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D111D; --panel:#161B2C; --chip:#20263A; --ink:#E9ECF4; --muted:#9AA3B8; --line:#2A3149;
+  --lane:#5B4731; --lane-line:#7A6142; --gutter:#2D3450; --pin:#F3F4F8; --pin-stroke:#6C7491; --pin-down:#262C42;
+  --accent:#F2475D; --accent-ink:#FFFFFF; --ball:#8E98FF; --hl:#2C2717;
+  --ok:#57CB94; --ok-bg:#12301F; --warn:#E6B35E; --warn-bg:#33270F; --bad:#F27D7D; --bad-bg:#3A1717; color-scheme:dark}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--body);font-size:16px;line-height:1.45;padding-inline:16px;padding-block:0 40px}
+*{box-sizing:border-box}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);margin-inline:-16px;padding:12px 16px 10px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.brand h1{font-family:var(--display);font-weight:400;font-size:24px;margin:0;letter-spacing:.02em}
+.brand h1 span{color:var(--accent)}
+.sync{font-size:13px;color:var(--muted);text-align:right}
+.tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:3px}
+.tabs button{border:0;background:none;font:600 15px var(--body);color:var(--muted);padding:8px 2px;border-radius:8px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card.flat{background:none;border-style:dashed}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0}
+h2{font-family:var(--display);font-weight:400;font-size:21px;margin:0;line-height:1.15;text-wrap:balance}
+h3{font-size:17px;font-weight:600;margin:0}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+.btn{font:600 16px var(--body);border-radius:10px;padding:10px 16px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;min-height:44px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.dark{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.btn.ghost{background:none}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.55;cursor:default}
+button:focus-visible,input:focus-visible,.pinbtn:focus-visible,.fr:focus-visible{outline:2px solid var(--ball);outline-offset:2px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.between{justify-content:space-between}
+.grow{flex:1 1 0;min-width:0}
+.total{font-family:var(--display);font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
+.sheet{overflow-x:auto;padding:2px;margin:-2px}
+.frames{display:flex;width:max-content;border:1.5px solid var(--ink);border-radius:6px;overflow:hidden;background:var(--panel)}
+.fr{width:44px;border-right:1px solid var(--ink);display:flex;flex-direction:column;background:var(--panel);cursor:pointer;padding:0;font:inherit;color:inherit;text-align:left}
+.fr:last-child{border-right:0;width:64px}
+.fr .n{font-size:11px;text-align:center;color:var(--muted);border-bottom:1px solid var(--line);line-height:16px}
+.fr .balls{display:flex;justify-content:flex-end;height:22px}
+.fr .b{width:20px;border-left:1px solid var(--line);border-bottom:1px solid var(--line);display:grid;place-items:center;font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
+.fr .b.x{color:var(--accent)}
+.fr .tot{height:24px;display:grid;place-items:center;font-weight:600;font-variant-numeric:tabular-nums}
+.fr.cur{background:var(--hl)}
+.fr.sel{box-shadow:inset 0 -3px 0 var(--ball)}
+.split{display:inline-grid;place-items:center;width:18px;height:18px;border:1.5px solid var(--accent);border-radius:50%;font-size:12px}
+.rack{width:100%;max-width:290px;display:block;margin:0 auto;height:auto;touch-action:manipulation}
+.pinbtn{cursor:pointer}
+.pinbtn circle{fill:var(--pin-down);stroke:var(--pin-stroke);stroke-width:1.5}
+.pinbtn text{fill:var(--muted);font:600 19px var(--body)}
+.pinbtn.up circle{fill:var(--pin);stroke:var(--accent);stroke-width:4}
+.pinbtn.up text{fill:var(--ink)}
+.pinbtn.out{cursor:default;opacity:.28}
+.pinbtn.out circle{stroke-dasharray:3 3}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field label{font-size:13px;color:var(--muted);font-weight:500}
+.step{display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg)}
+.step button{width:42px;height:44px;border:0;background:var(--chip);font:500 22px var(--body);color:var(--ink);cursor:pointer;flex:none}
+.step input{flex:1;min-width:0;width:40px;text-align:center;border:0;background:none;font:600 20px var(--body);color:var(--ink);font-variant-numeric:tabular-nums;-moz-appearance:textfield;appearance:textfield}
+.step input::-webkit-outer-spin-button,.step input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.txt{font:500 16px var(--body);padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);width:100%;min-width:0}
+.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.metric{background:var(--chip);border-radius:10px;padding:8px 10px;min-width:0}
+.metric p{font-size:12px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;font-weight:600}
+.metric b{display:block;font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;font-weight:600;font-size:13px;white-space:nowrap}
+.ok{background:var(--ok-bg);color:var(--ok)} .warn{background:var(--warn-bg);color:var(--warn)} .bad{background:var(--bad-bg);color:var(--bad)}
+.tip{border-left:3px solid var(--ball);padding:2px 0 2px 10px;border-radius:0}
+.lane{width:100%;max-width:330px;display:block;margin:0 auto;height:auto}
+.bars{display:flex;flex-direction:column;gap:7px}
+.bar{display:grid;grid-template-columns:88px minmax(0,1fr) 28px;gap:8px;align-items:center;font-size:15px}
+.bar span{font-weight:600;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar i{display:block;height:10px;border-radius:5px;background:var(--accent);min-width:4px}
+.bar em{font-style:normal;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.stack{display:flex;height:16px;border-radius:8px;overflow:hidden;background:var(--chip)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:var(--panel);font:600 15px var(--body);color:var(--muted);padding:9px 14px;cursor:pointer;min-height:42px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.seg.cols{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);width:100%}
+.seg.cols button{padding:9px 4px;border-left:1px solid var(--line)}
+.seg.cols button:first-child{border-left:0}
+.metric small{font-size:13px;font-weight:500;color:var(--muted)}
+table.lines{width:100%;border-collapse:collapse;font-size:15px;font-variant-numeric:tabular-nums}
+table.lines th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:right;font-weight:600;padding:4px 6px;border-bottom:1px solid var(--line)}
+table.lines td{text-align:right;padding:6px;border-bottom:1px solid var(--line)}
+table.lines th:first-child,table.lines td:first-child{text-align:left}
+.coach{white-space:pre-wrap;font-size:15px;line-height:1.55}
+.badge{font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--ball);border:1px solid var(--ball);border-radius:6px;padding:1px 6px}
+.game{display:flex;align-items:center;gap:12px;background:none;border:0;padding:0;width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.game .total{font-size:30px}
+.err{color:var(--bad);font-size:14px}
+.btn.small{font-size:14px;min-height:40px;padding:8px 10px}
+.danger-text{color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:flex;flex-direction:column;align-items:flex-start;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:6px 10px;font:inherit;color:var(--ink);cursor:pointer;min-height:44px;text-align:left;max-width:100%}
+.chip b{font-weight:600;font-size:15px}.chip span{font-size:12px;color:var(--muted)}
+.chip.on{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}.chip.on span{color:var(--ok)}
+.label{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.editbox{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:12px}
+.card.editing{border:2px solid var(--ball)}
+.back{align-self:flex-start}
+.frameline{background:var(--chip);border-radius:10px;padding:8px 10px}
+.suggest{background:var(--chip);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;border:1px solid var(--line)}
+.sugline{font-family:var(--display);font-size:20px;line-height:1.2}
+.sugextra{font-weight:600;font-size:16px;color:var(--accent)}
+select.txt{appearance:auto}
+.sptable{display:flex;flex-direction:column;gap:6px}
+.sprow{display:grid;grid-template-columns:28px minmax(0,64px) minmax(0,64px) auto auto;gap:6px;align-items:center}
+.sprow .txt{padding:8px;text-align:center;font-variant-numeric:tabular-nums}
+.sprow b{font-size:17px;text-align:center}
+.gamerows{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.gamerow{display:flex;justify-content:space-between;align-items:center;gap:8px;background:none;border:0;border-bottom:1px solid var(--line);padding:10px 2px;font:inherit;color:var(--ink);cursor:pointer;text-align:left;min-height:44px}
+.gamerow b{font-family:var(--display);font-weight:400;font-size:20px;font-variant-numeric:tabular-nums}
+.right{text-align:right}
+.preview{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;background:var(--bg)}
+.pv-lane .lane{max-width:250px}
+.ballrow{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.ballrow .seg button{padding:8px 12px}
+.lookup{background:var(--chip);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.changes{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:2px}
+.gaps{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:15px}
+table.lines tr.mine td{font-weight:600;background:var(--hl)}
+table.lines td:nth-child(3){text-align:left;white-space:normal}
+.readcard{gap:8px;padding-block:10px;border-left:4px solid var(--ball);border-radius:0 14px 14px 0}
+.readlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.readlist li{display:grid;grid-template-columns:62px minmax(0,1fr);gap:8px;align-items:start;font-size:16px;line-height:1.3}
+.readlist .pill{text-align:center;padding:2px 6px}
+.readtoggle{align-self:flex-start}
+.btn.center{display:flex;align-items:center;justify-content:center}
+.filebtn{position:relative;overflow:hidden}
+.filebtn input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0}
+.debrief .dq{display:flex;flex-direction:column;gap:6px}
+.debrief .dq p,.debrief .dq label{font-size:15px;font-weight:500;margin:0}
+.chip.mini{min-height:40px;padding:6px 12px;font-weight:600;flex-direction:row}
+.think{background:var(--hl);border-radius:10px;padding:10px 12px}
+.histitem{border-left:3px solid var(--line);padding-left:10px;display:flex;flex-direction:column;gap:4px}
+textarea.txt{resize:vertical;font-family:var(--body)}
+.coachcard{gap:10px}
+.coachhead{font-family:var(--display);font-size:20px;line-height:1.25;text-wrap:balance}
+.cpoint{border-top:1px solid var(--line)}
+.cptitle{display:flex;justify-content:space-between;align-items:center;width:100%;background:none;border:0;padding:10px 0;font:600 16px var(--body);color:var(--ink);cursor:pointer;text-align:left;min-height:44px}
+.cpoint p{margin:0 0 10px;font-size:15px;line-height:1.5}
+.pbar{display:flex;flex-direction:column;gap:5px;font-size:15px}
+.pbar .track{height:10px;border-radius:5px;background:var(--chip);overflow:hidden}
+.pbar .track i{display:block;height:100%;background:var(--accent);border-radius:5px}
+.achlist{display:flex;flex-direction:column;gap:10px}
+.explain{width:100%;text-align:left;display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:10px}
+.explain-rack{display:flex;gap:12px;align-items:center}
+.minirack{width:80px;height:72px;flex:none}
+.gloss{margin:0;display:grid;grid-template-columns:minmax(0,1fr);gap:2px}
+.gloss dt{font-weight:600;margin-top:8px}.gloss dd{margin:0;color:var(--muted);font-size:15px}
+button.ach{background:none;border:0;border-radius:10px;padding:6px;margin:-6px;font:inherit;color:inherit;text-align:left;cursor:pointer;width:calc(100% + 12px)}
+button.ach:hover{background:var(--chip)}
+.tile{position:relative;overflow:hidden}
+.explain-all{width:100%;text-align:left}.explain-all summary{cursor:pointer;font-weight:600;padding:6px 0}
+.tile span,.tile b,.tile p{position:relative;z-index:1}
+.tile .conf{z-index:0}
+.tile.t2{background:var(--hl);border-width:3px}
+.tile.t3{grid-column:1/-1;background:var(--accent);border-color:var(--accent);padding:18px 16px;text-align:center;align-items:center}
+.tile.t3 span,.tile.t3 b,.tile.t3 p{color:var(--accent-ink)}.tile.t3 b{font-size:24px}
+.tile.t4{grid-column:1/-1;background:var(--ink);border:3px solid var(--warn);padding:26px 16px;text-align:center;align-items:center}
+.tile.t4 span{color:var(--warn);font-size:13px}.tile.t4 b{font-family:var(--display);font-weight:400;font-size:34px;color:var(--warn)}.tile.t4 p{color:var(--bg);font-size:15px}
+.tile .conf{position:absolute;top:-12px;width:7px;height:12px;border-radius:2px;opacity:0;pointer-events:none}
+@media (prefers-reduced-motion: no-preference){
+ .tile.t2{animation:pop .55s cubic-bezier(.2,1.5,.4,1) both,glow 1.6s ease-out .3s 1}
+ .tile.t3{animation:pop .65s cubic-bezier(.2,1.6,.4,1) both}
+ .tile.t4{animation:slam .8s cubic-bezier(.2,1.7,.4,1) both,pulse 2.4s ease-in-out .8s 3}
+ .tile .conf{animation:fall 1.8s ease-in 1 both}
+ @keyframes glow{0%{box-shadow:0 0 0 0 var(--accent)}100%{box-shadow:0 0 0 14px transparent}}
+ @keyframes slam{0%{opacity:0;transform:scale(1.8)}60%{opacity:1;transform:scale(.94)}100%{transform:none}}
+ @keyframes pulse{0%,100%{box-shadow:0 0 0 0 var(--warn)}50%{box-shadow:0 0 24px 2px var(--warn)}}
+ @keyframes fall{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:0;transform:translateY(260px) rotate(540deg)}}}
+.ach{display:grid;grid-template-columns:110px minmax(0,1fr);gap:10px;align-items:start}
+.ach .pill{text-align:center;white-space:normal}
+.ach p{margin:0}
+.review h2{margin-bottom:2px}
+.reveal{align-items:center;text-align:center;gap:10px}
+.reveal .bigscore{font-family:var(--display);font-size:64px;line-height:1;font-variant-numeric:tabular-nums}
+.reveal.earned .bigscore{color:var(--accent)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;width:100%}
+.tile{border:2px solid var(--accent);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:4px;background:var(--panel);text-align:left}
+.tile span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--accent)}
+.tile b{font-size:17px;line-height:1.2}.tile p{margin:0;font-size:13px;color:var(--muted)}
+.tile.surprise{border-color:var(--warn)}.tile.surprise span{color:var(--warn)}
+@media (prefers-reduced-motion: no-preference){.tile{animation:pop .5s cubic-bezier(.2,1.4,.4,1) both}.reveal.earned .bigscore{animation:pop .6s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes pop{from{opacity:0;transform:scale(.6) translateY(10px)}to{opacity:1;transform:none}}}
+.tabs button{font-size:14px}
+.del-confirm{background:var(--bad-bg);color:var(--bad);border-radius:10px;padding:8px 10px}
+@media (prefers-reduced-motion: no-preference){.btn,.tabs button,.pinbtn circle{transition:background .15s,fill .15s,stroke .15s}}
+</style>
+
+<div class="wrap" id="app"><p class="muted" style="padding-block:24px">Loading Pocket Log…</p></div>
+
+<script>
+(function(){
+const ALL=[1,2,3,4,5,6,7,8,9,10];
+const MIR={1:1,2:3,3:2,4:6,5:5,6:4,7:10,8:9,9:8,10:7};
+const NB={1:[2,3,5],2:[1,3,4,5,8],3:[1,2,5,6,9],4:[2,5,7,8],5:[1,2,3,4,6,8,9],6:[3,5,9,10],7:[4,8],8:[2,4,5,7,9],9:[3,5,6,8,10],10:[6,9]};
+const RACK={7:[40,36],8:[110,36],9:[180,36],10:[250,36],4:[75,94],5:[145,94],6:[215,94],2:[110,152],3:[180,152],1:[145,210]};
+const DECK={1:[180,70],2:[146,56],3:[214,56],4:[112,42],5:[180,42],6:[248,42],7:[78,28],8:[146,28],9:[214,28],10:[282,28]};
+const DEF={hand:'R',offset:7,bf:40,spareBall:'Spare ball',spare:{10:{st:32,tg:15,ball:'spare'},7:{st:29,tg:15,ball:'spare'}}};
+const NAMES={'7-10':'7-10 split','4-6':'4-6 split','4-6-7-10':'Big four','2-4-5-8':'Bucket','3-5-6-9':'Bucket','2-7':'2-7 baby split','3-10':'3-10 baby split','4-7-10':'4-7-10 split','6-7-10':'6-7-10 split','4-6-7-9-10':'Greek church','4-6-7-8-10':'Greek church','5-7':'5-7 split','5-10':'5-10 split','8-10':'8-10 split','7-9':'7-9 split','1-2-4-10':'Washout','1-3-6-7':'Washout','1-2-10':'Washout','1-3-7':'Washout'};
+const NOTES={
+ 10:'The {6} slid around the {10} (a ringing {10}). Usually a flat entry angle or a light hit on the {3}.',
+ 7:'The {4} wrapped around the {7}. The pocket hit was slightly off, so the {2} hit the {4} at the wrong angle.',
+ 8:'Stone {8}. The {5} got pushed past the {8} instead of into it, usually from ball deflection.',
+ 9:"The ball didn't carry through to the {9}. It deflected early or ran out of energy.",
+ 5:'The ball deflected too much before reaching the {5}. Light hit, too little angle, or not enough energy.',
+ 4:'The {2} went straight back instead of into the {4}. Often a high hit on the head pin.',
+ 6:'The {3} was clipped too thin, so it never drove the {6}.',
+ 2:'The head pin was hit too thin and slid away from the {2}.',
+ 3:'The ball hit high on the head pin and deflected away from the {3}.'};
+
+const state={games:[],settings:{...DEF},tab:'bowl',draft:null,loaded:false,mode:'connecting',expanded:null,confirmDel:null,confirmDiscard:false,viewShot:null,meta:{center:'',lane:'',date:'',ball:null,type:''},session:null,scope:'all',post:null,histOpen:{},imp:null,readOpen:(()=>{try{return localStorage.getItem('pocketlog.read')!=='0'}catch(e){return true}})(),confirmBall:null,lookup:null,ballErr:'',pvOpen:(()=>{try{return localStorage.getItem('pocketlog.pv')!=='0'}catch(e){return true}})(),detail:null,fedit:null,metaEdit:null,whatif:null,coach:{busy:false,text:'',err:''},syncErr:''};
+let db=null, wq=Promise.resolve(), pending=false;
+const app=document.getElementById('app');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clone=o=>JSON.parse(JSON.stringify(o));
+const r1=n=>Math.round(n*10)/10;
+
+/* ---------- game logic ---------- */
+function connected(s){const set=new Set(s),seen=new Set([s[0]]),st=[s[0]];while(st.length){const p=st.pop();for(const q of NB[p])if(set.has(q)&&!seen.has(q)){seen.add(q);st.push(q)}}return seen.size===set.size}
+const isSplit=s=>s.length>=2&&!s.includes(1)&&!connected(s);
+function ballsInfo(f){let rack=ALL.slice(),fresh=true;return (f.balls||[]).map(b=>{const o={...b,rack,fresh,knocked:rack.length-b.standing.length};fresh=b.standing.length===0;rack=fresh?ALL.slice():b.standing.slice();return o})}
+function frameDone(f,fi){const b=f.balls||[];if(fi<9)return b.length>=2||(b.length===1&&b[0].standing.length===0);if(b.length<2)return false;return (b[0].standing.length===0||b[1].standing.length===0)?b.length>=3:true}
+function nextBall(g){for(let fi=0;fi<10;fi++){const f=g.frames[fi];if(!frameDone(f,fi)){const info=ballsInfo(f),last=info[info.length-1];const fresh=!last||last.standing.length===0;return {fi,bi:f.balls.length,rack:fresh?ALL.slice():last.standing.slice(),fresh}}}return null}
+function score(g){const rolls=[],start=[];g.frames.forEach((f,fi)=>{start[fi]=rolls.length;ballsInfo(f).forEach(b=>rolls.push(b.knocked))});
+ const cum=Array(10).fill(null);let tot=0,last=0;
+ for(let fi=0;fi<10;fi++){const f=g.frames[fi],i=start[fi],n=f.balls.length;if(!n)break;let v;
+  if(fi<9){if(rolls[i]===10){if(rolls[i+2]===undefined)break;v=10+rolls[i+1]+rolls[i+2]}
+   else{if(n<2)break;if(rolls[i]+rolls[i+1]===10){if(rolls[i+2]===undefined)break;v=10+rolls[i+2]}else v=rolls[i]+rolls[i+1]}}
+  else{if(!frameDone(f,9))break;v=ballsInfo(f).reduce((a,b)=>a+b.knocked,0)}
+  tot+=v;cum[fi]=tot;last=tot}
+ return {cum,total:last}}
+function mk1(b){if(b.knocked===10)return 'X';if(b.knocked===0)return '-';return isSplit(b.standing)?`<span class="split">${b.knocked}</span>`:String(b.knocked)}
+function mk2(b){if(b.fresh)return mk1(b);if(b.standing.length===0)return '/';return b.knocked===0?'-':String(b.knocked)}
+function marks(f,fi){const info=ballsInfo(f);if(fi<9){if(!info.length)return ['',''];if(info[0].knocked===10)return ['','X'];return [mk1(info[0]),info[1]?mk2(info[1]):'']}
+ const out=info.map(mk2);while(out.length<3)out.push('');return out}
+const hand=g=>(g&&g.hand)||state.settings.hand;
+const toR=(s,h)=>(h==='L'?s.map(p=>MIR[p]):s.slice()).sort((a,b)=>a-b);
+const keyOf=s=>s.slice().sort((a,b)=>a-b).join('-');
+function leaveName(s){if(!s.length)return 'Strike';const k=keyOf(s);return NAMES[k]||(s.length===1?`${k} pin`:k)}
+function inferEntry(standing,h){const r=toR(standing,h);if(!r.length)return tone(17.5,'Pocket');
+ if(r.includes(1)){const right=r.filter(p=>[3,6,9,10].includes(p)).length,left=r.filter(p=>[2,4,7,8].includes(p)).length;return right>=left?{entry:12,kind:'Missed light',tone:'bad'}:{entry:24,kind:'Brooklyn',tone:'bad'}}
+ const T={'10':16.2,'6-10':15.5,'3-6-10':14.5,'3-10':15,'6':15.5,'3':15,'9':16.5,'5':16,'5-9':16,'8':17.5,'7':18.2,'4':19,'4-7':19.5,'2':19.5,'2-8':19.5,'2-4-5-8':16,'7-10':20.5,'4-6':21,'4-6-7-10':21,'4-7-10':20.5,'4-6-7':21,'4-9':19.5,'4-6-10':21,'4-7-9':20,'8-10':18.5,'4-10':20};
+ let e=T[r.join('-')];if(e===undefined){const W={2:2.5,4:1.5,7:.7,8:0,5:-1.5,9:-1,3:-3,6:-2.5,10:-1.5};e=17.5+r.reduce((a,p)=>a+W[p],0)/r.length;if(isSplit(r))e=Math.max(e,19.5)}
+ return tone(e)}
+function tone(e,k){const d=e-17.5;if(k)return {entry:e,kind:k,tone:'ok'};if(Math.abs(d)<=1)return {entry:e,kind:'Pocket',tone:'ok'};if(d>3)return {entry:e,kind:'Nose hit',tone:'bad'};if(d>1)return {entry:e,kind:'High',tone:'warn'};if(d<-2.5)return {entry:e,kind:'Very light',tone:'bad'};return {entry:e,kind:'Light',tone:'warn'}}
+function leaveNote(standing,h){if(!standing.length)return 'Everything chained the way it should.';const r=toR(standing,h);const m=n=>h==='L'?MIR[n]:n;
+ if(r.length===1)return NOTES[r[0]].replace(/\{(\d+)\}/g,(_,n)=>m(+n));
+ if(r.includes(1))return 'The ball missed the head pin, so the whole chain never started.';
+ if(isSplit(r))return 'Splits usually come from hitting too much head pin, so the pins spread instead of chaining.';
+ const k=inferEntry(standing,h).kind;
+ if(k==='Pocket')return 'Good pocket hit. The pin action just didn’t carry.';
+ if(/light/i.test(k))return 'The ball came in light and deflected, so the pins behind its path stayed up.';
+ return 'The ball hit too much head pin, so the pins scattered instead of knocking into each other.'}
+const arFt=b=>16-Math.abs(b-20)/5;
+const SPD={slow:-3,fast:3};
+function model(st,ax,s,sp){const bf=s.bf+(SPD[sp]||0),ld=Math.max(1,st-s.offset),af=arFt(ax),sl=(ax-ld)/af;return {ld,af,bf,bp:ax+sl*(bf-af)*.35}}
+function hookFor(st,ax,entry,s,sp){const m=model(st,ax,s,sp);return {...m,hook:(entry-m.bp)*20/(60-m.bf)}}
+function solveAx(st,entry,hook,s,sp){let best=null,bd=1e9;for(let x=1;x<=39;x+=.25){const m=model(st,x,s,sp),d=Math.abs(m.bp+hook*(60-m.bf)/20-entry);if(d<bd){bd=d;best=x}}return best}
+const axOf=b=>b.ax!==undefined?b.ax:(b.tg??null);
+const MISS=[['1-2','1–2 bd'],['3-4','3–4 bd'],['5+','5+ bd'],['','Not sure']];
+const missLbl=m=>m==='5+'?'5 or more boards':m?m.replace('-','–')+' boards':'';
+/* A miss with no exact count: the side (and range, if given) bounds where the ball crossed; the pins plus your usual hook pick the most likely board inside those bounds. */
+/* Predicting the miss: compare the pins you got with what your usual shot on this line leaves.
+   On a house shot, a board missed at the arrows moves the ball about 0.8 boards at the pins, because the oil pattern absorbs part of the miss. */
+const SENS=0.8;
+/* Speed: gear is the speed you chose on purpose (it carries to your next first balls tonight); sp is how one ball felt against that. */
+const spOf=b=>b.sp||b.gear||null;
+/* Where your usual shot on a line enters. Anchored to your strike line with this ball (pocket, or where those shots really end up once there are 3+),
+   and the ball model is only used for the difference when you move off that line or change speed. */
+function onMarkEntry(st,tg,s,th,sp,ball){const f=(a,b,v)=>{const m=model(a,b,s,v);return m.bp+th.v*(60-m.bf)/20};const L=strikeLine(ball)||{st,tg};
+ const es=allShots().filter(b=>b.fresh&&b.ball===ball&&b.st===L.st&&b.tg===L.tg).map(b=>inferEntry(b.standing,hand(b.g)).entry),base=es.length>=3?median(es):17.5;
+ return base+f(st,tg,sp)-f(L.st,L.tg,null)}
+function predictAx(st,tg,entry,s,th,sp,ball){const eOn=onMarkEntry(st,tg,s,th,sp,ball);return {ax:Math.min(39,Math.max(1,tg+(entry-eOn)/SENS)),eOn,dev:entry-eOn}}
+function predictMark(st,tg,entry,s,th,sp,h,ball){const p=predictAx(st,tg,entry,s,th,sp,ball),off=p.ax-tg;if(Math.abs(p.dev)<=1)return {...p,mark:'yes',miss:null};
+ const a=Math.abs(off);return {...p,mark:((off>0)===(h==='R'))?'left':'right',miss:a<2.5?'1-2':a<4.5?'3-4':'5+'}}
+function autoMark(c,d,g){if(!c.fresh||d.st==null||d.tg==null)return null;const h=hand(g),s=BP(d.ball),th=typicalHook(d.ball),pr=predictMark(d.st,d.tg,inferEntry(d.standing,h).entry,s,th,d.sp,h,d.ball);
+ if(d.markAuto){d.mark=pr.mark;d.miss=pr.miss}return pr}
+function missCross(b,h,entry,s,th){if(!(b.mark==='left'||b.mark==='right')||b.tg==null||b.st==null)return null;if(b.by!=null&&b.ax!=null&&!b.miss)return null;
+ const dir=((b.mark==='left')===(h==='R'))?1:-1,[lo,hi]=b.miss==='1-2'?[1,2]:b.miss==='3-4'?[3,4]:b.miss==='5+'?[5,12]:[1,12];
+ const a=b.tg+dir*lo,c=b.tg+dir*hi,mn=Math.max(1,Math.min(a,c)),mx=Math.min(39,Math.max(a,c)),raw=predictAx(b.st,b.tg,entry,s,th,b.sp,b.ball).ax;
+ return {ax:Math.min(mx,Math.max(mn,raw)),raw,mn,mx}}
+/* ---------- your balls: each one carries its own path model (laydown, breakpoint, hook) ---------- */
+const slug=n=>'n_'+String(n).toLowerCase().replace(/[^a-z0-9]+/g,'-');
+function newBall(name,use){const S=state.settings;return {id:'b'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),name,use,offset:S.offset??7,bf:S.bf??40,hook:null}}
+function arsenal(){const S=state.settings;if(Array.isArray(S.balls))return S.balls;
+ const names=new Set();state.games.forEach(g=>{if(g.ball)names.add(g.ball);g.frames.forEach(f=>f.balls.forEach(b=>{if(b.ball)names.add(b.ball)}))});
+ const sp=(S.spareBall||'Spare ball').trim()||'Spare ball';names.delete(sp);
+ return [...[...names].map(n=>({id:slug(n),name:n,use:'strike',offset:S.offset??7,bf:S.bf??40,hook:null})),{id:slug(sp),name:sp,use:'spare',offset:S.offset??7,bf:S.bf??40,hook:null}]}
+function ownBalls(){if(!Array.isArray(state.settings.balls))state.settings.balls=clone(arsenal());return state.settings.balls}
+const findBall=name=>arsenal().find(b=>b.name===name);
+function BP(name){const b=findBall(name),S=state.settings;return {offset:b?b.offset:(S.offset??7),bf:b?b.bf:(S.bf??40),hook:b?b.hook:null,use:b?b.use:'strike'}}
+function typicalHook(ball){const hs=[];state.games.forEach(g=>{const h=hand(g);firstBalls(g).forEach(b=>{const bn=ballOf(b,g);if(ball&&bn!==ball)return;const ax=axOf(b);if(b.st!=null&&ax!=null&&b.standing.length<=2)hs.push(hookFor(b.st,ax,inferEntry(b.standing,h).entry,BP(bn),spOf(b)).hook)})});
+ const p=BP(ball);return hs.length>=3?{v:median(hs),n:hs.length}:{v:p.hook??(p.use==='spare'?2:13),n:hs.length,starter:true}}
+function renameBall(id,name){name=(name||'').trim();const bs=ownBalls(),b=bs.find(x=>x.id===id);if(!b)return;state.ballErr='';
+ if(!name||name===b.name){render();return}if(bs.some(x=>x!==b&&x.name.toLowerCase()===name.toLowerCase())){state.ballErr=`You already have a ball called ${name}.`;render();return}
+ const old=b.name;b.name=name;saveSettings();
+ state.games.slice().forEach(g=>{let ch=false;const ng=clone(g);if(ng.ball===old){ng.ball=name;ch=true}ng.frames.forEach(f=>f.balls.forEach(x=>{if(x.ball===old){x.ball=name;ch=true}}));if(ch)persist(ng)});
+ if(state.meta.ball===old)state.meta.ball=name;render()}
+const sd=a=>{const m=a.reduce((x,y)=>x+y,0)/a.length;return Math.sqrt(a.reduce((x,y)=>x+(y-m)*(y-m),0)/a.length)};
+function advice(entry,h){const d=entry-17.5;if(Math.abs(d)<=1)return 'Good line. Repeat it.';
+ const hi=h==='L'?'right':'left',lo=h==='L'?'left':'right',f=Math.max(1,Math.round(Math.abs(d))),t=Math.max(1,Math.round(Math.abs(d)/2));
+ return d>0?`Came in high. Rule of thumb: move your feet ${f} board${f>1?'s':''} ${hi} and your target ${t} ${hi}.`:`Came in light. Rule of thumb: move your feet ${f} board${f>1?'s':''} ${lo} and your target ${t} ${lo}.`}
+
+/* ---------- drawing ---------- */
+let mid=0;
+function cub(a,b,c,d,t){const u=1-t;return [u*u*u*a[0]+3*u*u*t*b[0]+3*u*t*t*c[0]+t*t*t*d[0],u*u*u*a[1]+3*u*u*t*b[1]+3*u*t*t*c[1]+t*t*t*d[1]]}
+const LX=(o,b)=>{const x=297-(b-.5)*6;return o.hand==='L'?360-x:x},LY=f=>490-f*7;
+function geo(o,ax,entry){const X=b=>LX(o,b),f=n=>n.toFixed(1),E=[X(Math.min(Math.max(entry,1),39)),76],T=[X(ax),LY(arFt(ax))];
+ if(o.straight){const A=[X(o.st),490];return {T,E,pts:[A,T,E],d:`M${f(A[0])} ${f(A[1])} L${f(T[0])} ${f(T[1])} L${f(E[0])} ${f(E[1])}`}}
+ const e=model(o.st,ax,o,o.sp),A=[X(e.ld),490],B=[X(Math.max(e.bp,.5)),LY(e.bf)];
+ const m=(T[0]-A[0])/(T[1]-A[1]),c1y=T[1]-(T[1]-B[1])/3,c1=[T[0]+m*(c1y-T[1]),c1y],c2=[B[0],B[1]+(T[1]-B[1])/3],c3=[B[0],B[1]-(B[1]-E[1])/2],c4=[E[0]+(B[0]-E[0])*.3,E[1]+(B[1]-E[1])*.3];
+ return {T,E,B,e,pts:[A,T,cub(T,c1,c2,B,.5),B,cub(B,c3,c4,E,.5),E],d:`M${f(A[0])} ${f(A[1])} L${f(T[0])} ${f(T[1])} C${f(c1[0])} ${f(c1[1])} ${f(c2[0])} ${f(c2[1])} ${f(B[0])} ${f(B[1])} C${f(c3[0])} ${f(c3[1])} ${f(c4[0])} ${f(c4[1])} ${f(E[0])} ${f(E[1])}`}}
+function laneSVG(o){const L=o.hand==='L',X=b=>{const x=297-(b-.5)*6;return L?360-x:x},Y=f=>490-f*7,id='ah'+(++mid);
+ let s=`<svg class="lane" viewBox="0 0 360 590" role="img" aria-label="Estimated ball path from your stance to the pins"><defs><marker id="${id}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="var(--ball)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>`;
+ s+=`<rect x="51" y="4" width="258" height="14" rx="3" fill="var(--gutter)"/><rect x="51" y="18" width="12" height="472" fill="var(--gutter)"/><rect x="297" y="18" width="12" height="472" fill="var(--gutter)"/><rect x="63" y="18" width="234" height="472" fill="var(--lane)"/><rect x="63" y="490" width="234" height="92" fill="var(--lane)" opacity=".7"/>`;
+ for(let b=5;b<=35;b+=5){const x=X(b);s+=`<line x1="${x}" y1="18" x2="${x}" y2="582" stroke="var(--lane-line)" stroke-width=".7"/>`;const y=Y(arFt(b));s+=`<polygon points="${x},${y-6} ${x-4},${y+4} ${x+4},${y+4}" fill="var(--muted)"/><circle cx="${x}" cy="556" r="2" fill="var(--muted)"/>`}
+ [3,5,8,11,14,26,29,32,35,37].forEach(b=>s+=`<circle cx="${X(b)}" cy="${Y(7)}" r="1.8" fill="var(--muted)"/>`);
+ s+=`<line x1="63" y1="490" x2="297" y2="490" stroke="var(--ink)" stroke-width="1.5"/>`;
+ const pk=X(17.5);s+=`<line x1="${pk}" y1="80" x2="${pk}" y2="94" stroke="var(--ok)" stroke-width="2"/>`;
+ for(const p in DECK){const [x,y]=DECK[p],up=o.standing.includes(+p);s+=`<circle cx="${x}" cy="${y}" r="6" fill="${up?'var(--accent)':'var(--pin-down)'}" stroke="${up?'var(--accent)':'var(--pin-stroke)'}" stroke-width=".8"/>`}
+ const f=n=>n.toFixed(1);
+ (o.ghosts||[]).forEach(gh=>{const G=geo(o,gh.ax,gh.entry);s+=`<path d="${G.d}" fill="none" stroke="var(--muted)" stroke-width="1.6" stroke-opacity=".75" stroke-dasharray="2 4"/>`});
+ if(o.st!=null&&o.ax!=null){const G=geo(o,o.ax,o.entry),T=G.T,E=G.E,B=G.B;
+  s+=`<line x1="${X(o.st)}" y1="548" x2="${X(o.st)}" y2="500" stroke="var(--muted)" stroke-dasharray="3 3"/><rect x="${X(o.st)-6}" y="548" width="12" height="20" rx="5" fill="var(--muted)" opacity=".55"/>`;
+  s+=`<path d="${G.d}" fill="none" stroke="var(--ball)" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#${id})"/>`;
+  G.pts.forEach(p=>s+=`<circle cx="${f(p[0])}" cy="${f(p[1])}" r="11" fill="var(--ball)" fill-opacity=".17" stroke="var(--ball)" stroke-opacity=".5" stroke-width=".7"/>`);
+  if(o.tg!=null){const Q=[X(o.tg),Y(arFt(o.tg))];s+=`<polygon points="${Q[0]},${Q[1]-8} ${Q[0]-6},${Q[1]} ${Q[0]},${Q[1]+8} ${Q[0]+6},${Q[1]}" fill="var(--warn)"/>`}
+  const lab=(p,t,right)=>{const r=right??p[0]>180;return `<text x="${f(r?p[0]-18:p[0]+18)}" y="${f(p[1]+4)}" text-anchor="${r?'end':'start'}" font-size="13" font-weight="600" fill="var(--ink)" font-family="var(--body)">${t}</text>`};
+  const tR=T[0]>180,same=o.tg!=null&&Math.round(o.ax)===o.tg;
+  s+=lab(T,same&&!o.axEst?'Hit target '+o.tg:(o.axEst?'Crossed ~':'Crossed ')+Math.round(o.ax),tR);
+  if(o.tg!=null&&!(same&&!o.axEst))s+=lab([X(o.tg),Y(arFt(o.tg))-12],'Aimed '+o.tg,!tR);
+  if(B)s+=lab(B,'Breakpoint ~'+(G.e.bp<1?'gutter':Math.round(G.e.bp)));
+  s+=lab([X(o.st),560],'Stance '+o.st)+lab([E[0],104],(o.straight?'Reaches ~':'Entry ~')+Math.round(o.entry))}
+ return s+'</svg>'}
+function rackSVG(rack,standing){let s=`<svg class="rack" viewBox="0 0 290 245" role="group" aria-label="Pin deck. Tap pins that are still standing">`;
+ for(const p of [7,8,9,10,4,5,6,2,3,1]){const [x,y]=RACK[p],inR=rack.includes(p),up=standing.includes(p);
+  s+=`<g class="pinbtn ${!inR?'out':up?'up':''}" ${inR?`data-act="pin" data-p="${p}" tabindex="0" role="button" aria-pressed="${up}" aria-label="Pin ${p} ${up?'standing':'down'}"`:''}><circle cx="${x}" cy="${y}" r="26"/><text x="${x}" y="${y+6}" text-anchor="middle">${p}</text></g>`}
+ return s+'</svg>'}
+function sheetHTML(g,cur,sel){const sc=score(g);let s='<div class="sheet"><div class="frames">';
+ for(let fi=0;fi<10;fi++){const mk=marks(g.frames[fi],fi),has=g.frames[fi].balls.length>0;
+  s+=`<button class="fr ${fi===cur?'cur':''} ${fi===sel?'sel':''}" data-act="frame" data-id="${g.id}" data-fi="${fi}" ${has?'':'tabindex="-1"'} aria-label="Frame ${fi+1}"><div class="n">${fi+1}</div><div class="balls">${mk.map(m=>`<div class="b ${m==='X'?'x':''}">${m}</div>`).join('')}</div><div class="tot">${sc.cum[fi]??''}</div></button>`}
+ return s+'</div></div>'}
+
+/* ---------- storage: saved on this device first, pushed to your log whenever it's reachable ---------- */
+let LS='pocketlog.sandbox.v1';
+/* Each person's log lives in their own private space: data/users/<id>/profile (settings) and its games subcollection. */
+let uid=null;const profileDoc=()=>db.doc(`data/users/${uid}/profile`),gamesCol=()=>profileDoc().collection('games');
+let cache={games:{},dirty:[],deleted:[],settings:null,settingsDirty:false,plans:{},plansDirty:[]},flushing=false;
+const plansCol=()=>profileDoc().collection('coaching');
+function saveLocal(){if(state.mode==='real')return;try{localStorage.setItem(LS,JSON.stringify(cache))}catch(e){}}
+let SNAP=null;
+function fromSnap(){state.games=clone(SNAP.games);state.settings={...DEF,...clone(SNAP.settings)};cache={games:{},dirty:[],deleted:[],settings:null,settingsDirty:false,plans:clone(SNAP.plans||{}),plansDirty:[]};state.games.forEach(g=>cache.games[g.id]=clone(g))}
+function readOnly(){fromSnap();state.draft=null;state.fedit=null;state.metaEdit=null;state.roMsg='This is my real league data, so it’s read-only. Switch to Sandbox to try that.';plPost({type:'readonly'});render();window.scrollTo(0,0);return true}
+function loadLocal(){try{const d=JSON.parse(localStorage.getItem(LS)||'null');if(d){
+  if(Array.isArray(d.games)){d.games.forEach(g=>cache.games[g.id]=g);cache.dirty=d.games.map(g=>g.id);if(d.settings){cache.settings=d.settings;cache.settingsDirty=true}}
+  else cache={...cache,...d,games:d.games||{},dirty:d.dirty||[],deleted:d.deleted||[]}}}catch(e){}
+ state.games=Object.values(cache.games).map(clone);if(cache.settings)state.settings={...DEF,...cache.settings}}
+const pendingCount=()=>cache.dirty.length+cache.deleted.length+(cache.settingsDirty?1:0)+((cache.plansDirty||[]).length);
+function failed(e){state.syncErr=(e&&e.code==='quota_exceeded')?'Your log is full. Delete some old games to keep saving.':'';render()}
+function persist(g){if(state.mode==='real'){readOnly();return}g.updatedAt=new Date().toISOString();const i=state.games.findIndex(x=>x.id===g.id);if(i<0)state.games.push(g);else state.games[i]=g;
+ cache.games[g.id]=clone(g);if(!cache.dirty.includes(g.id))cache.dirty.push(g.id);saveLocal();flush()}
+function remove(id){if(state.mode==='real'){readOnly();return}state.games=state.games.filter(g=>g.id!==id);delete cache.games[id];cache.dirty=cache.dirty.filter(x=>x!==id);if(!cache.deleted.includes(id))cache.deleted.push(id);saveLocal();flush()}
+function saveSettings(){if(state.mode==='real'){readOnly();return}cache.settings=clone(state.settings);cache.settingsDirty=true;saveLocal();flush()}
+async function flush(){if(!db||flushing)return;flushing=true;
+ try{
+  while(cache.deleted.length){const id=cache.deleted[0];await gamesCol().doc(id).delete();cache.deleted=cache.deleted.filter(x=>x!==id);saveLocal()}
+  while(cache.dirty.length){const id=cache.dirty[0],g=cache.games[id];if(!g){cache.dirty.shift();continue}const sent=g.updatedAt;
+   await gamesCol().doc(id).set(clone(g));if(!cache.games[id]||cache.games[id].updatedAt===sent)cache.dirty=cache.dirty.filter(x=>x!==id);saveLocal()}
+  if(cache.settingsDirty){await profileDoc().set(clone(cache.settings));cache.settingsDirty=false;saveLocal()}
+  while((cache.plansDirty||[]).length){const id=cache.plansDirty[0],pl=cache.plans[id];if(pl)await plansCol().doc(id).set(clone(pl));cache.plansDirty=cache.plansDirty.filter(x=>x!==id);saveLocal()}
+  state.offline=false;state.syncErr=''}
+ catch(e){if(e&&e.code==='quota_exceeded')failed(e);else state.offline=true}
+ flushing=false;render()}
+function onRemote(snap){const remote={};snap.docs.forEach(x=>{remote[x.id]={...clone(x.data()),id:x.id}});
+ cache.dirty.slice().forEach(id=>{const l=cache.games[id],r=remote[id];if(l&&r&&(r.updatedAt||'')>(l.updatedAt||''))cache.dirty=cache.dirty.filter(x=>x!==id)});
+ const merged={...remote};cache.dirty.forEach(id=>{if(cache.games[id])merged[id]=cache.games[id]});cache.deleted.forEach(id=>delete merged[id]);
+ cache.games=merged;state.games=Object.values(merged).map(clone);state.loaded=true;state.offline=false;saveLocal();render();flush()}
+
+/* ---------- helpers ---------- */
+const active=()=>state.games.find(g=>g.status==='active');
+const ymd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const gameDate=g=>g.date||(g.startedAt?ymd(new Date(g.startedAt)):'');
+const done=()=>state.games.filter(g=>g.status==='done').sort((a,b)=>(gameDate(b)+(b.startedAt||'')).localeCompare(gameDate(a)+(a.startedAt||'')));
+const fmtDate=g=>{const d=gameDate(g);if(!d)return '';try{return new Date(d+'T12:00:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'})}catch(e){return d}};
+const where=g=>[g.center||'',g.lane?'Lane '+g.lane:''].filter(Boolean).join(' · ');
+const ballsUsed=()=>[...new Set(state.games.map(g=>g.ball).filter(Boolean))];
+function prefill(g,fresh){const scan=gm=>{for(let fi=9;fi>=0;fi--){const info=ballsInfo(gm.frames[fi]);for(let j=info.length-1;j>=0;j--){const b=info[j];if(b.fresh===fresh&&b.st!=null)return {st:b.st,tg:b.tg}}}return null};
+ return (g&&scan(g))||done().map(scan).find(Boolean)||(fresh?{st:22,tg:12}:{st:null,tg:null})}
+function blankDraft(key,rack,fresh,p){return {key,rack,fresh,standing:[],st:p.st,tg:p.tg,ball:p.ball||null,auto:true,markAuto:true,mark:'unsure',by:2,miss:null,sp:null}}
+function ensureDraft(g,nb){const key=`${g.id}:${nb.fi}:${nb.bi}`;if(state.draft&&state.draft.key===key)return state.draft;
+ const ball=defaultBall(g,nb),gear=nb.fresh?lastGear(g):null,sg=suggest(g,nb,ball,gear);state.draft=blankDraft(key,nb.rack,nb.fresh,sg?{st:sg.st,tg:sg.tg,ball}:{...prefill(g,nb.fresh),ball});
+ state.draft.gear=gear;state.draft.gearCarried=!!gear;return state.draft}
+function lastGear(g){const se=sessOf(g),games=se?se.games:[g];for(let i=games.length-1;i>=0;i--){const gm=games[i].id===g.id?g:games[i];
+ for(let fi=9;fi>=0;fi--){const info=ballsInfo(gm.frames[fi]);for(let j=info.length-1;j>=0;j--){const b=info[j];if(b.fresh&&b.gear!==undefined)return b.gear||null}}}return null}
+/* ---------- ideal shot: learned strike line per ball + your spare system ---------- */
+const ROW={1:0,2:1,3:1,4:2,5:2,6:2,7:3,8:3,9:3,10:3};
+const MOVE={2:3,8:3,4:6,7:9,3:-2,9:-2,6:-4,10:-6};
+const ballOf=(b,g)=>b.ball||g.ball||'';
+const spareBallName=()=>(arsenal().find(b=>b.use==='spare')||{}).name||'Spare ball';
+function keyPin(r){return r.slice().sort((a,b)=>ROW[a]-ROW[b]||Math.abs(MOVE[b]||0)-Math.abs(MOVE[a]||0))[0]}
+function spareRule(p){const o=(state.settings.spare||{})[p];return o&&(o.st!=null||o.ball)?o:null}
+function defaultBall(g,c){if(c.fresh)return g.ball||null;const h=hand(g),kp=keyPin(toR(c.rack,h)),p=h==='L'?MIR[kp]:kp,o=spareRule(p);return o&&o.ball==='spare'?spareBallName():(g.ball||null)}
+function allShots(){const out=[];state.games.slice().sort((a,b)=>(gameDate(a)+(a.startedAt||'')).localeCompare(gameDate(b)+(b.startedAt||''))).forEach(g=>g.frames.forEach((f,fi)=>ballsInfo(f).forEach((b,j)=>out.push({...b,g,fi,j,ball:ballOf(b,g)}))));return out}
+function strikeLine(ball,gear){let shots=allShots().filter(b=>b.fresh&&b.st!=null&&b.tg!=null&&(!ball||b.ball===ball));if(gear){const sg=shots.filter(b=>b.gear===gear);if(sg.length<2)return null;shots=sg}shots=shots.slice(-40);if(!shots.length)return null;const grp={};
+ shots.forEach((b,i)=>{const k=b.st+'|'+b.tg,x=grp[k]||(grp[k]={st:b.st,tg:b.tg,n:0,x:0,last:0});x.n++;if(!b.standing.length)x.x++;x.last=i});
+ return Object.values(grp).sort((a,b)=>b.x-a.x||b.last-a.last)[0]}
+function spareHistory(rackKey){const grp={};allShots().filter(b=>!b.fresh&&b.st!=null&&keyOf(b.rack)===rackKey).forEach(b=>{const k=`${b.st}|${b.tg}|${b.ball}`,x=grp[k]||(grp[k]={st:b.st,tg:b.tg,ball:b.ball,n:0,m:0});x.n++;if(!b.standing.length)x.m++});
+ return Object.values(grp).sort((a,b)=>b.m-a.m||b.n-a.n)[0]||null}
+function suggest(g,c,ball,gear){const h=hand(g);
+ if(c.fresh){const sp=n=>n==='slow'?'slower':'faster',dirTxt=sg=>(sg>0)===(h==='R')?'left':'right',aimMiss=b=>(b.mark==='left'||b.mark==='right')&&!b.markPred;
+  /* Tonight first: the line you're playing right now beats last week's history. */
+  const se=sessOf(g),night=(se?se.games:[g]).flatMap(gm=>firstBalls(gm.id===g.id?g:gm).map(b=>({...b,ball:ballOf(b,gm)}))).filter(b=>b.st!=null&&b.tg!=null&&(!ball||b.ball===ball));
+  if(night.length){const A=nightAdjust(g,ball);if(A)return {st:A.st,tg:A.tg,ball:A.kind==='ball'?A.ball:undefined,gear:A.kind==='speed'?A.gear:undefined,why:`${A.record} ${A.text}`}}
+  const LG=gear&&strikeLine(ball,gear),L=LG||strikeLine(ball)||strikeLine(null);if(!L)return null;
+  return {st:L.st,tg:L.tg,why:`${ball?ball+' strike line':'Your strike line'}${LG?` at your ${sp(gear)} speed`:''}: struck ${L.x} of ${L.n} from ${L.st} → ${L.tg}. Starts here until you throw a ball tonight.`}}
+ const r=toR(c.rack,h),kp=keyPin(r),p=h==='L'?MIR[kp]:kp,o=spareRule(p),H=spareHistory(keyOf(c.rack));
+ const hist=H&&H.m?`You've made ${leaveName(c.rack)} ${H.m} of ${H.n} from ${H.st} → ${H.tg}${H.ball?' with '+H.ball:''}.`:H?`Missed ${leaveName(c.rack)} ${H.n} time${H.n>1?'s':''} from ${H.st} → ${H.tg}.`:'';
+ if(o&&o.st!=null)return {st:o.st,tg:o.tg,why:`Your ${p} pin shot${o.ball==='spare'?' with your spare ball':''}.${c.rack.length>1?` Key pin is the ${p}.`:''}`,hist};
+ const base=strikeLine(g.ball||null)||strikeLine(null)||{st:20,tg:12},mv=MOVE[kp]||0,dir=(mv>0)===(h==='R')?'right':'left';
+ return {st:Math.min(45,Math.max(1,base.st-mv)),tg:base.tg,why:mv?`${Math.abs(mv)} boards ${dir} of your strike line (${base.st} → ${base.tg}), same target. ${Math.abs(mv)===3||Math.abs(mv)===6||Math.abs(mv)===9?'3-6-9':'2-4-6'} for the ${p}.`:`Your strike line, same target. The ${p} is right behind the pocket.`,hist}}
+function firstBalls(g){const out=[];g.frames.forEach((f,fi)=>ballsInfo(f).forEach((b,j)=>{if(b.fresh)out.push({...b,fi,j})}));return out}
+function makeBall(d,h){let ax=null;if(d.tg!=null){if(d.mark==='yes'&&!d.markAuto)ax=d.tg;}
+ return {standing:d.standing.filter(p=>d.rack.includes(p)).sort((x,y)=>x-y),st:d.st??null,tg:d.tg??null,ax,mark:d.tg!=null?d.mark:null,by:null,miss:(d.mark==='left'||d.mark==='right')?(d.miss||null):null,sp:d.sp||null,gear:d.fresh?(d.gear||null):undefined,ball:d.ball||null,markPred:!!(d.fresh&&d.markAuto&&d.tg!=null&&d.st!=null)}}
+/* Frame editing: re-enter one frame ball by ball, each ball prefilled from what was saved. */
+function editCtx(){const fe=state.fedit;if(!fe)return null;const g=state.games.find(x=>x.id===fe.id);if(!g)return null;
+ const info=ballsInfo({balls:fe.balls}),last=info[info.length-1],fresh=!last||last.standing.length===0,rack=fresh?ALL.slice():last.standing.slice(),bi=fe.balls.length,key=`edit:${g.id}:${fe.fi}:${bi}`;
+ if(!state.draft||state.draft.key!==key){const o=g.frames[fe.fi].balls[bi],oi=ballsInfo(g.frames[fe.fi])[bi];const d=blankDraft(key,rack,fresh,o?{st:o.st,tg:o.tg}:prefill(g,fresh));
+  if(o){if(oi&&keyOf(oi.rack)===keyOf(rack))d.standing=o.standing.slice();d.mark=o.mark||(o.ax!=null?'yes':'unsure');d.by=o.by||2;d.miss=o.miss!==undefined?o.miss:(o.by!=null?(o.by<=2?'1-2':o.by<=4?'3-4':'5+'):null);d.markAuto=!!o.markPred;d.sp=o.sp||null;d.gear=o.gear||null;d.ball=o.ball||g.ball||null;d.auto=false}
+  state.draft=d}
+ return {g,fi:fe.fi,bi,rack,fresh}}
+
+/* ---------- nights: games on the same date, type and center form one session (league series, practice) ---------- */
+const TYPES=[['league','League'],['practice','Practice'],['open','Open play']];
+const gameType=g=>g.type||'open';
+const typeLabel=t=>(TYPES.find(x=>x[0]===t)||TYPES[2])[1];
+const sessKey=g=>`${gameDate(g)}|${gameType(g)}|${(g.center||'').trim().toLowerCase()}`;
+function sessions(){const m={};state.games.slice().sort((a,b)=>(a.startedAt||'').localeCompare(b.startedAt||'')).forEach(g=>{const k=sessKey(g);(m[k]=m[k]||{key:k,date:gameDate(g),type:gameType(g),center:g.center||'',lanes:new Set(),games:[]}).games.push(g);if(g.lane)m[k].lanes.add(g.lane)});
+ return Object.values(m).sort((a,b)=>(b.date+b.games[b.games.length-1].startedAt).localeCompare(a.date+a.games[a.games.length-1].startedAt))}
+const sessOf=g=>sessions().find(x=>x.key===sessKey(g));
+const gameNo=g=>{const se=sessOf(g);return se?se.games.findIndex(x=>x.id===g.id)+1:1};
+const sessTitle=se=>`${typeLabel(se.type)}${se.type==='league'?' night':''} · ${fmtDate(se.games[0])}`;
+const avgOf=gs=>gs.length?Math.round(gs.reduce((a,g)=>a+score(g).total,0)/gs.length):0;
+function gamesForScope(scope){const real=done().filter(g=>!g.example),base=real.length?real:done();
+ if(scope.startsWith('session:')){const se=sessions().find(x=>x.key===scope.slice(8));return se?se.games.filter(g=>g.status==='done'):[]}
+ if(scope==='all'||scope.startsWith('advice-'))return base;return base.filter(g=>gameType(g)===scope)}
+
+/* ---------- views ---------- */
+function ballOptions(cur,use){const bs=arsenal().filter(b=>!use||b.use===use),names=bs.map(b=>b.name);if(cur&&!names.includes(cur))names.push(cur);
+ return names.map(n=>{const b=findBall(n);return `<option value="${esc(n)}" ${n===cur?'selected':''}>${esc(n)}${b?(b.use==='spare'?' · spare':''):' · not in your balls'}</option>`}).join('')+`<option value="" ${cur?'':'selected'}>Not set</option>`}
+function metaFields(p,m){return `<div class="field"><label>What kind of game</label><div class="seg cols">${TYPES.map(([v,l])=>`<button data-act="mtype" data-p="${p}" data-v="${v}" aria-pressed="${(m.type||'open')===v}">${l}</button>`).join('')}</div></div><div class="fields"><div class="field"><label for="${p}-center">Bowling center</label><input class="txt" id="${p}-center" data-in="${p}-center" value="${esc(m.center)}" placeholder="Lynwood Bowl" autocomplete="off"></div><div class="field"><label for="${p}-lane">Lane(s)</label><input class="txt" id="${p}-lane" data-in="${p}-lane" value="${esc(m.lane)}" placeholder="5 & 6"></div>
+ <div class="field"><label for="${p}-date">Date</label><input class="txt" id="${p}-date" type="date" data-in="${p}-date" value="${esc(m.date)}"></div><div class="field"><label for="${p}-ball">Strike ball</label><select class="txt" id="${p}-ball" data-in="${p}-ball">${ballOptions(m.ball,'strike')}</select></div></div>`}
+function gameHead(g,cur,sel,total){const me=state.metaEdit&&state.metaEdit.id===g.id;
+ return `<section class="card"><div class="row between"><div class="grow"><p class="eyebrow">${typeLabel(gameType(g))} · game ${gameNo(g)} · ${esc(fmtDate(g))}${g.ball?' · '+esc(g.ball):''}${g.example?' · <span class="badge">Example</span>':''}</p><h3>${esc(where(g)||'Unnamed center')}</h3></div><div class="total" aria-label="Score">${total}</div></div>${sheetHTML(g,cur,sel)}
+ ${me?`<div class="editbox">${metaFields('me',state.metaEdit)}<div class="row"><button class="btn primary" data-act="meta-save">Save details</button><button class="btn ghost" data-act="meta-cancel">Cancel</button></div></div>`
+ :`<div class="row between"><p class="muted small grow">Tap a frame to read it or fix it.</p><button class="btn ghost small" data-act="meta-edit" data-id="${g.id}">Edit details</button></div>`}</section>`}
+function entryCard(c,d,o){const pr=autoMark(c,d,o.g);return `<section class="card ${o.edit?'editing':''}"><div class="row between"><div><p class="eyebrow">${o.edit?'Editing · ':''}Frame ${c.fi+1} · ball ${c.bi+1}</p><h2>${c.fresh?'Full rack':'Spare shot'}</h2></div><span class="pill ${c.fresh?'ok':'warn'}">${c.rack.length} pin${c.rack.length>1?'s':''} up</span></div>
+  <p class="muted small">Tap the pins still standing after this ball. Leave them all down for a ${c.fresh?'strike':'spare'}.</p>
+  ${rackSVG(c.rack,d.standing)}
+  <div class="row"><button class="btn grow" data-act="clear">${c.fresh?'Strike':'Spare'}</button><button class="btn grow" data-act="allup">${c.fresh?'Gutter':'Missed it'}</button></div>
+  <div class="field"><div class="row between"><label for="in-ball">Ball</label><button class="btn ghost small" data-act="tab" data-tab="settings">Edit balls</button></div><select id="in-ball" class="txt" data-in="ball">${ballOptions(d.ball)}</select></div>
+  ${o.sug?`<div class="suggest"><div class="row between"><div class="grow"><p class="label">Ideal shot${d.ball?' · '+esc(d.ball):''}</p><p class="sugline">Stand ${o.sug.st} · aim ${o.sug.tg}</p>${o.sug.ball||o.sug.gear!==undefined?`<p class="sugextra">${[o.sug.ball?'Switch to '+esc(o.sug.ball):'',o.sug.gear!==undefined?(o.sug.gear==='slow'?'Throw it slower':o.sug.gear==='fast'?'Throw it faster':'Back to normal speed'):''].filter(Boolean).join(' · ')}</p>`:''}</div>${d.st===o.sug.st&&d.tg===o.sug.tg&&(!o.sug.ball||d.ball===o.sug.ball)&&(o.sug.gear===undefined||(d.gear||null)===o.sug.gear)?'<span class="pill ok">Set</span>':'<button class="btn small" data-act="use-sug">Use it</button>'}</div><p class="small muted">${esc(o.sug.why)}</p>${o.sug.hist?`<p class="small">${esc(o.sug.hist)}</p>`:''}</div>`:''}
+  <div class="fields">${stepper('st','Stood on board',d.st)}${stepper('tg','Aimed at (arrows)',d.tg)}</div>
+  ${previewHTML(c,d,o.g)}
+  <div class="field"><div class="row between"><label>Did you hit your mark?</label>${pr&&d.markAuto?'<span class="pill warn">Predicted from the pins</span>':''}</div><div class="seg cols">${[['yes','Yes'],['left','Left'],['right','Right'],['unsure','Not sure']].map(([v,l])=>`<button data-act="mark" data-v="${v}" aria-pressed="${d.mark===v}">${l}</button>`).join('')}</div></div>
+  ${pr&&d.markAuto?`<p class="muted small">${pr.mark==='yes'?`This is what your usual ${esc(d.ball||'')} shot on this line leaves, so it looks like you hit your mark.`:`This came in about ${Math.abs(r1(pr.dev))} boards ${pr.dev<0?'lighter':'higher'} than your usual shot on this line leaves, which points to missing ${pr.mark} ${missLbl(pr.miss)} (or a speed change). Tap what really happened if you remember.`}</p>`:''}
+  ${pr&&!d.markAuto&&(pr.mark!==d.mark||(pr.miss||null)!==(d.miss||null))?`<button class="btn ghost small" data-act="mark-auto">Use the prediction: ${pr.mark==='yes'?'hit your mark':`${pr.mark} ${missLbl(pr.miss)}`}</button>`:''}
+  ${d.mark==='left'||d.mark==='right'?`<div class="field"><label>How far ${d.mark}? Best guess is fine</label><div class="seg cols">${MISS.map(([v,l])=>`<button data-act="miss" data-v="${v}" aria-pressed="${(d.miss||'')===v}">${l}</button>`).join('')}</div></div>`:''}
+  ${c.fresh?`<div class="field"><div class="row between"><label>Speed you're throwing on purpose</label>${d.gear&&d.gearCarried?'<span class="pill warn">Kept from your last shot</span>':''}</div><div class="seg cols">${[['','Normal'],['slow','Slower'],['fast','Faster']].map(([v,l])=>`<button data-act="gear" data-v="${v}" aria-pressed="${(d.gear||'')===v}">${l}</button>`).join('')}</div><p class="muted small">An adjustment, not a miss. It stays set for your next first balls tonight until you change it.</p></div>`:''}
+  <div class="field"><label>This ball felt</label><div class="seg cols">${[['',c.fresh&&d.gear?'As planned':'Normal'],['slow','Slow'],['fast','Fast']].map(([v,l])=>`<button data-act="speed" data-v="${v}" aria-pressed="${(d.sp||'')===v}">${l}</button>`).join('')}</div></div>
+  ${c.fresh?'':'<p class="muted small">Stance and target are optional on spare shots.</p>'}
+  <button class="btn primary wide" data-act="saveball">${o.edit?'Save':'Save ball'} · ${leaveLabel(c,d)}</button>
+  ${o.footer}</section>`}
+/* Live shot picture: redraws as pins, stance, aim and miss change, so the bowler can match it to what they saw. */
+const PINBOARD={1:20,2:25,3:15,4:30,5:20,6:10,7:35,8:25,9:15,10:5};
+function previewHTML(c,d,g){if(d.st==null||d.tg==null)return `<p class="muted small">Add where you stood and aimed to see a picture of the shot.</p>`;
+ const h=hand(g),s=BP(d.ball),th=typicalHook(d.ball),missed=d.mark==='left'||d.mark==='right',dir=missed?(((d.mark==='left')===(h==='R'))?1:-1):0;
+ const [lo,hi]=d.miss==='1-2'?[1,2]:d.miss==='3-4'?[3,4]:d.miss==='5+'?[5,8]:[1,5];const side=n=>(n>0)===(h==='R')?'left':'right';
+ let ax,entry,est=false,ghosts=[],cap=[],straight=false,standing=d.standing;
+ if(c.fresh){const inf=inferEntry(d.standing,h);entry=inf.entry;const what=d.standing.length?`a ${leaveName(d.standing)}`:'a strike';
+  if(d.mark==='yes'){ax=d.tg;const hk=hookFor(d.st,ax,entry,s,spOf(d)).hook;cap.push(`On your mark at ${d.tg}, ${what} means it hooked about ${Math.max(0,Math.round(hk))} boards${th.starter?'':` (your usual is ${Math.round(th.v)})`} and entered near board ${r1(entry)}.`)}
+  else if(missed&&d.markAuto){const p=predictAx(d.st,d.tg,entry,s,th,d.sp,d.ball);ax=p.ax;est=true;ghosts=[{ax:d.tg,entry:p.eOn}];
+   cap.push(`Predicted: ${what} means it most likely crossed around ${Math.round(ax)}, ${Math.abs(Math.round(ax-d.tg))} ${d.mark} of your target. The faint line is your usual shot on this line, which enters near board ${r1(p.eOn)}.`)}
+  else if(missed){const cr=missCross({...d,by:null,ax:null},h,entry,s,th);ax=cr.ax;est=true;ghosts=[lo,hi].filter((v,i,a)=>a.indexOf(v)===i).map(n=>({ax:d.tg+dir*n,entry}));
+   cap.push(`Missed ${d.mark}${d.miss?' '+missLbl(d.miss):''} and got ${what}: most likely crossed around ${Math.round(ax)}. Faint lines show the edges of that miss.`)}
+  else{ax=predictAx(d.st,d.tg,entry,s,th,d.sp,d.ball).ax;est=true;const off=Math.round(ax-d.tg);if(Math.abs(off)>=1)ghosts=[{ax:d.tg,entry:onMarkEntry(d.st,d.tg,s,th,d.sp,d.ball)}];
+   cap.push(`With ${th.starter?'a typical':'your usual'} hook, ${what} from ${d.st} most likely crossed around ${Math.round(ax)}${off?`, ${Math.abs(off)} ${side(off)} of your target. The faint line is your usual shot on this line`:', right on your target'}. Does that match what you saw?`)}}
+ else{straight=true;standing=c.rack;const r=toR(c.rack,h),kp=keyPin(r),pb=PINBOARD[kp],af=arFt(d.tg),reach=a=>pb+(a-d.tg)*60/af,kpn=h==='L'?MIR[kp]:kp;
+  ax=missed?d.tg+dir*(lo+hi)/2:d.tg;entry=reach(ax);est=missed;if(missed)ghosts=[lo,hi].filter((v,i,a)=>a.indexOf(v)===i).map(n=>({ax:d.tg+dir*n,entry:reach(d.tg+dir*n)}));
+  cap.push(missed?`Missing ${d.mark}${d.miss?' '+missLbl(d.miss):''} at the arrows sends the ball ${entry<1||entry>39?`into the ${(entry<1)===(h==='R')?'right':'left'} gutter before the pins`:`to about board ${Math.round(entry)} at the pins, ${Math.abs(entry-pb)<=2.5?`still on the ${kpn}`:`${Math.round(Math.abs(entry-pb))} boards ${side(entry-pb)} of the ${kpn} (board ${pb})`}`}.`:`Aimed at ${d.tg} for the ${kpn} pin, which sits on about board ${pb}.`);
+  cap.push('Spare view: a straight line from the arrows to the pins.')}
+ const svg=laneSVG({st:d.st,ax,tg:d.tg,axEst:est,entry,hand:h,offset:s.offset,bf:s.bf,sp:spOf(d),standing,ghosts,straight});
+ return `<div class="preview"><div class="row between"><p class="label">Your shot, as entered</p><button class="btn ghost small" data-act="pv-toggle">${state.pvOpen===false?'Show':'Hide'}</button></div>${state.pvOpen===false?'':`<div class="pv-lane">${svg}</div>${cap.map(t=>`<p class="small">${esc(t)}</p>`).join('')}`}</div>`}
+const editFooter=()=>`<div class="row between"><p class="muted small grow">Each ball starts with what you saved. Change only what was wrong.</p><button class="btn ghost" data-act="fedit-cancel">Cancel edit</button></div>`;
+/* ---------- Tonight's adjustment ladder: move first, then speed, then ball. Steps already used tonight are skipped. ---------- */
+function ballStrength(name){const b=findBall(name);if(!b||b.use==='spare')return null;return typicalHook(name).v+(45-b.bf)*0.4}
+function nightAdjust(g,ball){const h=hand(g),se=sessOf(g),games=(se?se.games:[g]).map(gm=>gm.id===g.id?g:gm);
+ const all=games.flatMap(gm=>firstBalls(gm).map(b=>({...b,ball:ballOf(b,gm)}))).filter(b=>b.st!=null&&b.tg!=null&&(()=>{const k=findBall(b.ball);return !k||k.use!=='spare'})());
+ const cur=ball||(all.length?all[all.length-1].ball:g.ball),fb=all.filter(b=>b.ball===cur);if(!fb.length)return null;
+ const last=fb[fb.length-1],aimMiss=b=>(b.mark==='left'||b.mark==='right')&&!b.markPred,dir=sg=>(sg>0)===(h==='R')?'left':'right';
+ const base={st:last.st,tg:last.tg,ball:cur,gear:last.gear||null,line:`${last.st} → ${last.tg}`};
+ const on=fb.filter(b=>b.st===last.st&&b.tg===last.tg),x=on.filter(b=>!b.standing.length).length;base.record=`${x} strike${x===1?'':'s'} in ${on.length} from ${base.line} tonight.`;
+ if(!last.standing.length)return {...base,kind:'stay',text:'Your last one struck. Change nothing.'};
+ if(aimMiss(last))return {...base,kind:'aim',text:`Your last ball missed your mark ${last.mark}. Repeat the shot and hit ${last.tg}.`};
+ const onRead=on.filter(b=>!aimMiss(b)),read=(onRead.length>=2?onRead:fb.filter(b=>!aimMiss(b))).slice(-2);if(!read.length)return {...base,kind:'stay',text:'Keep throwing this line.'};
+ const d=read.reduce((a,b)=>a+inferEntry(b.standing,h).entry,0)/read.length-17.5,flat=fb.slice(-4).filter(b=>keyOf(toR(b.standing,h))==='10').length>=2;
+ const need=flat?'flat':d<-1?'light':d>1?'high':null;
+ if(!need)return {...base,kind:'stay',text:`Your last ${read.length>1?read.length+' are':'one is'} close to the pocket. Stay.`};
+ const moves=sg=>{let n=0;for(let i=1;i<fb.length;i++){const dd=fb[i].st-fb[i-1].st;if(dd&&Math.sign(dd)===sg)n++}return n};
+ const S=ballStrength(cur),bag=arsenal().filter(b=>b.use==='strike'&&b.name!==cur).map(b=>({n:b.name,s:ballStrength(b.name)}));
+ const stronger=bag.filter(z=>z.s>S+1).sort((a,b)=>a.s-b.s)[0],weaker=bag.filter(z=>z.s<S-1).sort((a,b)=>b.s-a.s)[0];
+ const f=Math.max(1,Math.round(Math.abs(d))),t=Math.max(1,Math.round(Math.abs(d)/2));
+ const lastN=read.length>1?` (last ${read.length}${onRead.length>=2?' on this line':''})`:'',why={light:`Coming in light${lastN}`,high:`Coming in high${lastN}`,flat:`Ringing ${h==='R'?'10':'7'}s: the ball is entering too flat`}[need];
+ const move=(sg,ff,tt)=>({...base,kind:'move',st:base.st+sg*ff,tg:base.tg+sg*tt,text:`${why}. Move feet ${ff} and target ${tt} ${dir(sg)}: ${base.st+sg*ff} → ${base.tg+sg*tt}.`});
+ const moved=n=>n?`You've already moved ${n===1?'once':n+' times'} that way, so `:'';
+ const slower=()=>({...base,kind:'speed',gear:base.gear==='fast'?null:'slow',text:`${why}. ${moved(need==='light'?moves(-1):0)}stay on ${base.line} and throw it ${base.gear==='fast'?'at normal speed':'a little slower'} so it hooks earlier${need==='flat'?' and hits with more angle':''}.`});
+ const faster=()=>({...base,kind:'speed',gear:base.gear==='slow'?null:'fast',text:`${why}. ${moved(moves(1))}stay on ${base.line} and throw it ${base.gear==='slow'?'back at normal speed':'a little faster'} so it holds longer.`});
+ const swap=(z,more)=>({...base,kind:'ball',ball:z.n,text:`${why}. Switch to the ${z.n}: it hooks ${more?'more':'less'} than the ${cur}. Start on ${base.line} and adjust from its first ball.`});
+ const steps=[];
+ if(need==='light'){if(moves(-1)<2)steps.push(move(-1,f,t));if(base.gear!=='slow')steps.push(slower());if(stronger)steps.push(swap(stronger,true))}
+ if(need==='flat'){if(base.gear!=='slow')steps.push(slower());if(stronger)steps.push(swap(stronger,true));if(moves(1)<2)steps.push(move(1,2,1))}
+ if(need==='high'){if(moves(1)<2)steps.push(move(1,f,t));if(base.gear!=='fast')steps.push(faster());if(weaker)steps.push(swap(weaker,false))}
+ return steps[0]||{...base,kind:'bag',text:`${why}. You've moved, changed speed, and have no ${need==='high'?'weaker':'stronger'} ball in your bag. Keep making small moves, and check Next steps for what to add.`}}
+
+/* ---------- What's happening: a glanceable read of tonight, kept apart from the strike and spare suggestions ---------- */
+function laneRead(g){const h=hand(g),se=sessOf(g),games=(se?se.games:[g]).map(gm=>gm.id===g.id?g:gm),out=[];
+ const isStrikeBall=n=>{const b=findBall(n);return !b||b.use!=='spare'};
+ const fb=games.flatMap(gm=>firstBalls(gm).map(b=>({...b,ball:ballOf(b,gm)}))).filter(b=>isStrikeBall(b.ball));if(fb.length<2)return out;
+ const dir=sg=>(sg>0)===(h==='R')?'left':'right',aimMiss=b=>(b.mark==='left'||b.mark==='right')&&!b.markPred,last4=fb.slice(-4);
+ const remembered=last4.filter(b=>b.mark&&b.mark!=='unsure'&&!b.markPred),L=remembered.filter(b=>b.mark==='left').length,R=remembered.filter(b=>b.mark==='right').length,Y=remembered.filter(b=>b.mark==='yes').length;
+ const tg=fb[fb.length-1].tg;
+ if(L>=2||R>=2){const side=L>=R?'left':'right',k=Math.max(L,R);out.push({p:1,tag:'Aim',tone:'bad',text:`Missed ${side} ${k} of your last ${last4.length}. Don't move yet. Hit ${tg??'your target'} first.`})}
+ const A=nightAdjust(g);if(A&&A.kind!=='aim')out.push({p:A.kind==='stay'?6:2,tag:{move:'Move',speed:'Speed',ball:'Ball',bag:'Bag',stay:'Lane'}[A.kind],tone:A.kind==='stay'?'ok':'warn',text:A.text});
+ const felt=last4.filter(b=>b.sp),fast=felt.filter(b=>b.sp==='fast').length,slow=felt.filter(b=>b.sp==='slow').length;
+ if(fast>=2||slow>=2)out.push({p:4,tag:'Speed',tone:'warn',text:`${Math.max(fast,slow)} of your last ${last4.length} felt ${fast>=slow?'fast':'slow'}. Reset your pace on the approach.`});
+ const gear=fb[fb.length-1].gear;if(gear&&(fast>=2||slow>=2)&&out[out.length-1].tag==='Speed'){const w=out[out.length-1];w.text=`Planned ${gear==='slow'?'slower':'faster'}, but ${Math.max(fast,slow)} of your last ${last4.length} felt ${fast>=slow?'fast':'slow'}. Settle into the new pace.`}
+ else if(gear)out.push({p:7,tag:'Speed',tone:'ok',text:`Throwing ${gear==='slow'?'slower':'faster'} on purpose. Reads account for it.`});
+ let o=0,m=0,single=0,singleMiss=0;games.forEach(gm=>gm.frames.forEach(f=>{const info=ballsInfo(f);info.forEach((b,j)=>{const nx=info[j+1];if(b.fresh&&b.standing.length&&nx&&!nx.fresh){o++;if(!nx.standing.length)m++;if(b.standing.length===1){single++;if(nx.standing.length)singleMiss++}}})}));
+ if(singleMiss>=2)out.push({p:3,tag:'Spares',tone:'bad',text:`Missed ${singleMiss} single pins tonight. Slow down and walk straight to your spare target.`});
+ else if(o>=3&&m===o)out.push({p:8,tag:'Spares',tone:'ok',text:`${m} for ${o} on spares tonight.`});
+ if(Y>=3&&!(L>=2||R>=2))out.push({p:5,tag:'Aim',tone:'ok',text:`Hit your mark ${Y} of the last ${remembered.length}. Trust the line.`});
+ return out.sort((a,b)=>a.p-b.p).slice(0,3)}
+function laneReadCard(g){if(state.readOpen===false)return `<button class="btn ghost small readtoggle" data-act="read-toggle">Show what's happening</button>`;
+ const items=laneRead(g);if(!items.length)return '';
+ return `<section class="card readcard" aria-label="What's happening on the lane"><div class="row between"><p class="eyebrow">What's happening</p><button class="btn ghost small" data-act="read-toggle">Hide</button></div><ul class="readlist">${items.map(i=>`<li><span class="pill ${i.tone}">${i.tag}</span><span>${esc(i.text)}</span></li>`).join('')}</ul></section>`}
+/* ---------- printout import: Claude reads the photo, you check it, then it saves ---------- */
+async function importPrintout(files){files=[...files];if(!files.length)return;
+ let sample=null;try{sample=window.claude&&window.claude.use?await window.claude.use('sample'):null}catch(e){}
+ if(!sample){state.imp={err:'Live AI features aren’t on the site yet. The saved coaching here is from my real league nights.'};render();return}
+ const lim=await sample.limits().catch(()=>null);if(!lim||!lim.images){state.imp={err:'Live AI features aren’t on the site yet. The saved coaching here is from my real league nights.'};render();return}
+ const okT=lim.images.mediaTypes||[];if(okT.length&&files.some(f=>f.type&&!okT.includes(f.type))){state.imp={err:'That photo format can’t be read. Take a screenshot of the photo, or set your camera to save as JPEG, and try again.'};render();return}
+ files=files.slice(0,lim.images.maxCount);state.imp={busy:true,n:files.length};render();
+ const prompt=`These are photos of a bowling center's score printout (recap sheet). Read every game for every bowler.
+Pins are numbered the standard way: 1 is the head pin, 2-3 the second row, 4-5-6 the third, 7-8-9-10 the back row from left to right.
+For every ball give the pin count and the pins still standing after that ball, read from the pin diagram for that ball. Printouts usually draw the pins that were left standing as filled or highlighted; use the pin counts to confirm which convention this printout uses. If there is no diagram for a ball, use null for standing. Frames 1-9 have one ball for a strike, otherwise two. The 10th frame has up to three, and the rack resets after a strike or spare there.
+Also copy the printed running total under each frame and the game total, so the reading can be checked.
+Reply with only JSON in this shape:
+{"bowlers":["JACOB"],"games":[{"bowler":"JACOB","game":1,"frames":[[{"pins":9,"standing":[10]},{"pins":1,"standing":[]}],[{"pins":10,"standing":[]}]],"frameTotals":[20,40],"total":187}],"notes":"anything unreadable"}`;
+ try{const r=await sample.json(prompt,{images:files,modelTier:'complex'});
+  const all=(r&&Array.isArray(r.games)?r.games:[]);if(!all.length)throw {code:'empty'};
+  const names=[...new Set(all.map(x=>String(x.bowler||'').trim()).filter(Boolean))];
+  state.imp={raw:all,names,notes:r.notes||'',pick:pickBowler(names)};prepImport();}
+ catch(e){state.imp={err:e&&e.code==='not_granted'?'Claude wasn’t allowed to read the photo here.':e&&e.code==='rate_limited'?'Too many requests right now. Try again in a minute.':e&&e.code==='image_rejected'?'That photo couldn’t be read. Try a JPEG or PNG under the size limit.':'Couldn’t read that printout. Try a sharper, straight-on photo with the whole sheet in frame.'}}
+ render()}
+function pickBowler(names){const want=(state.settings.printName||'').trim().toLowerCase();if(names.length<=1)return names[0]||'';
+ return (want&&names.find(n=>n.toLowerCase().includes(want)||want.includes(n.toLowerCase())))||null}
+function prepImport(){const I=state.imp;if(!I||!I.raw)return;const mine=I.raw.filter(x=>!I.names.length||String(x.bowler||'').trim()===I.pick);
+ const ballName=state.meta.ball||'';I.games=mine.sort((a,b)=>(+a.game||0)-(+b.game||0)).map((x,i)=>{const frames=readFrames(x.frames);const tmp={id:'imp'+i,frames,hand:state.settings.hand,status:'done'};
+  const sc=score(tmp),complete=!nextBall(tmp),printed=+x.total||null,bad=[];
+  (x.frameTotals||[]).forEach((t,fi)=>{if(t!=null&&sc.cum[fi]!=null&&+t!==sc.cum[fi])bad.push(fi+1)});
+  const guessed=frames.flatMap((f,fi)=>f.balls.some(b=>b.guess)?[fi+1]:[]);
+  return {n:+x.game||i+1,tmp,score:sc.total,printed,complete,bad:bad.slice(0,3),guessed,st:null,tg:null,ball:ballName,keep:true}})}
+function readFrames(raw){const out=[];for(let fi=0;fi<10;fi++){let rack=ALL.slice();const balls=[];
+ ((raw||[])[fi]||[]).forEach((b,j)=>{if(fi<9&&j>0&&!balls[0].standing.length)return;if(fi<9&&j>1)return;if(j>2)return;
+  const cnt=Number.isFinite(+b.pins)?Math.max(0,Math.min(rack.length,+b.pins)):null;let st=Array.isArray(b.standing)?[...new Set(b.standing.map(Number).filter(p=>rack.includes(p)))]:null,guess=false;
+  if(st&&cnt!=null&&rack.length-st.length!==cnt){if(cnt===rack.length)st=[];else guess=true}
+  if(!st){if(cnt!=null&&cnt>=rack.length)st=[];else if(cnt!=null){st=rack.slice().sort((a,c)=>c-a).slice(0,rack.length-cnt);guess=true}else{st=rack.slice();guess=true}}
+  st.sort((a,c)=>a-c);balls.push({standing:st,st:null,tg:null,ball:null,...(guess?{guess:true}:{})});rack=st.length?st:ALL.slice()});
+ out.push({balls})}return out}
+function importView(){const I=state.imp;
+ if(I.busy)return `<section class="card"><p class="eyebrow">Printout</p><h2>Reading your printout…</h2><p class="muted small">Claude is reading ${I.n} photo${I.n>1?'s':''}. This usually takes under a minute.</p></section>`;
+ if(I.err)return `<section class="card"><p class="eyebrow">Printout</p><p class="err">${esc(I.err)}</p><div class="row"><label class="btn primary filebtn">Try another photo<input id="imp-file" type="file" accept="image/*" multiple aria-label="Try another photo"></label><button class="btn ghost" data-act="imp-cancel">Cancel</button></div></section>`;
+ if(I.pick==null)return `<section class="card"><p class="eyebrow">Printout</p><h2>Which bowler is you?</h2><div class="gamerows">${I.names.map(n=>`<button class="gamerow" data-act="imp-pick" data-n="${esc(n)}"><span>${esc(n)}</span><b>${I.raw.filter(x=>String(x.bowler||'').trim()===n).length}</b></button>`).join('')}</div><p class="muted small">Your pick is remembered for next time.</p><button class="btn ghost" data-act="imp-cancel">Cancel</button></section>`;
+ const keep=I.games.filter(x=>x.keep),series=keep.reduce((a,x)=>a+x.score,0);
+ const strikeBalls=arsenal().filter(b=>b.use==='strike');
+ return `<section class="card"><p class="eyebrow">Check before saving</p><h2>${esc(I.pick||'Your')} games${keep.length>1?` · ${series} series`:''}</h2>
+ <p class="muted small">${esc([typeLabel(state.meta.type||'open'),state.meta.center,state.meta.lane?'Lane '+state.meta.lane:'',state.meta.date].filter(Boolean).join(' · '))}. Change these on the Bowl screen before importing if they're wrong.</p>${I.notes?`<p class="small">Claude noted: ${esc(I.notes)}</p>`:''}</section>
+ ${I.games.map((x,i)=>`<section class="card ${x.keep?'':'flat'}"><div class="row between"><h3>Game ${x.n}</h3><div class="total">${x.score}</div></div>
+  ${sheetHTML(x.tmp,-1,-1)}
+  ${x.printed==null?'':x.printed===x.score&&!x.bad.length?'<p class="small"><span class="pill ok">Matches the printout</span></p>':`<p class="small"><span class="pill bad">Check this</span> Printout says ${x.printed}${x.bad.length?`; frames ${x.bad.join(', ')} don’t match`:''}. You can fix frames after saving.</p>`}
+  ${!x.complete?'<p class="small"><span class="pill warn">Incomplete</span> Some balls are missing. It will save as an unfinished game.</p>':''}
+  ${x.guessed.length?`<p class="small"><span class="pill warn">Pins guessed</span> No pin diagram for frames ${x.guessed.join(', ')}. The count is right, but check which pins were left.</p>`:''}
+  <p class="label">Your line this game (optional)</p>
+  <div class="fields"><div class="field"><label for="imp-${i}-st">Stood on</label><input class="txt" id="imp-${i}-st" type="number" inputmode="numeric" data-in="imp-${i}-st" value="${x.st??''}" placeholder="22"></div><div class="field"><label for="imp-${i}-tg">Aimed at</label><input class="txt" id="imp-${i}-tg" type="number" inputmode="numeric" data-in="imp-${i}-tg" value="${x.tg??''}" placeholder="12"></div></div>
+  <div class="field"><label for="imp-${i}-ball">Ball</label><select class="txt" id="imp-${i}-ball" data-in="imp-${i}-ball">${ballOptions(x.ball,'strike')}</select></div>
+  <button class="btn ghost small" data-act="imp-keep" data-i="${i}">${x.keep?'Leave this game out':'Include this game'}</button></section>`).join('')}
+ <section class="card"><div class="row"><button class="btn primary grow" data-act="imp-save" ${keep.length?'':'disabled'}>Save ${keep.length} game${keep.length===1?'':'s'}</button><button class="btn ghost" data-act="imp-cancel">Discard</button></div><p class="muted small">The line you enter is applied to every first ball in that game, so the lane read and coaching can use it. Fix any single frame afterward with Edit frame.</p></section>`}
+/* ---------- Record: permanent accomplishments. Earned items are stored, so they never drop. ---------- */
+const GAME_RUNGS=[150,175,200,225,250,275,300],SERIES_RUNGS=[450,500,550,600,650,700,750,800],LIFE={strikes:[50,100,250,500,1000],spares:[50,100,250,500,1000],games:[10,25,50,100,250]};
+const chron=()=>done().filter(g=>!g.example).slice().sort((a,b)=>(gameDate(a)+(a.startedAt||'')).localeCompare(gameDate(b)+(b.startedAt||'')));
+function gameFacts(g){const h=hand(g),fb=firstBalls(g);let pr=0,pocketRun=0,sr=0,strikeRun=0;
+ fb.forEach(b=>{const pk=!b.standing.length||inferEntry(b.standing,h).kind==='Pocket';pr=pk?pr+1:0;pocketRun=Math.max(pocketRun,pr);sr=b.standing.length?0:sr+1;strikeRun=Math.max(strikeRun,sr)});
+ const conv=[];g.frames.forEach(f=>{const info=ballsInfo(f);info.forEach((b,j)=>{const nx=info[j+1];if(b.fresh&&b.standing.length&&nx&&!nx.fresh)conv.push({k:keyOf(b.standing),pins:b.standing.slice(),made:!nx.standing.length,split:isSplit(b.standing)})})});
+ const t=g.frames[9].balls;return {score:score(g).total,pocketRun,strikeRun,conv,strikes:fb.filter(b=>!b.standing.length).length,made:conv.filter(c=>c.made).length,clean:fb.length>0&&conv.every(c=>c.made),tenthTurkey:t.length===3&&t.every((b,i)=>ballsInfo(g.frames[9])[i].knocked===10&&ballsInfo(g.frames[9])[i].fresh)}}
+const leaveLbl=k=>leaveName(k.split('-').map(Number));
+function computeRecord(){const out=[],add=(id,title,desc,g,kind,hidden)=>{if(!out.find(x=>x.id===id))out.push({id,title,desc,date:gameDate(g),gid:g.id,night:sessKey(g),kind,hidden:!!hidden})};
+ const gs=chron(),life={strikes:0,spares:0,games:0},weak=(state.settings.weak||[]);
+ gs.forEach(g=>{const f=gameFacts(g);life.games++;life.strikes+=f.strikes;life.spares+=f.made;
+  GAME_RUNGS.forEach(r=>{if(f.score>=r)add('game'+r,r===300?'Perfect game':`First ${r} game`,`Bowled ${f.score}.`,g,'ladder')});
+  [4,6,8,10,12].forEach(r=>{if(f.pocketRun>=r)add('pocket'+r,`${r} pocket hits in a row`,r===12?'Every first ball of a game in the pocket. The part of a 300 that is yours.':'First balls into the pocket in a row, carry or not.',g,'skill')});
+  [3,4,5,6,7,8,9,10,11].forEach(r=>{if(f.strikeRun>=r)add('run'+r,r===3?'First turkey':`${r} strikes in a row`,'',g,'ladder')});
+  if(f.clean)add('clean','First clean game','Every frame a strike or a spare.',g,'skill');
+  if(f.tenthTurkey)add('tenth-x','Three in the tenth','A turkey to finish a game.',g,'surprise',true);
+  f.conv.filter(c=>c.made&&(c.split||NAMES[c.k])).forEach(c=>add('conv-'+c.k,`Picked up the ${leaveLbl(c.k)}`,'First time.',g,'spare'));
+  Object.entries(LIFE).forEach(([k,rs])=>rs.forEach(n=>{if(life[k]>=n)add(`life-${k}-${n}`,`${n} ${k} logged`,'Lifetime total.',g,'life')}));
+  weak.forEach(w=>{const tries=gs.slice(0,gs.indexOf(g)+1).filter(x=>gameDate(x)>=w.since).flatMap(x=>gameFacts(x).conv.filter(c=>c.k===w.key)).slice(-5);if(tries.length>=5&&tries.filter(c=>c.made).length>=4)add('beat-'+w.key,`Beat the ${w.label}`,'Made 4 of your last 5 after you named it a weakness.',g,'weakness')});
+ });
+ sessions().slice().reverse().forEach(se=>{const fin=se.games.filter(g=>g.status==='done'&&!g.example);if(!fin.length)return;const last=fin[fin.length-1],sc=fin.map(g=>score(g).total),series=sc.reduce((a,b)=>a+b,0);
+  if(fin.length>=3){SERIES_RUNGS.forEach(r=>{if(series>=r)add('series'+r,`First ${r} series`,`${sc.join(', ')}.`,last,'ladder')});
+   if(sc.every((v,i)=>!i||v>sc[i-1]))add('climb','Better every game','Each game beat the one before it.',last,'surprise',true);
+   if(Math.max(...sc)-Math.min(...sc)<=10)add('steady','Even keel','Every game within 10 pins.',last,'surprise',true)}
+  if(sc.some((v,i)=>i&&v>=200&&sc[i-1]<150))add('comeback','Comeback','A 200 right after a game under 150.',last,'surprise',true);
+  if(new Set(sc).size<sc.length)add('twin','Twins','The same score twice in one night.',last,'surprise',true);
+  const singles=fin.flatMap(g=>gameFacts(g).conv.filter(c=>c.pins.length===1));if(singles.length>=4&&singles.every(c=>c.made))add('singles-'+se.key,'Every single pin','No single-pin spare missed all night.',last,'skill');
+  const h=hand(fin[0]),line=g=>{const b=firstBalls(g).find(x=>x.st!=null);return b?`${b.st} → ${b.tg}`:null},off=g=>firstBalls(g).filter(b=>b.standing.length&&inferEntry(b.standing,h).kind!=='Pocket').length;
+  for(let i=1;i<fin.length;i++){const a=line(fin[i-1]),b=line(fin[i]);if(a&&b&&a!==b&&off(fin[i-1])-off(fin[i])>=3){add('adj-'+fin[i].id,'An adjustment that worked',`Moved from ${a} to ${b}. Off-pocket first balls went from ${off(fin[i-1])} to ${off(fin[i])}.`,fin[i],'adjust');break}}
+ });
+ return {items:out,life}}
+function recordAll(){const c=computeRecord(),stored=state.settings.record||{},map={};c.items.forEach(x=>map[x.id]=x);Object.entries(stored).forEach(([id,x])=>{if(!map[id])map[id]={...x,id}});return {items:Object.values(map).sort((a,b)=>(b.date||'').localeCompare(a.date||'')),life:c.life}}
+function keepRecord(items){const r={...(state.settings.record||{})};let ch=false;items.forEach(x=>{if(!r[x.id]){r[x.id]={title:x.title,desc:x.desc,date:x.date,gid:x.gid,night:x.night,kind:x.kind,hidden:x.hidden};ch=true}});if(ch){state.settings.record=r;saveSettings()}}
+function weekStreak(){const nights=[...new Set(chron().filter(g=>gameType(g)==='league').map(gameDate))].sort();let run=nights.length?1:0;for(let i=nights.length-1;i>0;i--){const d=(new Date(nights[i])-new Date(nights[i-1]))/864e5;if(d>=5&&d<=9)run++;else break}return {lifetime:nights.length,run}}
+const KIND={ladder:'Milestone',skill:'Skill',spare:'Spare first',life:'Lifetime',weakness:'Weakness beaten',adjust:'Adjustment',surprise:'Surprise'};
+function bar(label,val,lo,hi,note){lo=0;const pct=hi>lo?Math.max(0,Math.min(100,(val-lo)/(hi-lo)*100)):100;return `<div class="pbar"><div class="row between"><span>${label}</span><b>${note}</b></div><div class="track"><i style="width:${pct}%"></i></div></div>`}
+function nextRung(rs,v){const n=rs.find(r=>r>v);const p=[...rs].reverse().find(r=>r<=v)||0;return {next:n,prev:p}}
+/* Bigger records get bigger reveals: four tiers. */
+function tierOf(x){const id=x.id||'',n=+((id.match(/(\d+)$/)||[0,0])[1]);
+ if(/^game/.test(id))return n>=275?4:n>=250?3:n>=200?2:1;
+ if(/^series/.test(id))return n>=700?4:n>=600?3:n>=550?2:1;
+ if(/^pocket/.test(id))return n>=12?4:n>=10?3:n>=8?2:1;
+ if(/^run/.test(id))return n>=9?4:n>=6?3:n>=4?2:1;
+ if(/^life/.test(id))return 1;
+ if(id==='clean'||/^beat-/.test(id))return 3;
+ if(/^conv-/.test(id))return /7-10|4-6-7-10|Greek/.test(x.title)?4:3;
+ return 2}
+/* Plain-language explanations for the terms the app uses. */
+const TERMS={
+ 'Bucket':'A diamond of four pins: the 2-4-5-8 for a right-hander (3-5-6-9 for a lefty). Usually left by a light hit. Aim at the front pin (the 2) and the ball carries through the rest.',
+ 'Big four':'The 4-6-7-10: two pins on each side with nothing between. One of the hardest leaves in bowling.',
+ 'Greek church':'Five pins in two groups, like 4-6-7-9-10. Named for the shape, which looks like a church with two towers.',
+ 'Washout':'A leave that includes the head pin, like 1-2-4-10. Not a split, because the 1 is still standing, but it is spread out.',
+ 'Baby split':'Two pins one row apart with a gap between, like the 2-7 or 3-10. Easier than it looks: aim between them.',
+ 'Split':'Two or more pins left with a gap between them and the head pin gone. Shown circled on the printout.',
+ 'Brooklyn':'A strike where the ball crosses to the other side of the head pin: the 1-2 pocket for a right-hander. It counts, but it means the ball came in too far left.',
+ 'Pocket':'Where the ball should hit for a strike: between the 1 and 3 pins for a right-hander (1 and 2 for a lefty), around board 17.',
+ 'Pocket hit':'A first ball that reached the pocket, whether or not every pin fell. The app reads this from the pins left: a single 10 or 7 usually means a good hit that did not carry.',
+ 'Light':'The ball hit too little of the head pin and deflected, leaving pins on the right side like the 10, 6-10 or 3-6-10.',
+ 'High':'The ball hit too much of the head pin, often leaving splits or the 4 pin.',
+ 'Carry':'Whether the pins fall after a good hit. A ringing 10 is a pocket hit that did not carry.',
+ 'Ringing 10':'The 10 pin standing after a strike-looking hit, because the 6 slid around it. Usually a sign the ball came in too flat.',
+ 'Turkey':'Three strikes in a row.',
+ 'Clean game':'A game with no open frames: every frame is a strike or a spare.',
+ 'Series':'Your total for the night, usually three games.',
+ '2-and-1':'A standard move: shift your feet 2 boards and your target 1 board the same way to move where the ball hits the pins.',
+ 'Board':'The lane is 39 wooden boards wide, counted from your ball-side gutter. The arrows sit on boards 5, 10, 15, 20, 25.',
+ 'Arrows':'The markers about 15 feet down the lane that you aim at. The 2nd arrow is board 10, the 3rd is board 15.',
+ 'Breakpoint':'Where the ball stops sliding and starts hooking back toward the pocket.'};
+function termsIn(text){return Object.keys(TERMS).filter(k=>new RegExp('\\b'+k.replace(/[-]/g,'\\-')+'\\b','i').test(text||''))}
+function miniRack(pins){const P={7:[10,8],8:[30,8],9:[50,8],10:[70,8],4:[20,26],5:[40,26],6:[60,26],2:[30,44],3:[50,44],1:[40,62]};
+ return `<svg class="minirack" viewBox="0 0 80 72" role="img" aria-label="Pins ${pins.join(', ')} standing">${Object.entries(P).map(([n,[x,y]])=>{const up=pins.includes(+n);return `<circle cx="${x}" cy="${y}" r="7" fill="${up?'var(--accent)':'var(--panel)'}" stroke="${up?'var(--accent)':'var(--pin-stroke)'}" stroke-width="1.2"/>`}).join('')}</svg>`}
+function explainHTML(x){const id=x.id||'',out=[];
+ if(/^conv-/.test(id)){const pins=id.slice(5).split('-').map(Number),nm=leaveLbl(id.slice(5));out.push(`<div class="explain-rack">${miniRack(pins)}<p class="small">You knocked down every pin of the <b>${esc(nm)}</b> (${pins.join('-')}) with your second ball. Red pins were standing.</p></div>`)}
+ termsIn(x.title+' '+(x.desc||'')+' '+(/^conv-/.test(id)?leaveLbl(id.slice(5)):'')).forEach(k=>out.push(`<p class="small"><b>${esc(k)}.</b> ${esc(TERMS[k])}</p>`));
+ if(/^pocket/.test(id)&&!out.length)out.push(`<p class="small">${esc(TERMS['Pocket hit'])}</p>`);
+ return out.length?`<div class="explain"><p class="label">What this means</p>${out.join('')}</div>`:''}
+function glossaryCard(){if(!state.glossOpen)return `<section class="card flat"><div class="row between"><div><p class="eyebrow">Glossary</p><p class="muted small">What the bowling terms in this app mean.</p></div><button class="btn ghost small" data-act="gloss">Show</button></div></section>`;
+ return `<section class="card"><div class="row between"><p class="eyebrow">Glossary</p><button class="btn ghost small" data-act="gloss">Hide</button></div><dl class="gloss">${Object.entries(TERMS).map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl></section>`}
+const TIERNAME=['','Nice','Big one','Major','Legendary'];
+function tileHTML(x,i,key){const t=tierOf(x),conf=t>=3?Array.from({length:t===4?36:20},(_,k)=>`<i class="conf" style="left:${(k*37)%100}%;animation-delay:${(k%9)*70+i*120}ms;background:var(${['--accent','--warn','--ok','--ball'][k%4]})"></i>`).join(''):'';
+ return `<div class="tile t${t} ${x.kind}" style="animation-delay:${i*120}ms" data-k="${esc(key||'')}">${conf}<span>${esc(KIND[x.kind]||'New')} · ${TIERNAME[t]}</span><b>${esc(x.title)}</b>${x.desc?`<p>${esc(x.desc)}</p>`:''}</div>`}
+const SAMPLES=[{id:'game150',title:'First 150 game',desc:'Bowled 152.',kind:'ladder'},{id:'game200',title:'First 200 game',desc:'Bowled 204.',kind:'ladder'},{id:'series600',title:'First 600 series',desc:'201, 196, 214.',kind:'ladder'},{id:'game300',title:'Perfect game',desc:'Twelve in a row.',kind:'ladder'}];
+function previewCard(){const pv=state.preview;if(!pv)return '';const x=pv.sample?SAMPLES[pv.sample-1]:recordAll().items.find(y=>y.id===pv.id);if(!x)return '';
+ return `<section class="card reveal earned preview-reveal" id="pv-top"><div class="row between" style="width:100%"><p class="eyebrow">Preview · how this looked</p><button class="btn ghost small" data-act="pv-close">Close</button></div>
+ <div class="tiles">${tileHTML(x,0,'p'+(state.pvN||0))}</div>${explainHTML(x)}<button class="btn small" data-act="pv-replay">Replay</button></section>`}
+function viewRecord(){const gs=chron();if(!gs.length)return `<section class="card flat"><p class="eyebrow">Record</p><h2>Your record starts with your first game</h2><p class="muted">Milestones, firsts and lifetime totals. Everything here is permanent, so a bad night never takes anything away.</p></section>`;
+ const {items,life}=recordAll(),F=gs.map(gameFacts),bestG=Math.max(...F.map(f=>f.score)),bestP=Math.max(...F.map(f=>f.pocketRun));
+ const series=sessions().map(se=>se.games.filter(g=>g.status==='done'&&!g.example)).filter(x=>x.length>=3).map(x=>x.reduce((a,g)=>a+score(g).total,0)),bestS=series.length?Math.max(...series):0,st=weekStreak();
+ const gR=nextRung(GAME_RUNGS,bestG),sR=nextRung(SERIES_RUNGS,bestS),pR=nextRung([4,6,8,10,12],bestP);
+ const lifeBars=Object.entries(LIFE).map(([k,rs])=>{const r=nextRung(rs,life[k]);return r.next?bar(`${k[0].toUpperCase()+k.slice(1)} logged`,life[k],r.prev,r.next,`${life[k]} / ${r.next}`):''}).join('');
+ const weak=(state.settings.weak||[]),beaten=new Set(items.filter(x=>x.kind==='weakness').map(x=>x.id.slice(5)));
+ const shown=items;
+ return previewCard()+`<section class="card"><p class="eyebrow">Toward the big ones</p>
+ ${gR.next?bar('Best game',bestG,gR.prev,gR.next,`${bestG} · next ${gR.next}`):'<p><b>Perfect game.</b></p>'}
+ ${bestS?(sR.next?bar('Best series',bestS,sR.prev,sR.next,`${bestS} · next ${sR.next}`):'<p><b>800 series.</b></p>'):''}
+ ${pR.next?bar('Pocket hits in a row',bestP,pR.prev,pR.next,`${bestP} · next ${pR.next}`):'<p><b>12 pocket hits in a row.</b></p>'}
+ <p class="muted small">These only move up. Pocket hits count whether or not the pins carried; that part of a 300 is yours.</p></section>
+ <section class="card"><p class="eyebrow">Lifetime</p>${lifeBars}<p class="small">League nights logged: <b>${st.lifetime}</b>${st.run>1?` · ${st.run} weeks running`:''}</p></section>
+ ${weak.length?`<section class="card"><p class="eyebrow">Weaknesses you named</p><ul class="gaps">${weak.map(w=>{const tries=chron().filter(x=>gameDate(x)>=w.since).flatMap(x=>gameFacts(x).conv.filter(c=>c.k===w.key)).slice(-5);return `<li><b>${esc(w.label)}</b>${beaten.has(w.key)?' · <span class="pill ok">Beaten</span>':(tries.length?` · made ${tries.filter(c=>c.made).length} of your last ${tries.length} tries since you named it. Beat it with 4 of 5.`:' · no tries since you named it yet. Beat it with 4 of 5.')}</li>`}).join('')}</ul></section>`:''}
+ <section class="card"><p class="eyebrow">Earned · ${shown.length}</p><div class="achlist">${shown.map(x=>`<button class="ach ${x.kind}" data-act="pv-open" data-id="${esc(x.id)}" aria-label="Preview ${esc(x.title)}"><span class="pill ${x.kind==='surprise'?'warn':'ok'}">${KIND[x.kind]||'Earned'}</span><div><b>${esc(x.title)}</b>${x.desc?`<p class="muted small">${esc(x.desc)}</p>`:''}<p class="muted small">${esc(fmtDate({date:x.date}))} · ${TIERNAME[tierOf(x)]}</p></div></button>`).join('')}</div>
+ <p class="muted small">Tap any record to replay its reveal. Some achievements stay hidden until you earn them.</p></section>
+ <section class="card flat"><p class="eyebrow">Test: reveal levels</p><div class="chips">${SAMPLES.map((x,i)=>`<button class="chip mini" data-act="pv-sample" data-v="${i+1}">${i+1} · ${TIERNAME[tierOf(x)]}</button>`).join('')}</div><p class="muted small">Samples only, for checking how each level looks.</p></section>${glossaryCard()}`}
+
+/* ---------- Night review: upload → up to 3 confirmation cards → reveal → coaching ---------- */
+function reviewCards(se){const fin=se.games.filter(g=>g.status==='done');if(!fin.length)return [];const cards=[],h=hand(fin[0]),N=fin[0].nightNotes||{};
+ const xs=fin.map(g=>firstBalls(g).filter(b=>!b.standing.length).length);
+ if(xs.reduce((a,b)=>a+b,0)>=3&&!fin.some(g=>g.debrief&&g.debrief.brooklyn!=null))cards.push({id:'brooklyn',title:'Brooklyns',q:'How many of your strikes went Brooklyn (crossed to the other side of the head pin)?',games:fin.map((g,i)=>({g,i,x:xs[i]})).filter(z=>z.x)});
+ const all=chron(),stats={};all.forEach(g=>gameFacts(g).conv.forEach(c=>{if(c.pins.length===1||NAMES[c.k]){const o=stats[c.k]||(stats[c.k]={n:0,m:0});o.n++;if(c.made)o.m++}}));
+ const tonight=new Set(fin.flatMap(g=>gameFacts(g).conv.filter(c=>!c.made).map(c=>c.k))),named=new Set([...(state.settings.weak||[]).map(w=>w.key),...(state.settings.weakNo||[])]);
+ const cand=[...tonight].filter(k=>stats[k]&&stats[k].n>=4&&stats[k].m/stats[k].n<=0.6&&!named.has(k)).sort((a,b)=>stats[a].m/stats[a].n-stats[b].m/stats[b].n)[0];
+ if(cand)cards.push({id:'weak',key:cand,title:'A pattern',q:`The ${leaveLbl(cand)} keeps beating you: made ${stats[cand].m} of ${stats[cand].n}. Track it as a weakness? Beat it later and it goes in your record.`});
+ const a=analyze(fin),L=a.cls.light,H=a.cls.high,lean=L>=3&&L>=2*H?'light':H>=3&&H>=2*L?'high':null;
+ if(lean&&!N.missWhy)cards.push({id:'lean',lean,title:'Your first balls',q:`The pins say your first balls came in ${lean} a lot tonight (${lean==='light'?L:H} of ${a.fb.length}). What was behind it?`});
+ return cards.slice(0,3)}
+function startReview(key){const se=sessions().find(x=>x.key===key);if(!se)return;state.post={key,cards:reviewCards(se),i:0,step:'cards'};if(!state.post.cards.length)toReveal();state.tab='bowl';window.scrollTo(0,0)}
+function toReveal(){if(!state.post||state.post.step==='reveal')return;const P=state.post,se=sessions().find(x=>x.key===P.key);P.step='reveal';const {items}=computeRecord(),stored=state.settings.record||{};
+ P.earned=items.filter(x=>x.night===P.key&&!stored[x.id]);P.already=Object.entries(stored).filter(([,x])=>x.night===P.key).map(([id,x])=>({...x,id}));keepRecord(items);
+ if(se){const ng=clone(se.games[0]);ng.nightNotes={...(ng.nightNotes||{}),reviewed:true};persist(ng)}}
+function reviewView(){const P=state.post,se=sessions().find(x=>x.key===P.key);if(!se){state.post=null;return viewBowl()}
+ const fin=se.games.filter(g=>g.status==='done'),sc=fin.map(g=>score(g).total);
+ if(P.step==='cards'){const c=P.cards[P.i],chip=(act,v,l,extra='')=>`<button class="chip mini" data-act="${act}" data-v="${v}" ${extra}>${l}</button>`;
+  let body='';
+  if(c.id==='brooklyn')body=c.games.map(z=>`<div class="dq"><p>Game ${z.i+1}: ${z.x} strike${z.x>1?'s':''}</p><div class="chips">${Array.from({length:Math.min(z.x,6)+1},(_,n)=>`<button class="chip mini ${z.g.debrief&&z.g.debrief.brooklyn===n?'on':''}" data-act="db-br" data-id="${z.g.id}" data-v="${n}">${n}</button>`).join('')}</div></div>`).join('')+`<button class="btn primary" data-act="rv-next">Next</button>`;
+  if(c.id==='weak')body=`<div class="row">${chip('rv-weak','yes','Yes, track it')}${chip('rv-weak','no','Not now')}</div>`;
+  if(c.id==='lean')body=`<div class="chips">${[['aim','Missed my mark'],['lane','The lane changed'],['speed','My speed'],['unsure','Not sure']].map(([v,l])=>chip('rv-lean',v,l)).join('')}</div>`;
+  return `<section class="card review"><div class="row between"><p class="eyebrow">Quick check · ${P.i+1} of ${P.cards.length}</p><button class="btn ghost small" data-act="rv-skipall">Skip to results</button></div>
+  <h2>${esc(c.title)}</h2><p>${esc(c.q)}</p>${body}<button class="btn ghost small" data-act="rv-next">Skip this one</button>
+  <p class="muted small">Your answers make the coaching sharper. Skipping never costs you anything.</p></section>`}
+ const fam=x=>(x.id.match(/^(run|pocket|game|series|life-[a-z]+)\d/)||[])[1]||x.id,E=(P.earned||[]).filter((x,i,arr)=>!arr.slice(i+1).some(y=>fam(y)===fam(x))),big=E.filter(x=>x.kind!=='life'),small=E.filter(x=>x.kind==='life'),F=fin.map(gameFacts),bestRun=Math.max(...F.map(f=>f.pocketRun)),sp=F.reduce((a,f)=>a+f.made,0),so=F.reduce((a,f)=>a+f.conv.length,0);
+ return `<section class="card reveal ${E.length?'earned':''}"><p class="eyebrow">${esc(sessTitle(se))}</p>
+ <div class="bigscore">${fin.length>1?sc.reduce((a,b)=>a+b,0):sc[0]}</div><p class="muted">${fin.length>1?sc.join(' · '):'Scratch'}</p>
+ ${big.length?`<div class="tiles">${big.slice().sort((a,b)=>tierOf(b)-tierOf(a)).map((x,i)=>tileHTML(x,i)).join('')}</div>${big.map(explainHTML).filter(Boolean).length?`<details class="explain-all"><summary>What these mean</summary>${big.map(explainHTML).join('')}</details>`:''}`:''}
+ ${small.length?`<p class="small">${small.map(x=>esc(x.title)).join(' · ')}</p>`:''}
+ ${!E.length?`<p class="small">No new records tonight. Longest pocket run: <b>${bestRun}</b>. Spares: <b>${sp} of ${so}</b>. All of it adds to your lifetime totals.</p>`:''}
+ <button class="btn primary wide" data-act="rv-coach">See your coaching</button><button class="btn ghost wide" data-act="rv-done">Done</button></section>`}
+
+function saveImport(){const I=state.imp,m=state.meta,date=m.date||ymd(new Date()),t0=new Date(date+'T19:00:00').getTime();let first=null;
+ I.games.filter(x=>x.keep).forEach((x,i)=>{const frames=clone(x.tmp.frames);frames.forEach(f=>{const info=ballsInfo(f);f.balls.forEach((b,j)=>{if(info[j].fresh){b.st=x.st;b.tg=x.tg;b.ball=x.ball||null}})});
+  const g={id:'g'+Date.now().toString(36)+i,startedAt:new Date(t0+i*15*60000).toISOString(),date,center:(m.center||'').trim(),lane:(m.lane||'').trim(),ball:x.ball||'',type:m.type||'league',hand:state.settings.hand,source:'printout',frames};
+  if(nextBall(g)){g.status='active'}else{g.status='done';g.finishedAt=new Date(t0+(i+1)*15*60000).toISOString();g.score=score(g).total}
+  if(!first)first=g;persist(g)});
+ state.imp=null;if(first)startReview(sessKey(first))}
+function viewBowl(){const g=active();let s='';
+ if(!g&&state.imp)return importView();
+ if(state.post)return reviewView();
+ if(!g){const last=done()[0];if(!state.meta.date)state.meta.date=ymd(new Date());if(state.meta.ball==null)state.meta.ball=(last&&last.ball)||'';if(!state.meta.type)state.meta.type=(last&&gameType(last))||'league';if(last&&!state.meta.center&&gameDate(last)===state.meta.date){state.meta.center=last.center||'';state.meta.lane=last.lane||''}
+  s+=`<section class="card"><p class="eyebrow">New game</p><h2>${last&&sessKey(last)===`${state.meta.date}|${state.meta.type}|${(state.meta.center||'').trim().toLowerCase()}`?`Game ${sessOf(last).games.length+1} of tonight`:(last?'Ready for the next one?':'Log your first game')}</h2><p class="muted small">Bowl first. Afterward, take a photo of your printout and Claude fills in every frame and leave.</p>
+  ${metaFields('m',state.meta)}${arsenal().some(b=>b.use==='strike')?'':'<p class="tip">Add your balls in Settings so each one gets its own path and hook.</p>'}
+  <div class="field"><label for="in-printName">Your name on the printout</label><input class="txt" id="in-printName" data-in="printName" value="${esc(state.settings.printName||'')}" placeholder="JACOB" autocomplete="off"></div>
+  <label class="btn primary wide center filebtn">Scan your printout<input id="imp-file" type="file" accept="image/*" multiple aria-label="Scan your printout"></label>
+  <p class="muted small">You can pick several photos if your series is on more than one page.</p>
+  <button class="btn ghost wide" data-act="newgame">Or enter shots by hand during a game</button></section>`;
+  if(last)s+=`<section class="card"><div class="row between"><div class="grow"><p class="eyebrow">Last game · ${esc(fmtDate(last))}</p><h3>${esc(where(last)||'Unnamed center')}</h3></div><div class="total">${score(last).total}</div></div>${sheetHTML(last,-1,-1)}${delRow(last)}</section>`;
+  return s}
+ const nb=nextBall(g),sc=score(g),sel=state.viewShot&&state.viewShot.id===g.id?state.viewShot.fi:-1;
+ s+=gameHead(g,nb?nb.fi:-1,sel,sc.total)+laneReadCard(g);
+ const ec=editCtx();if(ec&&ec.g.id===g.id)return s+entryCard(ec,state.draft,{edit:true,g,gball:g.ball,footer:editFooter()});
+ if(nb){const d=ensureDraft(g,nb);
+  state.sug=suggest(g,nb,d.ball,d.gear);s+=entryCard(nb,d,{g,gball:g.ball,sug:state.sug,footer:`<div class="row between"><button class="btn ghost" data-act="undo" ${g.frames.some(f=>f.balls.length)?'':'disabled'}>Undo last ball</button>${state.confirmDiscard?`<span class="row"><button class="btn danger" data-act="discard-yes">Discard game</button><button class="btn ghost" data-act="discard-no">Keep</button></span>`:`<button class="btn ghost" data-act="discard">Discard…</button>`}</div>`})}
+ return s+frameCard(g)}
+function leaveLabel(nb,d){const k=nb.rack.length-d.standing.length;if(!d.standing.length)return nb.fresh?'strike':'spare';return `${k} down, ${d.standing.length} left`}
+function stepper(f,label,v){return `<div class="field"><label for="in-${f}">${label}</label><div class="step"><button data-act="step" data-f="${f}" data-d="-1" aria-label="${label} minus one">−</button><input id="in-${f}" type="number" inputmode="numeric" min="1" max="45" data-in="${f}" value="${v??''}" placeholder="–"><button data-act="step" data-f="${f}" data-d="1" aria-label="${label} plus one">+</button></div></div>`}
+const frameText=info=>info.map((b,i)=>`ball ${i+1}: ${b.fresh?(b.knocked===10?'strike':`${b.knocked}, left ${keyOf(b.standing)}`):(b.standing.length?`missed ${keyOf(b.standing)}`:'spare')}`).join(' · ');
+function frameCard(g){const has=g.frames.map((f,i)=>f.balls.length?i:-1).filter(i=>i>=0);
+ if(!has.length)return `<section class="card flat"><p class="eyebrow">Shot read</p><p class="muted">After your first ball, this shows what the leave says about where the ball hit, an estimated path down the lane, and a suggested move.</p></section>`;
+ let fi=has[has.length-1];if(state.viewShot&&state.viewShot.id===g.id&&g.frames[state.viewShot.fi].balls.length)fi=state.viewShot.fi;
+ const info=ballsInfo(g.frames[fi]),can=frameDone(g.frames[fi],fi);
+ const extra=`<div class="row between frameline"><p class="small grow"><b>Frame ${fi+1}</b> · ${esc(frameText(info))}</p>${can?`<button class="btn small" data-act="fedit" data-id="${g.id}" data-fi="${fi}">Edit frame ${fi+1}</button>`:''}</div>`;
+ return shotHTML({...info[0],ball:ballOf(info[0],g),fi,j:0},hand(g),`Frame ${fi+1} · first ball`,extra)}
+function shotHTML(b,h,eyebrow,extra=''){const s=BP(b.ball),inf=inferEntry(b.standing,h),th=typicalHook(b.ball),missed=b.mark==='left'||b.mark==='right';
+ let ax=axOf(b),est=false,he=null;const lines=[];if(b.gear)lines.push(`Thrown ${b.gear==='slow'?'slower':'faster'} on purpose. That counts as your adjustment, not a mistake, so the read only looks at how this ball differed from that plan.`);const side=d=>(d>0)===(h==='R')?'left':'right';
+ const cr=missCross(b,h,inf.entry,s,th);
+ if(b.st!=null){
+  if(cr){ax=cr.ax;est=true;he=hookFor(b.st,ax,inf.entry,s,spOf(b));
+   lines.push(`${b.markPred?'Predicted from the pins: you probably':'You'} missed ${b.mark}${b.miss?' by '+missLbl(b.miss):''}. With ${th.starter?`a starter hook of ${Math.round(th.v)} boards`:`${b.ball?b.ball+'’s':'your'} usual ~${Math.round(th.v)}-board hook`}, the pins say it most likely crossed around board ${Math.round(ax)}${b.miss?'':`, about ${Math.abs(Math.round(ax)-b.tg)} ${b.mark} of your target`}.`);
+   if(!b.markPred&&Math.abs(cr.raw-cr.ax)>1.5)lines.push(`The pins alone point to about board ${Math.round(cr.raw)}, which is outside what you remembered. Speed or hook was probably off on this one too.`);
+   lines.push('Fix the miss before moving your feet. Your line may have been fine.')}
+  else if(ax!=null){he=hookFor(b.st,ax,inf.entry,s,spOf(b));
+   if(missed)lines.push(`You missed your mark ${b.by||''} board${b.by===1?'':'s'} ${b.mark}. That miss alone changes where the ball enters, so fix it before moving your feet.`);
+   if(!th.starter){const d=he.hook-th.v;if(Math.abs(d)>=3)lines.push(d>0?`It hooked about ${Math.round(d)} boards more than your usual ${Math.round(th.v)}. That usually means a slower ball, more revs, or a drier spot on the lane.`:`It hooked about ${Math.round(-d)} boards less than your usual ${Math.round(th.v)}. That usually means a faster ball, fewer revs, or more oil.`)}}
+  else{ax=predictAx(b.st,b.tg??b.st-8,inf.entry,s,th,b.sp,b.ball).ax;est=true;he=hookFor(b.st,ax,inf.entry,s,spOf(b));
+   let t=`With ${th.starter?`a starter hook of ${Math.round(th.v)} boards`:`${b.ball?b.ball+'’s':'your'} usual ~${Math.round(th.v)}-board hook`}, ending near board ${r1(inf.entry)} means the ball probably crossed the arrows around ${Math.round(ax)}`;
+   if(b.tg!=null){const d=Math.round(ax)-b.tg;t+=d===0?', right on your target.':`, ${Math.abs(d)} board${Math.abs(d)>1?'s':''} ${side(d)} of your target ${b.tg}.`}else t+='.';
+   lines.push(t);if(th.starter)lines.push('Mark "Yes" on shots where you know you hit your target. After three of those, this uses your own hook instead of the starter number.')}}
+ if(!missed)lines.push(advice(inf.entry,h));
+ return `<section class="card"><div class="row between"><div class="grow"><p class="eyebrow">${eyebrow}</p><h2>${esc(leaveName(b.standing))}</h2></div><span class="pill ${inf.tone}">${inf.kind}</span></div>
+ <p>${esc(leaveNote(b.standing,h))}</p>${extra}
+ <div class="metrics"><div class="metric"><p>Entry board</p><b>~${r1(inf.entry)}</b></div><div class="metric"><p>Crossed arrows</p><b>${ax==null?'–':est?'~'+Math.round(ax)+' <small>est.</small>':ax}</b></div><div class="metric"><p>Stance → aim</p><b>${b.st??'–'} → ${b.tg??'–'}</b></div><div class="metric"><p>Est. hook</p><b>${he?Math.max(0,Math.round(he.hook))+' bd':'–'}</b></div></div>
+ ${lines.map(l=>`<p class="tip">${esc(l)}</p>`).join('')}
+ ${b.st!=null&&ax!=null?laneSVG({st:b.st,ax,tg:b.tg,axEst:est,entry:inf.entry,hand:h,offset:s.offset,bf:s.bf,sp:spOf(b),standing:b.standing}):'<p class="muted small">Add where you stood to see the ball path.</p>'}
+ <p class="muted small">Facts: your stance and the pins. Entry is read from the leave (about ±1 board); the path${est?' and where it crossed the arrows are':' is'} estimated from that${b.sp?`, with ${b.sp} speed moving the breakpoint`:''}.</p></section>`}
+
+function viewHistory(){if(state.detail){const g=state.games.find(x=>x.id===state.detail);if(g)return viewDetail(g);state.detail=null}
+ if(state.session){const se=sessions().find(x=>x.key===state.session);if(se)return viewSession(se);state.session=null}
+ const ss=sessions().filter(se=>se.games.some(g=>g.status==='done'));if(!ss.length)return `<section class="card flat"><p class="eyebrow">History</p><h2>No finished games yet</h2><p class="muted">Finished games show up here, grouped by night: a league series, a practice session, or open play.</p><button class="btn dark" data-act="tab" data-tab="bowl">Go bowl</button></section>`;
+ return ss.map(se=>{const fin=se.games.filter(g=>g.status==='done'),series=fin.reduce((a,g)=>a+score(g).total,0);
+  return `<section class="card"><div class="row between"><div class="grow"><p class="eyebrow">${esc(sessTitle(se))}</p><h3>${esc([se.center,se.lanes.size?'Lane '+[...se.lanes].join(', '):''].filter(Boolean).join(' · ')||'Unnamed center')}</h3></div><div class="right"><div class="total">${series}</div><p class="muted small">${fin.length>1?`${fin.length}-game series · ${avgOf(fin)} avg`:'1 game'}</p></div></div>
+  <div class="gamerows">${se.games.map((g,i)=>`<button class="gamerow" data-act="open" data-id="${g.id}"><span>Game ${i+1}${g.ball?` · ${esc(g.ball)}`:''}${g.status==='active'?' · in progress':''}</span><b>${score(g).total}</b></button>`).join('')}</div>
+  ${fin.length?`<button class="btn small" data-act="session" data-k="${esc(se.key)}">Stats for this night</button>`:''}</section>`}).join('')}
+/* Debrief: a few questions after the night. Answers are stored on the games and fed to coaching. */
+const MISSSIDE=[['left','Left'],['right','Right'],['both','Both ways'],['hit','Mostly hit it']],MISSWHY=[['aim','Aim / eyes'],['speed','Speed'],['release','Release'],['focus','Focus']],ARROWS=[[5,'1st arrow'],[10,'2nd'],[15,'3rd'],[20,'4th']];
+function debriefCard(se){const fin=se.games.filter(g=>g.status==='done');if(!fin.length)return '';const g0=fin[0],N=g0.nightNotes||{},a=analyze(fin);
+ const lean=a.cls.high>a.cls.light?'high':a.cls.light>a.cls.high?'light':null;
+ const chip=(act,id,field,v,l,cur)=>`<button class="chip mini ${cur===v?'on':''}" data-act="${act}" data-id="${id}" data-f="${field}" data-v="${v}" aria-pressed="${cur===v}">${l}</button>`;
+ const brq=fin.map((g,i)=>{const x=firstBalls(g).filter(b=>!b.standing.length).length;if(!x)return '';const cur=g.debrief?g.debrief.brooklyn:undefined;
+  return `<div class="dq"><p>Game ${i+1}: ${x} strike${x>1?'s':''}. How many went Brooklyn?</p><div class="chips">${Array.from({length:Math.min(x,6)+1},(_,n)=>chip('db-br',g.id,'brooklyn',n,String(n),cur)).join('')}</div></div>`}).join('');
+ const answered=[...fin.filter(g=>g.debrief&&g.debrief.brooklyn!=null),N.missSide,N.missWhy,N.bestArrow,N.focus].filter(Boolean).length,total=fin.filter(g=>firstBalls(g).some(b=>!b.standing.length)).length+4;
+ return `<section class="card debrief"><div class="row between"><p class="eyebrow">Debrief</p><span class="muted small">${answered} of ${total} answered</span></div>
+ <h3>A few questions about tonight</h3><p class="muted small">${lean?`The pins say your first balls leaned ${lean} tonight. `:''}Your answers beat anything the app can estimate, and the coaching uses them.</p>
+ ${N.think?`<div class="think"><p class="label">Something to think about</p><p>${esc(N.think)}</p></div>`:''}
+ ${brq}
+ <div class="dq"><p>Which way did you miss your mark?</p><div class="chips">${MISSSIDE.map(([v,l])=>chip('dn-set',g0.id,'missSide',v,l,N.missSide)).join('')}</div></div>
+ <div class="dq"><p>What caused most of your misses?</p><div class="chips">${MISSWHY.map(([v,l])=>chip('dn-set',g0.id,'missWhy',v,l,N.missWhy)).join('')}</div></div>
+ <div class="dq"><p>Where were your best shots crossing by the end of the night?</p><div class="chips">${ARROWS.map(([v,l])=>chip('dn-set',g0.id,'bestArrow',v,l,N.bestArrow)).join('')}</div></div>
+ <div class="dq"><label for="dn-focus-${g0.id}">What pulled your focus?</label><input class="txt" id="dn-focus-${g0.id}" data-dn="focus" data-id="${g0.id}" value="${esc(N.focus||'')}" placeholder="Watching the bowler next door"></div>
+ <div class="dq"><label for="dn-extra-${g0.id}">Anything else you noticed?</label><textarea class="txt" rows="3" id="dn-extra-${g0.id}" data-dn="extra" data-id="${g0.id}" placeholder="My Brooklyns came from crossing the 3rd arrow instead of the 2nd">${esc(N.extra||'')}</textarea></div></section>`}
+function viewSession(se){const fin=se.games.filter(g=>g.status==='done'),series=fin.reduce((a,g)=>a+score(g).total,0),avg=avgOf(fin);
+ const others=done().filter(g=>!g.example&&sessKey(g)!==se.key),sameType=others.filter(g=>gameType(g)===se.type);
+ const cmp=sameType.length?`Your other ${typeLabel(se.type).toLowerCase()} games average ${avgOf(sameType)}, so tonight was ${avg-avgOf(sameType)>=0?'+':''}${avg-avgOf(sameType)} per game.`:others.length?`Your other games average ${avgOf(others)}.`:'This is your first night logged, so it sets your baseline.';
+ return `<button class="btn ghost small back" data-act="session-close">← All nights</button>
+ <section class="card"><p class="eyebrow">${esc(sessTitle(se))}</p><h2>${esc(se.center||'Unnamed center')}${se.lanes.size?' · Lane '+esc([...se.lanes].join(', ')):''}</h2>
+ <div class="metrics"><div class="metric"><p>${fin.length>1?'Series':'Score'}</p><b>${series}</b></div><div class="metric"><p>Average</p><b>${avg}</b></div>${(()=>{const x=fin.reduce((t,g)=>t+firstBalls(g).filter(b=>!b.standing.length).length,0),d=fin.filter(g=>g.debrief&&g.debrief.brooklyn!=null),b=d.reduce((t,g)=>t+g.debrief.brooklyn,0);return `<div class="metric"><p>Strikes</p><b>${x}</b></div><div class="metric"><p>Brooklyn</p><b>${d.length?b:'–'}</b></div>`})()}</div>
+ <div class="gamerows">${se.games.map((g,i)=>`<button class="gamerow" data-act="open" data-id="${g.id}"><span>Game ${i+1}${g.ball?` · ${esc(g.ball)}`:''}</span><b>${score(g).total}</b></button>`).join('')}</div>
+ <p class="tip">${esc(cmp)}</p>${(fin[0]&&fin[0].nightNotes&&fin[0].nightNotes.reviewed)?'':`<button class="btn primary" data-act="rv-start" data-k="${esc(se.key)}">Review this night</button>`}</section>
+ ${debriefCard(se)}${coachCard(se.key)}${fin.length>1?gameByGame(fin):''}${statsBody(fin,false,'session:'+se.key)}`}
+function gameByGame(gs){const rows=gs.map((g,i)=>{const a=analyze([g]),c=a.cls,n=c.light+c.high;return {i,score:score(g).total,x:a.strikes,sp:`${a.made}/${a.opp}`,lean:!n?'–':c.high>c.light?`${c.high} high`:c.light>c.high?`${c.light} light`:'even'}});
+ return `<section class="card"><p class="eyebrow">Game by game</p><div style="overflow-x:auto"><table class="lines"><thead><tr><th>Game</th><th>Score</th><th>Strikes</th><th>Spares</th><th>Off pocket</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.i+1}</td><td>${r.score}</td><td>${r.x}</td><td>${r.sp}</td><td>${r.lean}</td></tr>`).join('')}</tbody></table></div><p class="muted small">"Off pocket" is which way your non-pocket first balls leaned. A shift from light to high between games usually means the lane dried up and you needed to move sooner.</p></section>`}
+function delRow(g,inDetail){return state.confirmDel===g.id
+ ?`<div class="row between del-confirm"><p class="small grow">Delete this ${score(g).total} game for good? Your stats will update.</p><span class="row"><button class="btn danger" data-act="del-yes" data-id="${g.id}">Delete game</button><button class="btn ghost" data-act="del-no">Keep</button></span></div>`
+ :`<div class="row between">${inDetail?'<span></span>':`<button class="btn ghost small" data-act="open" data-id="${g.id}">Open · edit · what if</button>`}<button class="btn ghost danger-text" data-act="del" data-id="${g.id}" aria-label="Delete this game">Delete game</button></div>`}
+function viewDetail(g){const sel=state.viewShot&&state.viewShot.id===g.id?state.viewShot.fi:-1;
+ let s=`<button class="btn ghost small back" data-act="close">← All games</button>`+gameHead(g,-1,sel,score(g).total);
+ const ec=editCtx();s+=ec&&ec.g.id===g.id?entryCard(ec,state.draft,{edit:true,g,gball:g.ball,footer:editFooter()}):frameCard(g);
+ return s+whatIfCard(g)+`<section class="card">${delRow(g,true)}</section>`}
+/* What-if: swap outcomes frame by frame and rescore with real bonus math. */
+const frameRolls=f=>ballsInfo(f).map(b=>b.knocked);
+function scoreRolls(frs){const rolls=[],start=[];frs.forEach((r,fi)=>{start[fi]=rolls.length;r.forEach(k=>rolls.push(k))});let tot=0;
+ for(let fi=0;fi<10;fi++){const i=start[fi],r=frs[fi];if(!r.length)continue;if(fi<9){if(r[0]===10)tot+=10+(rolls[i+1]||0)+(rolls[i+2]||0);else if(r[0]+(r[1]||0)===10)tot+=10+(rolls[i+2]||0);else tot+=r[0]+(r[1]||0)}else tot+=r.reduce((a,b)=>a+b,0)}return tot}
+function opportunities(g){const h=hand(g),out=[];g.frames.forEach((f,fi)=>{const info=ballsInfo(f);if(!info.length)return;const a=info[0];if(a.knocked===10)return;const kind=inferEntry(a.standing,h).kind;
+  out.push({k:fi+':x',type:'x',label:`Strike in ${fi+1}`,sub:`${kind} · left ${keyOf(a.standing)}`,kind});
+  if(info[1]&&info[1].standing.length)out.push({k:fi+':s',type:'s',label:`Spare in ${fi+1}`,sub:leaveName(a.standing),single:a.standing.length===1})});return out}
+function whatIf(g,on){const fb=firstBalls(g),fill=Math.round(fb.reduce((a,b)=>a+b.knocked,0)/Math.max(1,fb.length)),frs=g.frames.map(frameRolls);
+ on.forEach(k=>{const [a,t]=k.split(':'),i=+a,r=frs[i];if(!r.length)return;
+  if(i<9){if(t==='x')frs[i]=[10];else if(!on.has(i+':x'))frs[i]=[r[0],10-r[0]]}
+  else{if(t==='x')frs[i]=[10,fill,fill===10?fill:Math.round((10-fill)/2)];else if(!on.has(i+':x'))frs[i]=[r[0],10-r[0],fill]}});
+ return scoreRolls(frs)}
+function whatIfCard(g){if(g.status!=='done')return '';const ops=opportunities(g),base=score(g).total;
+ if(!ops.length)return `<section class="card"><p class="eyebrow">What if</p><h2>Nothing left on the table</h2><p class="muted">Every frame was a strike.</p></section>`;
+ if(!state.whatif||state.whatif.id!==g.id)state.whatif={id:g.id,on:[]};const on=new Set(state.whatif.on),alt=whatIf(g,on);
+ const chip=o=>`<button class="chip ${on.has(o.k)?'on':''}" data-act="wi" data-k="${o.k}" aria-pressed="${on.has(o.k)}"><b>${o.label}</b><span>${esc(o.sub)}</span></button>`;
+ const pre=(id,l)=>`<button class="btn small" data-act="wi-preset" data-p="${id}">${l}</button>`;
+ const xs=ops.filter(o=>o.type==='x'),ss=ops.filter(o=>o.type==='s');
+ const gains=ops.map(o=>({o,v:whatIf(g,new Set([o.k]))-base})).sort((a,b)=>b.v-a.v).slice(0,3);
+ return `<section class="card"><p class="eyebrow">What if</p><div class="row between"><h2>${on.size?`${alt} instead of ${base}`:'Find the missing pins'}</h2>${on.size?`<span class="pill ok">+${alt-base}</span>`:''}</div>
+ <p class="muted small">Tap frames to change how they went. Strikes and spares carry bonus pins into the next frame, so the same fix is worth more in some frames than others.</p>
+ <div class="row">${pre('fix','Line adjusted: light and high hits strike')}${pre('pocket','Pocket hits carry')}${pre('spares','Every spare made')}${pre('singles','Single pins made')}${on.size?pre('clear','Reset'):''}</div>
+ ${ss.length?`<p class="label">Spares you missed</p><div class="chips">${ss.map(chip).join('')}</div>`:''}
+ <p class="label">First balls that didn't strike</p><div class="chips">${xs.map(chip).join('')}</div>
+ <p class="tip">Biggest single swings: ${gains.map(x=>`${x.o.label.toLowerCase()} (+${x.v})`).join(', ')}.</p>
+ ${on.has('9:x')||on.has('9:s')?'<p class="muted small">Tenth-frame fill balls are estimated from your average first ball.</p>':''}</section>`}
+
+function analyze(gs){const out={games:gs.length,scores:gs.slice().reverse().map(g=>score(g).total),fb:[],opp:0,made:0,sOpp:0,sMade:0,leaves:{},lines:{},cls:{light:0,pocket:0,high:0},entries:[],hooks:[],mk:{n:0,y:0,left:0,right:0}};
+ gs.forEach(g=>{const h=hand(g);g.frames.forEach(f=>{const info=ballsInfo(f);info.forEach((b,j)=>{if(!b.fresh)return;out.fb.push(b);const nx=info[j+1];
+  if(b.standing.length){out.leaves[keyOf(b.standing)]=(out.leaves[keyOf(b.standing)]||0)+1;if(nx&&!nx.fresh){out.opp++;if(!nx.standing.length)out.made++;if(b.standing.length===1){out.sOpp++;if(!nx.standing.length)out.sMade++}}}
+  const inf=inferEntry(b.standing,h);out.entries.push(inf.entry);const d=inf.entry-17.5;out.cls[d<-1?'light':d>1?'high':'pocket']++;
+  const ax=axOf(b);if(b.st!=null&&ax!=null)out.hooks.push(hookFor(b.st,ax,inf.entry,BP(ballOf(b,g)),spOf(b)).hook);
+  if(b.mark&&b.mark!=='unsure'&&!b.markPred){out.mk.n++;if(b.mark==='yes')out.mk.y++;else out.mk[b.mark]++}
+  if(b.st!=null&&b.tg!=null){const k=b.st+'→'+b.tg,L=out.lines[k]||(out.lines[k]={n:0,x:0,e:0});L.n++;if(!b.standing.length)L.x++;L.e+=inf.entry}})})});
+ out.strikes=out.fb.filter(b=>!b.standing.length).length;return out}
+const pct=(a,b)=>b?Math.round(a/b*100)+'%':'–';
+const median=a=>{if(!a.length)return null;const s=a.slice().sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2};
+function trendSVG(sc){if(sc.length<2)return '';const W=320,H=150,pl=34,pr=12,pt=14,pb=22;let lo=Math.max(0,Math.floor((Math.min(...sc)-10)/10)*10),hi=Math.min(300,Math.ceil((Math.max(...sc)+10)/10)*10);if(hi-lo<30)hi=lo+30;
+ const x=i=>pl+i*(W-pl-pr)/(sc.length-1),y=v=>pt+(hi-v)*(H-pt-pb)/(hi-lo);let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" role="img" aria-label="Score by game, oldest to newest">`;
+ [lo,(lo+hi)/2,hi].forEach(v=>s+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${pl-6}" y="${y(v)+4}" text-anchor="end" font-size="12" fill="var(--muted)" font-family="var(--body)">${Math.round(v)}</text>`);
+ const pts=sc.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+ s+=`<polygon points="${x(0)},${H-pb} ${pts} ${x(sc.length-1)},${H-pb}" fill="var(--accent)" fill-opacity=".1"/><polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>`;
+ sc.forEach((v,i)=>s+=`<circle cx="${x(i)}" cy="${y(v)}" r="${i===sc.length-1?4.5:2.5}" fill="var(--accent)"/>`);
+ s+=`<text x="${pl}" y="${H-5}" font-size="12" fill="var(--muted)" font-family="var(--body)">Oldest</text><text x="${W-pr}" y="${H-5}" text-anchor="end" font-size="12" fill="var(--muted)" font-family="var(--body)">Latest ${sc[sc.length-1]}</text>`;
+ return s+'</svg>'}
+function usedGames(){const real=done().filter(g=>!g.example);return {gs:real.length?real:done(),ex:!real.length}}
+function coachEntryFor(nightKey){const pl=planFor('coach');if(!pl)return null;if(!nightKey||(pl.data&&pl.data.night===nightKey))return pl;return (pl.history||[]).find(h=>h.data&&h.data.night===nightKey)||null}
+function coachView(e,key){const d=e.data;if(!d)return `<div class="coach">${esc(e.text||'')}</div>`;const op=state.coachOpen||{};
+ return `<p class="coachhead">${esc(d.headline)}</p>${d.points.map((p,i)=>{const open=i===0?op[key+i]!==false:!!op[key+i];
+  return `<div class="cpoint ${open?'open':''}"><button class="cptitle" data-act="cp" data-k="${esc(key+i)}" data-first="${i===0}" aria-expanded="${open}"><span>${esc(p.title)}</span><span aria-hidden="true">${open?'−':'+'}</span></button>${open?`<p>${esc(p.body)}</p>`:''}</div>`}).join('')}`}
+function coachCard(nightKey){const all=gamesForScope('all');if(!all.length)return '';const latest=planFor('coach'),pl=coachEntryFor(nightKey),busy=state.coach.busy,stale=latest&&latest.fp!==gamesFp(all),hist=latest?(latest.history||[]).filter(h=>h.data):[],hOpen=state.coachHist;
+ const label=busy?'Thinking…':pl?(stale?'Update with new games':'Ask again'):'Ask the coach';
+ return `<section class="card coachcard"><div class="row between"><p class="eyebrow">Coach</p>${pl?`<span class="muted small">${esc(fmtDate({date:ymd(new Date(pl.at))}))}${stale?' · new games since':''}</span>`:''}</div>
+ ${busy?'<p class="small">Reading your games and debrief…</p>':pl?coachView(pl,'c'+pl.at):`<p class="small">${nightKey?'Answer the debrief first if you can, then ask. ':''}One short read, starting with what matters most for you right now.</p>`}
+ ${state.coach.err?`<p class="err">${esc(state.coach.err)}</p>`:''}
+ <div class="row between"><button class="btn ${pl&&!stale?'ghost':'dark'} small" data-act="coach" data-scope="${nightKey?'session:'+esc(nightKey):'all'}" ${busy?'disabled':''}>${label}</button>${hist.length?`<button class="btn ghost small" data-act="coach-hist">${hOpen?'Hide':'Earlier advice'} (${hist.length})</button>`:''}</div>
+ ${hOpen?hist.map(h=>`<div class="histitem"><p class="label">${esc(fmtDate({date:ymd(new Date(h.at))}))}${h.data.nightTitle?' · '+esc(h.data.nightTitle):''}</p><p class="small"><b>${esc(h.data.headline)}</b></p><p class="muted small">${h.data.points.map(p=>esc(p.title)).join(' · ')}</p></div>`).join(''):''}</section>`}
+function coachBlock(gs,scope,o={}){const id=planId(scope),pl=planFor(scope),busy=state.coach.busy,stale=pl&&pl.fp!==gamesFp(gs),open=(state.histOpen||{})[id],hist=(pl&&pl.history)||[];
+ const label=busy?'Thinking…':pl?(stale?'Update all plans with new games':'Refresh all plans'):'Get all my plans';
+ const meta=pl?`<p class="muted small">Saved ${esc(fmtDate({date:ymd(new Date(pl.at))}))} · from ${pl.games} game${pl.games===1?'':'s'}${stale?' · <b>you’ve logged or edited games since</b>':''}. Opening it again is free.</p>`:'';
+ return `${meta}${busy?'<p class="small">Updating your night review, training plan, lines and next ball in one call…</p>':''}<div class="coach">${esc(pl?pl.text:'')}</div>
+ ${hist.length?`<button class="btn ghost small" data-act="hist" data-id="${esc(id)}">${open?'Hide':'Show'} earlier plans (${hist.length})</button>${open?hist.map(h=>`<div class="histitem"><p class="label">${esc(fmtDate({date:ymd(new Date(h.at))}))} · ${h.games} game${h.games===1?'':'s'}</p><div class="coach">${esc(h.text)}</div></div>`).join(''):''}`:''}
+ ${state.coach.err?`<p class="err">${esc(state.coach.err)}</p>`:''}
+ <button class="btn ${pl&&!stale?'':'dark'}" data-act="coach" data-scope="${esc(scope)}" ${busy?'disabled':''}>${label}</button>
+ <p class="muted small">One call updates the night review, training plan, lines and next ball together. Earlier versions are kept.</p>`}
+function statsBody(gs,ex,scope){if(!gs.length)return `<section class="card flat"><p class="eyebrow">Stats</p><h2>Stats start after one game</h2><p class="muted">Finish a game and this fills in with your average, strike and spare rates, your most common leaves, and where your ball tends to hit.</p></section>`;
+ const a=analyze(gs),avg=Math.round(a.scores.reduce((x,y)=>x+y,0)/a.scores.length),tot=a.cls.light+a.cls.pocket+a.cls.high||1;
+ const leaves=Object.entries(a.leaves).sort((x,y)=>y[1]-x[1]).slice(0,6),max=leaves.length?leaves[0][1]:1;
+ const lines=Object.entries(a.lines).sort((x,y)=>y[1].n-x[1].n).slice(0,5),hk=median(a.hooks),me=a.entries.length?a.entries.reduce((x,y)=>x+y,0)/a.entries.length:17.5;
+ let s=ex?`<p class="muted small">Showing the example game until you finish one of your own.</p>`:'';
+ s+=`<section class="card"><p class="eyebrow">${a.games} game${a.games>1?'s':''}</p><div class="metrics"><div class="metric"><p>Average</p><b>${avg}</b></div><div class="metric"><p>High game</p><b>${Math.max(...a.scores)}</b></div><div class="metric"><p>Strikes</p><b>${pct(a.strikes,a.fb.length)}</b></div><div class="metric"><p>Spares made</p><b>${pct(a.made,a.opp)}</b></div><div class="metric"><p>Single-pin spares</p><b>${pct(a.sMade,a.sOpp)}</b></div><div class="metric"><p>Typical hook</p><b>${hk==null?'–':Math.max(0,Math.round(hk))+' bd'}</b></div><div class="metric"><p>Hit your mark</p><b>${pct(a.mk.y,a.mk.n)}</b></div><div class="metric"><p>Hook spread</p><b>${a.hooks.length>=3?'±'+Math.round(sd(a.hooks))+' bd':'–'}</b></div></div>${a.mk.left+a.mk.right?`<p class="muted small">Missed marks: ${a.mk.left} left, ${a.mk.right} right.</p>`:''}${trendSVG(a.scores)}</section>`;
+ s+=`<section class="card"><p class="eyebrow">Where your first ball hits</p><div class="stack" role="img" aria-label="Light ${a.cls.light}, pocket ${a.cls.pocket}, high ${a.cls.high}"><i style="width:${a.cls.light/tot*100}%;background:var(--ball)"></i><i style="width:${a.cls.pocket/tot*100}%;background:var(--ok)"></i><i style="width:${a.cls.high/tot*100}%;background:var(--accent)"></i></div>
+ <div class="legend"><span><i style="background:var(--ball)"></i>Light ${pct(a.cls.light,tot)}</span><span><i style="background:var(--ok)"></i>Pocket ${pct(a.cls.pocket,tot)}</span><span><i style="background:var(--accent)"></i>High ${pct(a.cls.high,tot)}</span></div>
+ <p class="tip">Average entry is about board ${r1(me)}. ${advice(me,state.settings.hand)}</p></section>`;
+ if(leaves.length)s+=`<section class="card"><p class="eyebrow">Most common leaves</p><div class="bars">${leaves.map(([k,n])=>`<div class="bar"><span title="${esc(leaveName(k.split('-').map(Number)))}">${esc(leaveName(k.split('-').map(Number)))}</span><i style="width:${n/max*100}%"></i><em>${n}</em></div>`).join('')}</div></section>`;
+ if(lines.length)s+=`<section class="card"><p class="eyebrow">Lines you've used</p><div style="overflow-x:auto"><table class="lines"><thead><tr><th>Stance → target</th><th>Shots</th><th>Strike</th><th>Avg entry</th></tr></thead><tbody>${lines.map(([k,L])=>`<tr><td>${k}</td><td>${L.n}</td><td>${pct(L.x,L.n)}</td><td>${r1(L.e/L.n)}</td></tr>`).join('')}</tbody></table></div></section>`;
+ const byBall={};gs.forEach(g=>{const k=g.ball||'Not set';(byBall[k]=byBall[k]||[]).push(g)});
+ if(Object.keys(byBall).some(k=>k!=='Not set'))s+=`<section class="card"><p class="eyebrow">By ball</p><div style="overflow-x:auto"><table class="lines"><thead><tr><th>Ball</th><th>Games</th><th>Avg</th><th>Strike</th></tr></thead><tbody>${Object.entries(byBall).map(([k,list])=>{const x=analyze(list);return `<tr><td>${esc(k)}</td><td>${list.length}</td><td>${Math.round(x.scores.reduce((p,q)=>p+q,0)/x.scores.length)}</td><td>${pct(x.strikes,x.fb.length)}</td></tr>`}).join('')}</tbody></table></div></section>`;
+
+ return s}
+/* ---------- next steps: what ball to add, which lines to learn ---------- */
+function ballKind(b){const t=((b.specs||'')+' '+b.name).toLowerCase(),yr=(t.match(/\b(19[89]\d|20[0-3]\d)\b/)||[])[1];
+ return {cover:b.use==='spare'||/polyester|plastic/.test(t)?'plastic':/solid/.test(t)?'solid':/hybrid/.test(t)?'hybrid':/urethane/.test(t)&&!/urethane-like|urethane alternative|plays like urethane/.test(t)?'urethane':/pearl/.test(t)?'pearl':'unknown',
+  urethaneLike:/urethane/.test(t),shiny:/polish|gloss/.test(t),year:yr?+yr:null,known:!!b.specs}}
+function arsenalGaps(a){const bs=arsenal(),strike=bs.filter(b=>b.use==='strike'),out=[];
+ if(!bs.some(b=>b.use==='spare'))out.push(['Get a plastic spare ball','Throwing corner pins dead straight takes the oil out of the equation. It is usually the cheapest pins you can add.']);
+ const unknown=strike.filter(b=>!b.specs);if(unknown.length)out.push([`Look up specs for ${unknown.map(b=>b.name).join(' and ')}`,'Then this can tell which conditions each ball covers.']);
+ const kinds=strike.map(b=>({b,k:ballKind(b)}));
+ if(strike.length&&!kinds.some(x=>x.k.cover==='solid'||x.k.cover==='hybrid'))out.push(['Nothing for medium-to-heavy oil',`Every strike ball you have is a pearl${kinds.some(x=>x.k.urethaneLike)?' or urethane-style':''}. A solid or hybrid ball with a sanded finish is the usual next ball: it grips earlier and hooks more when the lane has more oil.`]);
+ if(a&&strike.length&&a.cls.light>a.cls.high*1.5&&strike.every(b=>Math.round(typicalHook(b.name).v)<=11))out.push(['Your misses lean light','Your first balls come in light more than high and your balls hook modestly. A stronger ball would help most on fresh or heavier oil.']);
+ if(a&&a.cls.high>a.cls.light*1.5&&!kinds.some(x=>x.k.shiny||x.k.urethaneLike))out.push(['Your misses lean high','A weaker, smoother ball (a polished pearl or urethane) gives you control when the lanes dry out.']);
+ kinds.filter(x=>x.k.year&&x.k.year<=2015).forEach(x=>out.push([`${x.b.name} is from ${x.k.year}`,'Old covers soak up oil and lose grip. A resurface and oil extraction at a pro shop is cheap and can bring some of it back.']));
+ return out}
+const LADDER=[[-2,-1,'Fresh oil, or the ball is hooking early'],[0,0,'Your line'],[2,1,'Lanes start to dry, usually by game 2'],[4,2,'Later in the night, drier still'],[6,3,'Deep inside: very dry lanes or a stronger ball']];
+function viewNextSteps(){if(!state.refOpen)return `<section class="card flat"><div class="row between"><div><p class="eyebrow">Reference</p><p class="muted small">Gaps in your bag and your move-in ladder.</p></div><button class="btn ghost small" data-act="ref-toggle">Show</button></div></section>`;
+ return `<div class="row between"><p class="eyebrow">Reference</p><button class="btn ghost small" data-act="ref-toggle">Hide</button></div>`+viewNextStepsBody()}
+function viewNextStepsBody(){const {gs}=usedGames(),a=gs.length?analyze(gs):null,gaps=arsenalGaps(a);
+ const main=arsenal().filter(b=>b.use==='strike').map(b=>({b,n:allShots().filter(x=>x.fresh&&x.ball===b.name).length})).sort((x,y)=>y.n-x.n)[0],ball=main&&main.b.name,base=strikeLine(ball)||strikeLine(null)||{st:20,tg:12};
+ const shots=allShots().filter(x=>x.fresh&&x.st!=null);
+ const ladder=LADDER.map(([ds,dt,when])=>{const st=base.st+ds,tg=base.tg+dt,on=shots.filter(x=>x.st===st&&x.tg===tg),x=on.filter(b=>!b.standing.length).length;return `<tr${ds===0?' class="mine"':''}><td>${st}</td><td>${tg}</td><td>${when}</td><td>${on.length?`${x}/${on.length}`:'–'}</td></tr>`}).join('');
+ const sp={};gs.forEach(g=>g.frames.forEach(f=>{const info=ballsInfo(f);info.forEach((b,j)=>{const nx=info[j+1];if(b.fresh&&b.standing.length&&nx&&!nx.fresh){const k=keyOf(b.standing),o=sp[k]||(sp[k]={k,rack:b.standing,n:0,m:0,g});o.n++;if(!nx.standing.length)o.m++}})}));
+ const weak=Object.values(sp).filter(o=>o.m<o.n).sort((x,y)=>(x.m/x.n)-(y.m/y.n)||y.n-x.n).slice(0,3);
+ const spareRows=weak.map(o=>{const sg=suggest(o.g,{fresh:false,rack:o.rack},null);return `<li><b>${esc(leaveName(o.rack))}</b>: made ${o.m} of ${o.n}.${sg?` Try stand ${sg.st}, aim ${sg.tg}.`:''}</li>`}).join('');
+ return `<section class="card"><p class="eyebrow">Next steps</p><h2>Your next ball</h2>
+ ${gaps.length?`<ul class="gaps">${gaps.map(([t,d])=>`<li><b>${esc(t)}.</b> ${esc(d)}</li>`).join('')}</ul>`:'<p class="small">No obvious gaps in your bag from what the app knows.</p>'}
+ <p class="muted small">These come from your saved balls and your stats. For specific models, ask Claude below. Its product knowledge can be a year or two behind, so check new releases at a pro shop.</p>
+ </section>
+ <section class="card"><p class="eyebrow">Next steps</p><h2>Lines to learn</h2>
+ <p class="small">Your main line${ball?` with the ${esc(ball)}`:''} is ${base.st} → ${base.tg}. A league night usually means moving in as the oil breaks down. Learn this ladder using the 2-and-1 rule so each move is automatic:</p>
+ <div style="overflow-x:auto"><table class="lines"><thead><tr><th>Stand</th><th>Aim</th><th>When</th><th>Strikes</th></tr></thead><tbody>${ladder}</tbody></table></div>
+ ${spareRows?`<p class="label">Spares to drill</p><ul class="gaps">${spareRows}</ul>`:''}
+ </section>`}
+function advicePrompt(scope,a,gs){const h=state.settings.hand==='L'?'left':'right';
+ const bag=arsenal().map(b=>{const th=typicalHook(b.name);return `- ${b.name} (${b.use} ball). ${b.specs||'Specs unknown.'}${b.use==='strike'?` Laydown ${b.offset} boards inside stance, breakpoint ${b.bf} ft, hook ${th.starter?'about '+Math.round(th.v)+' boards (starting guess)':'about '+Math.round(th.v)+' boards (learned from '+th.n+' shots)'}.`:''}`}).join('\n');
+ const lines=Object.entries(a.lines).map(([k,L])=>`${k}: ${L.n} shots, ${L.x} strikes, avg entry board ${r1(L.e/L.n)}`).join('; ');
+ const leaves=Object.entries(a.leaves).sort((x,y)=>y[1]-x[1]).slice(0,8).map(([k,n])=>`${leaveName(k.split('-').map(Number))}: ${n}`).join('; ');
+ const facts=`Bowler: ${h}-handed league bowler. Boards counted from the ball-side gutter, pocket at 17.5, arrows at 5-board steps.
+Bag:\n${bag}
+Results over ${a.games} games: scores ${a.scores.join(', ')}. Strikes ${a.strikes}/${a.fb.length} first balls. Spares made ${a.made}/${a.opp}; single pins ${a.sMade}/${a.sOpp}.
+First-ball misses read from leaves: light ${a.cls.light}, pocket ${a.cls.pocket}, high ${a.cls.high}. Remembered aim: hit mark ${a.mk.y} of ${a.mk.n}, missed left ${a.mk.left}, right ${a.mk.right}.
+Lines used: ${lines||'none recorded'}. Common leaves: ${leaves||'none'}.
+Spare system: 3-6-9 for left-side pins, 2-4-6 for right-side pins off the strike line; 10 pin from 32 at 15, 7 pin from 29 at 15 with the spare ball.
+Note: entry boards and hooks are estimated from leaves, so treat small samples carefully.`;
+ if(scope==='advice-ball')return `You are a bowling pro shop operator advising a customer.\n${facts}\nRecommend the next ball for this bowler's bag. Start with the category that fills the biggest gap (cover type, core, finish, oil volume it is for, and where it sits between the balls they own). Then name 2 or 3 example models from major brands that fit that slot, and say plainly that your product knowledge may be a year or two out of date so they should confirm current lineups at a pro shop. If a spare ball or resurfacing an old ball would help more than a new ball, say so first. Plain text, no markdown symbols, under 220 words.`;
+ return `You are a bowling coach.\n${facts}\nTell this bowler which lines to learn. Give: their main line and why, a move-in ladder for a league night as the oil breaks down (stand and aim boards, using 2-and-1 moves), when to switch balls in their bag, one line for heavier oil or a fresh pair, and the two spare shots to drill most based on their leaves. Use board numbers. Plain text, no markdown symbols, under 250 words.`}
+function viewStats(){const present=TYPES.filter(([v])=>done().some(g=>gameType(g)===v));const sc=state.scope||'all';
+ const chips=`<div class="seg cols scope">${[['all','All games'],...present].map(([v,l])=>`<button data-act="scope" data-v="${v}" aria-pressed="${sc===v}">${l}</button>`).join('')}</div>`;
+ const gs=gamesForScope(sc),ex=!done().some(g=>!g.example);
+ return (present.length>1||sc!=='all'?chips:'')+(sc!=='all'&&!gs.length?`<section class="card flat"><p class="muted">No finished ${typeLabel(sc).toLowerCase()} games yet.</p></section>`:(sc==='all'?coachCard(null):'')+statsBody(gs,ex,sc))+(sc==='all'?viewNextSteps():'')}
+/* ---------- spec lookup: Claude reports what it knows about the ball; the page turns specs into path settings with fixed rules ---------- */
+const HOOKP={'low':7,'medium-low':8,'medium':10,'medium-high':12,'high':14,'very high':16};
+const LEN={'early':38,'early-medium':39,'medium':41,'medium-late':42,'late':44};
+function specsToModel(r){const cover=String(r.coverType||'').toLowerCase(),finish=String(r.finish||'').toLowerCase();
+ if(r.spare||/polyester|plastic/.test(cover))return {use:'spare',bf:null,hook:2,why:'Polyester or plastic cover: rolls straight, so it is treated as a spare ball.'};
+ const why=[];let bf=LEN[String(r.length||'').toLowerCase()];
+ if(bf!=null)why.push(`Reviewed as ${r.length} length`);
+ else{bf=/urethane/.test(cover)?37:/solid/.test(cover)?39:/hybrid/.test(cover)?40:41;const gloss=/polish|gloss|compound/.test(finish),dull=/abralon|grit|sanded|matte/.test(finish)&&!gloss;if(gloss)bf+=2;if(dull)bf-=1;why.push(`${r.coverType||'Cover'}${finish?` with a ${r.finish} finish`:''}`)}
+ let hook=HOOKP[String(r.hookPotential||'').toLowerCase()]??(/urethane/.test(cover)?8:/solid/.test(cover)?12:/hybrid/.test(cover)?11:10);
+ if(/urethane/.test(cover)&&r.hookPotential)hook-=1;
+ const diff=+r.diff;if(diff&&diff<.025){hook-=1;why.push('low-flare core')}else if(diff>.045){hook+=1;why.push('high-flare core')}
+ if(r.year&&+r.year<=2015){hook-=1;why.push('older cover that has likely lost some grip')}
+ return {use:'strike',bf:Math.min(50,Math.max(32,bf)),hook:Math.min(20,Math.max(3,hook)),why:why.join(', ')+'.'}}
+function specLine(r){return [[r.brand,r.year].filter(Boolean).join(' '),[r.coverstock,r.finish].filter(Boolean).join(', '),[r.core,r.rg?`RG ${r.rg}`:'',r.diff?`diff ${r.diff}`:''].filter(Boolean).join(', '),r.summary].filter(Boolean).join(' · ')}
+async function lookupBall(id){const b=arsenal().find(x=>x.id===id);if(!b)return;
+ let sample=null;try{sample=window.claude&&window.claude.use?await window.claude.use('sample'):null}catch(e){}
+ if(!sample){state.lookup={id,err:'Live AI features aren’t on the site yet. The saved coaching here is from my real league nights.'};render();return}
+ state.lookup={id,busy:true};render();
+ const prompt=`You are a bowling equipment expert. A bowler named a ball in their bag: "${b.name}". Identify the exact ball and report its manufacturer specs and how reviewers describe its reaction.
+Rules: report only specs you actually know for this exact ball. Never guess numbers; use null for anything you are not sure of. If the name is ambiguous or you do not recognize it, set found to false and say what extra detail would help (brand, full name, color). Set confidence to "low" if you are unsure it is the right ball.
+Reply with only JSON in this shape:
+{"found":true,"confidence":"high|medium|low","brand":"Storm","name":"Phaze II","year":2015,"coverstock":"TX-16 Pearl","coverType":"pearl reactive|solid reactive|hybrid reactive|urethane|polyester","finish":"1500 polished","core":"symmetric|asymmetric","rg":2.48,"diff":0.051,"hookPotential":"low|medium-low|medium|medium-high|high|very high","length":"early|early-medium|medium|medium-late|late","spare":false,"summary":"one short sentence on how it rolls","askFor":null}`;
+ try{const r=await sample.json(prompt,{modelTier:'default'});
+  if(!r||typeof r!=='object')throw {code:'invalid_json'};
+  state.lookup={id,result:r,model:r.found?specsToModel(r):null}}
+ catch(e){state.lookup={id,err:e&&e.code==='not_granted'?'Claude wasn’t allowed to answer here. You can still ask in your chat.':e&&e.code==='rate_limited'?'Too many requests right now. Try again in a minute.':'Couldn’t get specs right now. Try again in a moment.'}}
+ render()}
+function lookupPanel(b){const L=state.lookup;if(!L||L.id!==b.id)return '';
+ if(L.busy)return `<div class="lookup"><p class="small">Looking up ${esc(b.name)}…</p></div>`;
+ if(L.err)return `<div class="lookup"><p class="err">${esc(L.err)}</p><button class="btn ghost small" data-act="lu-dismiss">Dismiss</button></div>`;
+ const r=L.result,m=L.model;
+ if(!r.found)return `<div class="lookup"><p class="small"><b>Couldn’t identify “${esc(b.name)}”.</b> ${esc(r.askFor||'Try the brand and full name in the ball name, like “Brunswick Slingshot”.')}</p><p class="muted small">For a brand-new release, ask Claude in your chat to look it up on the web.</p><button class="btn ghost small" data-act="lu-dismiss">Dismiss</button></div>`;
+ const th=typicalHook(b.name),conf=r.confidence||'medium';
+ const rows=[m.use!==b.use?`<li>Type: ${b.use} → <b>${m.use}</b></li>`:'',m.bf!=null&&m.bf!==b.bf?`<li>Breakpoint: ${b.bf} → <b>${m.bf} ft</b></li>`:'',m.use==='strike'&&m.hook!==b.hook?`<li>Starting hook guess: ${b.hook??Math.round(th.v)} → <b>${m.hook} boards</b>${th.starter?'':' (you already have a learned hook, so this only matters as a fallback)'}</li>`:''].join('');
+ return `<div class="lookup"><div class="row between"><p class="label">Found: ${esc([r.brand,r.name].filter(Boolean).join(' '))}</p><span class="pill ${conf==='high'?'ok':conf==='low'?'bad':'warn'}">${esc(conf)} confidence</span></div>
+ <p class="small">${esc(specLine(r))}</p><p class="muted small">Why: ${esc(m.why)}</p>
+ ${rows?`<ul class="small changes">${rows}</ul>`:'<p class="small">Your settings already match these specs.</p>'}
+ <div class="row"><button class="btn primary small" data-act="lu-apply" data-id="${b.id}">${rows?'Apply':'Save specs'}</button><button class="btn ghost small" data-act="lu-dismiss">Dismiss</button></div>
+ <p class="muted small">Specs come from Claude’s knowledge, not a live web search, so very new releases may be missing or out of date. Laydown stays yours: it depends on how you walk and release.</p></div>`}
+function ballsCard(){const bs=arsenal();
+ return `<section class="card" id="balls"><p class="eyebrow">Your balls</p><h3>Each ball gets its own path</h3><p class="muted small">Laydown is how many boards inside your stance the ball lands. Breakpoint is where it starts hooking back (earlier on drier lanes). Hook is learned for each ball from shots you mark "Yes".</p>
+ ${state.ballErr?`<p class="err">${esc(state.ballErr)}</p>`:''}${bs.map(ballRow).join('')}<button class="btn" data-act="ball-add">Add a ball</button></section>`}
+function ballRow(b){const th=typicalHook(b.name);let n=0;state.games.forEach(g=>g.frames.forEach(f=>f.balls.forEach(x=>{if(ballOf(x,g)===b.name)n++})));
+ return `<div class="ballrow"><div class="row"><input class="txt grow" id="bn-${b.id}" data-in="bn-${b.id}" value="${esc(b.name)}" aria-label="Ball name" autocomplete="off"><div class="seg">${[['strike','Strike'],['spare','Spare']].map(([v,l])=>`<button data-act="ball-use" data-id="${b.id}" data-v="${v}" aria-pressed="${b.use===v}">${l}</button>`).join('')}</div></div>
+ ${b.specs?`<p class="muted small">${esc(b.specs)}</p>`:''}
+ ${b.use==='spare'?'<p class="muted small">Spare balls are drawn as a straight line from the arrows to the pins.</p>':`<div class="fields">${stepper('bo-'+b.id,'Laydown (boards)',b.offset)}${stepper('bb-'+b.id,'Breakpoint (ft)',b.bf)}</div>
+ <p class="small">${th.starter?`Hook: using a starting guess of ${Math.round(th.v)} boards until you mark 3 shots "Yes" with this ball (${th.n} so far).`:`Hook: about ${Math.round(th.v)} boards, learned from ${th.n} shots you marked "Yes".`}</p>${th.starter?`<div class="fields">${stepper('bh-'+b.id,'Starting hook guess',Math.round(th.v))}<div></div></div>`:''}`}
+ ${lookupPanel(b)}<div class="row between"><span class="muted small">${n} shot${n===1?'':'s'} logged</span><button class="btn small" data-act="lu" data-id="${b.id}" ${state.lookup&&state.lookup.busy?'disabled':''}>Look up specs</button>${state.confirmBall===b.id?`<span class="row"><button class="btn danger small" data-act="ball-del-yes" data-id="${b.id}">Remove ball</button><button class="btn ghost small" data-act="ball-del-no">Keep</button></span>`:`<button class="btn ghost small danger-text" data-act="ball-del" data-id="${b.id}">Remove</button>`}</div>
+ ${state.confirmBall===b.id?'<p class="muted small">Games keep the ball name. It just leaves your list and stops using its own path settings.</p>':''}</div>`}
+function viewSettings(){const s=state.settings;return `<section class="card"><p class="eyebrow">Your game</p><h3>Bowling hand</h3><div class="seg"><button data-act="hand" data-h="R" aria-pressed="${s.hand==='R'}">Right</button><button data-act="hand" data-h="L" aria-pressed="${s.hand==='L'}">Left</button></div><p class="muted small">Boards count from your ball-side gutter. Righties aim for the 1-3 pocket, lefties for the 1-2.</p></section>
+ <section class="card"><p class="eyebrow">Spare system</p><h3>How you pick up spares</h3>
+ <p class="small">Spare ball: <b>${esc(spareBallName())}</b>. Change it under Your balls.</p>
+ <p class="muted small">Blank boxes use your rule: 3-6-9 for the 2, 4 and 7, and 2-4-6 for the 3, 6 and 10, moving your feet away from the pins off your strike line with the same target. Fill in a stance and aim to lock a shot for that pin.</p>
+ <div class="sptable">${[7,4,2,8,5,9,3,6,10].map(p=>{const o=(s.spare||{})[p]||{},kp=s.hand==='L'?MIR[p]:p,base=strikeLine(null)||{st:20,tg:12},rs=base.st-(MOVE[kp]||0);
+  return `<div class="sprow"><b>${p}</b><input class="txt" type="number" inputmode="numeric" id="sp-${p}-st" data-in="sp-${p}-st" value="${o.st??''}" placeholder="${rs}" aria-label="${p} pin stance"><input class="txt" type="number" inputmode="numeric" id="sp-${p}-tg" data-in="sp-${p}-tg" value="${o.tg??''}" placeholder="${base.tg}" aria-label="${p} pin aim"><button class="btn small ${o.ball==='spare'?'dark':''}" data-act="sp-ball" data-p="${p}" data-v="spare" aria-pressed="${o.ball==='spare'}">Spare ball</button>${o.st!=null||o.ball?`<button class="btn ghost small" data-act="sp-clear" data-p="${p}" aria-label="Reset ${p} pin to rule">Reset</button>`:''}</div>`}).join('')}</div>
+ <p class="muted small">Columns: pin · stand · aim. Grey numbers are what the rule gives right now.</p></section>
+ ${ballsCard()}
+ <section class="card"><p class="eyebrow">Your data</p><p>${state.mode==='real'?'You’re looking at my real league data. It’s read-only.':'Sandbox: a copy of my data saved in this browser only. Nothing is sent anywhere. Reset it from the bar above the app.'}</p></section>
+ <section class="card"><p class="eyebrow">What's measured vs estimated</p><p class="small">Your stance and the pins left are facts. Entry board is read from the leave (about ±1 board). Where the ball crossed the arrows is a fact when you mark it, and an estimate when you pick "Not sure". Hook is backed out from those, so marking "Yes" on shots you know you hit makes every estimate better.</p></section>`}
+
+function render(){const ae=document.activeElement;if(ae&&app.contains(ae)&&ae.matches('input:not([type=file]):not([type=button]),textarea')){pending=true;return}pending=false;
+ const tabs=[['bowl','Bowl'],['history','History'],['record','Record'],['stats','Stats'],['settings','Settings']];
+ let body=!state.loaded?'<p class="muted">Loading your games…</p>':state.tab==='bowl'?viewBowl():state.tab==='history'?viewHistory():state.tab==='stats'?viewStats():state.tab==='record'?viewRecord():viewSettings();
+ const sync=state.mode==='real'?'Real data · read-only':'Sandbox · this browser';
+ app.innerHTML=`<header class="top"><div class="brand"><h1>Pocket<span>Log</span></h1><span class="sync">${sync}</span></div><nav class="tabs" role="tablist">${tabs.map(([k,l])=>`<button role="tab" data-act="tab" data-tab="${k}" aria-selected="${state.tab===k}">${l}</button>`).join('')}</nav></header>${state.roMsg?`<p class="err" role="status">${esc(state.roMsg)}</p>`:''}${state.syncErr?`<p class="err">${esc(state.syncErr)}</p>`:''}${body}`}
+app.addEventListener('focusout',()=>setTimeout(()=>{if(pending)render()},0));
+
+/* ---------- actions ---------- */
+function act(a,t){const g=active();const findG=id=>state.games.find(x=>x.id===id);
+ switch(a){
+ case 'tab':state.tab=t.dataset.tab;state.syncErr='';state.detail=null;state.session=null;state.fedit=null;state.metaEdit=null;window.scrollTo(0,0);break;
+ case 'pin':{const p=+t.dataset.p,d=state.draft;if(!d)return;d.standing=d.standing.includes(p)?d.standing.filter(x=>x!==p):[...d.standing,p];break}
+ case 'clear':if(state.draft)state.draft.standing=[];break;
+ case 'allup':if(state.draft)state.draft.standing=state.draft.rack.slice();break;
+ case 'step':{const f=t.dataset.f,dl=+t.dataset.d,inp=document.getElementById('in-'+f);
+  if(/^b[obh]-/.test(f)){const b=ownBalls().find(x=>x.id===f.slice(3));if(!b)return;const key={o:'offset',b:'bf',h:'hook'}[f[1]],lim={offset:[0,15],bf:[30,55],hook:[0,30]}[key];
+   const cur=b[key]??(key==='hook'?Math.round(typicalHook(b.name).v):DEF[key]);b[key]=Math.min(lim[1],Math.max(lim[0],cur+dl));if(inp)inp.value=b[key];saveSettings();if(key==='hook')break;return}
+  if(f==='offset'||f==='bf'){const lim=f==='offset'?[0,15]:[30,50];state.settings[f]=Math.min(lim[1],Math.max(lim[0],(state.settings[f]??DEF[f])+dl));inp.value=state.settings[f];saveSettings();return}
+  const d=state.draft;if(!d)return;if(f==='by'){d.by=Math.min(8,Math.max(1,(d.by||2)+dl));inp.value=d.by;return}d.auto=false;let v=d[f];if(v==null){const p=prefill(g,true);v=p[f]??(f==='st'?22:12)}else v+=dl;v=Math.min(45,Math.max(1,v));d[f]=v;break}
+ case 'saveball':{const d=state.draft;if(!d)return;
+  if(state.fedit){const fe=state.fedit,gm=findG(fe.id);if(!gm)return;fe.balls.push(makeBall(d,hand(gm)));state.draft=null;
+   if(frameDone({balls:fe.balls},fe.fi)){const ng=clone(gm);ng.frames[fe.fi].balls=fe.balls;if(ng.status==='done')ng.score=score(ng).total;else if(!nextBall(ng)){ng.status='done';ng.finishedAt=new Date().toISOString();ng.score=score(ng).total}
+    state.fedit=null;state.viewShot={id:ng.id,fi:fe.fi};state.whatif=null;persist(ng)}break}
+  if(!g)return;const nb=nextBall(g);if(!nb)return;const ng=clone(g);ng.frames[nb.fi].balls.push(makeBall(d,hand(g)));
+  if(!nextBall(ng)){ng.status='done';ng.finishedAt=new Date().toISOString();ng.score=score(ng).total}
+  state.draft=null;state.viewShot=null;persist(ng);break}
+ case 'undo':{if(!g)return;const ng=clone(g);for(let fi=9;fi>=0;fi--){if(ng.frames[fi].balls.length){ng.frames[fi].balls.pop();break}}state.draft=null;persist(ng);break}
+ case 'discard':state.confirmDiscard=true;break;
+ case 'discard-no':state.confirmDiscard=false;break;
+ case 'discard-yes':if(g)remove(g.id);state.confirmDiscard=false;state.draft=null;break;
+ case 'newgame':{if(active())return;const m=state.meta;const ng={id:'g'+Date.now().toString(36),startedAt:new Date().toISOString(),date:m.date||ymd(new Date()),center:(m.center||'').trim(),lane:(m.lane||'').trim(),ball:(m.ball||'').trim(),type:m.type||'open',hand:state.settings.hand,status:'active',frames:Array.from({length:10},()=>({balls:[]}))};
+  m.date='';state.draft=null;state.viewShot=null;persist(ng);break}
+ case 'frame':{const fi=+t.dataset.fi,gm=findG(t.dataset.id);if(!gm||!gm.frames[fi].balls.length)return;state.fedit=null;state.draft=null;state.viewShot=state.viewShot&&state.viewShot.id===gm.id&&state.viewShot.fi===fi?null:{id:gm.id,fi};break}
+ case 'fedit':state.fedit={id:t.dataset.id,fi:+t.dataset.fi,balls:[]};state.draft=null;state.viewShot={id:t.dataset.id,fi:+t.dataset.fi};break;
+ case 'fedit-cancel':state.fedit=null;state.draft=null;break;
+ case 'open':state.tab='history';state.detail=t.dataset.id;state.viewShot=null;state.fedit=null;state.metaEdit=null;state.confirmDel=null;state.draft=null;window.scrollTo(0,0);break;
+ case 'close':state.detail=null;state.fedit=null;state.metaEdit=null;state.draft=null;break;
+ case 'meta-edit':{const gm=findG(t.dataset.id);if(gm)state.metaEdit={id:gm.id,center:gm.center||'',lane:gm.lane||'',date:gameDate(gm),ball:gm.ball||'',type:gameType(gm)};break}
+ case 'meta-save':{const m=state.metaEdit,gm=m&&findG(m.id);if(!gm)return;const ng=clone(gm);ng.center=m.center.trim();ng.lane=m.lane.trim();ng.date=m.date||gameDate(gm);ng.ball=m.ball.trim();ng.type=m.type||'open';state.metaEdit=null;persist(ng);break}
+ case 'meta-cancel':state.metaEdit=null;break;
+ case 'wi':{const w=state.whatif;if(!w)return;const k=t.dataset.k;w.on=w.on.includes(k)?w.on.filter(x=>x!==k):[...w.on,k];break}
+ case 'wi-preset':{const w=state.whatif,gm=w&&findG(w.id);if(!gm)return;const ops=opportunities(gm),p=t.dataset.p;
+  w.on=p==='clear'?[]:ops.filter(o=>p==='fix'?(o.type==='x'&&o.kind!=='Pocket'):p==='pocket'?(o.type==='x'&&o.kind==='Pocket'):p==='spares'?o.type==='s':(o.type==='s'&&o.single)).map(o=>o.k);break}
+ case 'del':state.confirmDel=t.dataset.id;break;
+ case 'del-no':state.confirmDel=null;break;
+ case 'del-yes':remove(t.dataset.id);if(state.detail===t.dataset.id)state.detail=null;state.confirmDel=null;break;
+ case 'hand':state.settings.hand=t.dataset.h;saveSettings();break;
+ case 'mark':if(state.draft){state.draft.mark=t.dataset.v;state.draft.markAuto=false}break;
+ case 'mark-auto':if(state.draft)state.draft.markAuto=true;break;
+ case 'ball-add':{const bs=ownBalls();bs.push(newBall(`Ball ${bs.length+1}`,'strike'));saveSettings();break}
+ case 'ball-use':{const b=ownBalls().find(x=>x.id===t.dataset.id);if(!b)return;b.use=t.dataset.v;saveSettings();break}
+ case 'ball-del':state.confirmBall=t.dataset.id;break;
+ case 'ball-del-no':state.confirmBall=null;break;
+ case 'ball-del-yes':{const bs=ownBalls(),i=bs.findIndex(x=>x.id===t.dataset.id);if(i>=0)bs.splice(i,1);state.confirmBall=null;saveSettings();break}
+ case 'lu':lookupBall(t.dataset.id);return;
+ case 'lu-dismiss':state.lookup=null;break;
+ case 'lu-apply':{const L=state.lookup,b=ownBalls().find(x=>x.id===t.dataset.id);if(!L||!b||!L.model)return;const m=L.model,r=L.result;
+  b.use=m.use;if(m.bf!=null)b.bf=m.bf;if(m.use==='strike')b.hook=m.hook;b.specs=specLine(r);b.specsAt=ymd(new Date());state.lookup=null;saveSettings();break}
+ case 'read-toggle':state.readOpen=state.readOpen===false;try{localStorage.setItem('pocketlog.read',state.readOpen?'1':'0')}catch(e){}break;
+ case 'imp-cancel':state.imp=null;break;
+ case 'imp-pick':{const I=state.imp;if(!I)return;I.pick=t.dataset.n;state.settings.printName=t.dataset.n;saveSettings();prepImport();break}
+ case 'imp-keep':{const x=state.imp&&state.imp.games[+t.dataset.i];if(x)x.keep=!x.keep;break}
+ case 'imp-save':if(state.imp&&state.imp.games)saveImport();break;
+ case 'pv-toggle':state.pvOpen=state.pvOpen===false;try{localStorage.setItem('pocketlog.pv',state.pvOpen?'1':'0')}catch(e){}break;
+ case 'miss':if(state.draft){state.draft.miss=t.dataset.v||null;state.draft.markAuto=false}break;
+ case 'gear':{const d=state.draft;if(!d)return;d.gear=t.dataset.v||null;d.gearCarried=false;if(d.auto&&!d.key.startsWith('edit:')){const g=active(),nb=g&&nextBall(g),sg=nb&&suggest(g,nb,d.ball,d.gear);if(sg){d.st=sg.st;d.tg=sg.tg}}break}
+ case 'speed':if(state.draft)state.draft.sp=t.dataset.v||null;break;
+ case 'use-sug':{const d=state.draft,sg=state.sug;if(d&&sg){d.st=sg.st;d.tg=sg.tg;if(sg.ball)d.ball=sg.ball;if(sg.gear!==undefined){d.gear=sg.gear;d.gearCarried=false}d.auto=true}break}
+ case 'sp-ball':{const p=t.dataset.p,cur=(state.settings.spare||{})[p]||{};state.settings.spare={...state.settings.spare,[p]:{...cur,ball:cur.ball===t.dataset.v?null:t.dataset.v}};saveSettings();break}
+ case 'sp-clear':{const sp={...state.settings.spare};delete sp[t.dataset.p];state.settings.spare=sp;saveSettings();break}
+ case 'mtype':{const tgt=t.dataset.p==='m'?state.meta:state.metaEdit;if(tgt)tgt.type=t.dataset.v;break}
+ case 'session':state.session=t.dataset.k;state.detail=null;window.scrollTo(0,0);break;
+ case 'session-close':state.session=null;break;
+ case 'scope':state.scope=t.dataset.v;break;
+ case 'coach':{const sc=t.dataset.scope||'all';coachAll(sc.startsWith('session:')?sc.slice(8):null);return}
+ case 'db-br':{const g=state.games.find(x=>x.id===t.dataset.id);if(!g)return;const ng=clone(g),v=+t.dataset.v;ng.debrief={...(ng.debrief||{}),brooklyn:ng.debrief&&ng.debrief.brooklyn===v?null:v};persist(ng);break}
+ case 'dn-set':{const g=state.games.find(x=>x.id===t.dataset.id);if(!g)return;const ng=clone(g),f=t.dataset.f,raw=t.dataset.v,v=f==='bestArrow'?+raw:raw;ng.nightNotes={...(ng.nightNotes||{}),[f]:ng.nightNotes&&ng.nightNotes[f]===v?null:v};persist(ng);break}
+ case 'cp':{const k=t.dataset.k,first=t.dataset.first==='true',op=state.coachOpen||(state.coachOpen={}),cur=first?op[k]!==false:!!op[k];op[k]=!cur;break}
+ case 'coach-hist':state.coachHist=!state.coachHist;break;
+ case 'ref-toggle':state.refOpen=!state.refOpen;break;
+ case 'rv-next':{const P=state.post;if(!P)return;if(P.i<P.cards.length-1)P.i++;else toReveal();window.scrollTo(0,0);break}
+ case 'rv-skipall':toReveal();window.scrollTo(0,0);break;
+ case 'rv-weak':{const P=state.post,c=P.cards[P.i];if(t.dataset.v==='yes')state.settings.weak=[...(state.settings.weak||[]),{key:c.key,label:leaveLbl(c.key),since:ymd(new Date())}];else state.settings.weakNo=[...(state.settings.weakNo||[]),c.key];saveSettings();act('rv-next',t);return}
+ case 'rv-lean':{const P=state.post,se=sessions().find(x=>x.key===P.key);if(se){const ng=clone(se.games[0]);ng.nightNotes={...(ng.nightNotes||{}),missWhy:t.dataset.v,leanSeen:P.cards[P.i].lean};persist(ng)}act('rv-next',t);return}
+ case 'rv-done':{const k=state.post&&state.post.key;state.post=null;state.tab='history';state.session=k;window.scrollTo(0,0);break}
+ case 'rv-coach':{const k=state.post.key;state.post=null;state.tab='history';state.session=k;window.scrollTo(0,0);if(!coachEntryFor(k)){render();coachAll(k);return}break}
+ case 'pv-open':state.preview={id:t.dataset.id};state.pvN=(state.pvN||0)+1;window.scrollTo(0,0);break;
+ case 'pv-sample':state.preview={sample:+t.dataset.v};state.pvN=(state.pvN||0)+1;window.scrollTo(0,0);break;
+ case 'pv-replay':state.pvN=(state.pvN||0)+1;break;
+ case 'gloss':state.glossOpen=!state.glossOpen;break;
+ case 'pv-close':state.preview=null;break;
+ case 'rv-start':startReview(t.dataset.k);break;
+ case 'hist':state.histOpen={...(state.histOpen||{}),[t.dataset.id]:!(state.histOpen||{})[t.dataset.id]};break;
+ default:return}
+ render()}
+app.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(t)state.roMsg='';if(t&&app.contains(t))act(t.dataset.act,t)});
+app.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('pinbtn')){e.preventDefault();act('pin',e.target)}});
+app.addEventListener('change',e=>{if(e.target.id==='imp-file'){const fs=[...e.target.files];e.target.value='';e.target.blur();importPrintout(fs);return}
+ if(e.target.dataset&&e.target.dataset.dn){const g=state.games.find(x=>x.id===e.target.dataset.id);if(g){const ng=clone(g),f=e.target.dataset.dn,v=e.target.value.trim();if(((g.nightNotes||{})[f]||'')!==v){ng.nightNotes={...(ng.nightNotes||{}),[f]:v||null};persist(ng)}}return}const k=e.target.dataset&&e.target.dataset.in;if(k&&k.startsWith('bn-'))renameBall(k.slice(3),e.target.value)});
+app.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.in;if(!k)return;const v=e.target.value;
+ if(k==='ball'){const d=state.draft;if(!d)return;d.ball=v||null;const g=state.games.find(x=>d.key.includes(x.id));if(d.auto&&g&&!d.key.startsWith('edit:')){const nb=nextBall(g);const sg=nb&&suggest(g,nb,d.ball);if(sg){d.st=sg.st;d.tg=sg.tg}}render();return}
+ if(k.startsWith('bn-'))return;
+ if(k==='printName'){state.settings.printName=v;clearTimeout(act.t);act.t=setTimeout(saveSettings,600);return}
+ if(k.startsWith('imp-')){const [,i,f]=k.split('-'),x=state.imp&&state.imp.games&&state.imp.games[+i];if(!x)return;if(f==='ball'){x.ball=v;return}const n=v===''?null:Math.round(+v);x[f]=n==null||isNaN(n)?null:Math.min(45,Math.max(1,n));return}
+
+ if(/^b[obh]-/.test(k)){const b=ownBalls().find(x=>x.id===k.slice(3));const n=Math.round(+v);if(!b||v===''||isNaN(n))return;b[{o:'offset',b:'bf',h:'hook'}[k[1]]]=n;clearTimeout(act.t);act.t=setTimeout(saveSettings,600);return}
+ if(k.startsWith('sp-')){const [,p,f]=k.split('-'),n=v===''?null:Math.min(45,Math.max(1,Math.round(+v)));const cur=(state.settings.spare||{})[p]||{};state.settings.spare={...state.settings.spare,[p]:{...cur,[f]:n}};clearTimeout(act.t);act.t=setTimeout(saveSettings,600);return}
+ if(k.startsWith('me-')){if(state.metaEdit)state.metaEdit[k.slice(3)]=v;return}
+ if(k.startsWith('m-')){state.meta[k.slice(2)]=v;return}
+ const n=v===''?null:Math.round(+v);if(k==='offset'||k==='bf'){if(n!=null){state.settings[k]=n;clearTimeout(act.t);act.t=setTimeout(saveSettings,600)}return}
+ if(state.draft&&(k==='st'||k==='tg'))state.draft.auto=false;
+ if(state.draft)state.draft[k]=n==null?(k==='by'?2:null):Math.min(k==='by'?8:45,Math.max(1,n))});
+
+/* ---------- coach ---------- */
+/* Saved coaching: one plan per scope (a night, or all/league/practice games), so reopening costs nothing. */
+const planId=scope=>scope.replace(/[^A-Za-z0-9_.~:@+-]/g,'_').slice(0,180);
+const gamesFp=gs=>gs.map(g=>g.id+':'+(g.updatedAt||g.finishedAt||'')).sort().join(',');
+const planFor=scope=>(cache.plans||{})[planId(scope)]||null;
+function savePlan(scope,gs,text,data){if(state.mode==='real')return;const id=planId(scope);cache.plans=cache.plans||{};cache.plansDirty=cache.plansDirty||[];const prev=cache.plans[id];
+ const history=prev&&(prev.text||prev.data)?[{text:prev.text||'',data:prev.data||null,at:prev.at,games:prev.games},...(prev.history||[])].slice(0,12):[];
+ cache.plans[id]={scope,text:text||'',data:data||null,at:new Date().toISOString(),games:gs.length,fp:gamesFp(gs),history};if(!cache.plansDirty.includes(id))cache.plansDirty.push(id);saveLocal();flush()}
+function coachFacts(a,gs){const h=state.settings.hand==='L'?'left':'right';
+ const bag=arsenal().map(b=>{const th=typicalHook(b.name);return `- ${b.name} (${b.use} ball). ${b.specs||'Specs unknown.'}${b.use==='strike'?` Laydown ${b.offset} boards inside stance, breakpoint ${b.bf} ft, hook ${th.starter?'about '+Math.round(th.v)+' boards (starting guess)':'about '+Math.round(th.v)+' boards (learned from '+th.n+' shots)'}.`:''}`}).join('\n');
+ const lines=Object.entries(a.lines).map(([k,L])=>`${k}: ${L.n} shots, ${L.x} strikes, avg entry board ${r1(L.e/L.n)}`).join('; ');
+ const leaves=Object.entries(a.leaves).sort((x,y)=>y[1]-x[1]).slice(0,8).map(([k,n])=>`${leaveName(k.split('-').map(Number))}: ${n}`).join('; ');
+ const br=gs.filter(g=>g.debrief&&g.debrief.brooklyn!=null),brN=br.reduce((x,g)=>x+g.debrief.brooklyn,0),brS=br.reduce((x,g)=>x+firstBalls(g).filter(b=>!b.standing.length).length,0);
+ return `Bowler: ${h}-handed league bowler. Boards counted from the ball-side gutter, pocket at 17.5, arrows at 5-board steps.
+Bag:\n${bag}
+All games (${a.games}, oldest to newest scratch scores): ${a.scores.join(', ')}. Strikes ${a.strikes}/${a.fb.length} first balls${br.length?`; the bowler reported ${brN} of ${brS} strikes in debriefed games went Brooklyn`:''}. Spares made ${a.made}/${a.opp}; single pins ${a.sMade}/${a.sOpp}.
+First-ball misses read from leaves: light ${a.cls.light}, pocket ${a.cls.pocket}, high ${a.cls.high}. Remembered aim: hit mark ${a.mk.y} of ${a.mk.n}, missed left ${a.mk.left}, right ${a.mk.right}.
+Lines used: ${lines||'none recorded'}. Common leaves: ${leaves||'none'}.
+Spare system: 3-6-9 for left-side pins, 2-4-6 for right-side pins off the strike line; 10 pin from 32 at 15, 7 pin from 29 at 15 with the spare ball.
+Entry boards and hooks are estimated from leaves, so treat small samples carefully.`}
+function nightFacts(se,night){const N=(night[0]&&night[0].nightNotes)||{},h=hand(night[0]);
+ const gl=night.map((g,i)=>{const fb=firstBalls(g),x=fb.filter(b=>!b.standing.length).length;return `Game ${i+1}: ${score(g).total} scratch, ${x} strikes${g.debrief&&g.debrief.brooklyn!=null?` (${g.debrief.brooklyn} went Brooklyn)`:''}. First balls in order: ${fb.map(b=>b.standing.length?keyOf(b.standing):'X').join(', ')}.${g.note?' Notes: '+g.note:''}`}).join('\n');
+ const ans=[N.missSide&&`Missed the mark mostly: ${N.missSide}`,N.missWhy&&`Main cause of misses: ${N.missWhy}`,N.bestArrow&&`Best shots were crossing near board ${N.bestArrow}`,N.focus&&`What pulled focus: ${N.focus}`,N.extra&&`Other notes: ${N.extra}`].filter(Boolean).join('. ');
+ return `${sessTitle(se)} at ${se.center||'the center'}.\n${gl}\nBowler's own debrief (trust this over estimates): ${ans||'not answered yet'}.`}
+async function coachAll(nightKey){const all=gamesForScope('all');if(!all.length)return;
+ const se=nightKey?sessions().find(x=>x.key===nightKey):sessions().find(x=>x.games.some(g=>g.status==='done')),night=se?se.games.filter(g=>g.status==='done'):[];
+ let sample=null;try{sample=window.claude&&window.claude.use?await window.claude.use('sample'):null}catch(e){}
+ if(!sample){state.coach={busy:false,err:'Live AI features aren’t on the site yet. The saved coaching here is from my real league nights.'};render();return}
+ const prev=[['all','training plan'],['advice-lines','lines advice'],['advice-ball','ball advice']].map(([sc,l])=>{const p=planFor(sc);return p?`Earlier ${l} (${ymd(new Date(p.at))}): ${p.text.slice(0,500)}`:''}).filter(Boolean).join('\n');
+ const prompt=`You are this bowler's coach, writing after a league night. Use everything below, but say only what matters most. The bowler's own answers about the night are more reliable than estimates from leaves.
+${coachFacts(analyze(all),all)}
+TONIGHT:\n${night.length?nightFacts(se,night):'No night selected.'}
+${prev?`YOUR EARLIER ADVICE (say briefly what improved and what still needs work):\n${prev}`:''}
+Decide what matters most for THIS bowler right now and lead with it. Do not cover every topic: pick only what will change their next night. Topics are your choice (aim and focus, line and moves, speed, spares, equipment, practice, mindset). Skip a topic entirely if there is nothing new to say. Be brief and concrete, use board numbers where useful, and mention progress against earlier advice only when it matters.
+Reply with only JSON in this shape, plain text with no markdown symbols:
+{"headline":"the single most important thing, one sentence","points":[{"title":"2-5 words","body":"under 45 words"}],"think":"one question for them to think about before next week, specific to tonight"}
+Use 1 to 4 points, most important first. The first point should expand on the headline.`;
+ state.coach={busy:true,err:''};render();
+ try{const r=await sample.json(prompt,{modelTier:'default'});if(!r||typeof r!=='object')throw {code:'invalid_json'};
+  if(!r.headline)throw {code:'invalid_json'};const pts=(Array.isArray(r.points)?r.points:[]).slice(0,4).map(x=>({title:String(x.title||''),body:String(x.body||'')})).filter(x=>x.body);
+  const plan={headline:String(r.headline),points:pts,night:se?se.key:null,nightTitle:se?sessTitle(se):''};
+  if(r.think&&night.length){const ng=clone(night[0]);ng.nightNotes={...(ng.nightNotes||{}),think:String(r.think)};persist(ng)}
+  savePlan('coach',gamesForScope('all'),'',plan);
+  state.coach={busy:false,err:''}}
+ catch(e){state.coach={busy:false,err:e&&e.code==='not_granted'?'Claude wasn’t allowed to answer here. You can still ask in your chat.':e&&e.code==='rate_limited'?'Too many requests right now. Try again in a minute.':'Couldn’t get plans right now. Try again in a moment.'}}
+ render()}
+async function coach(scope){const gs=gamesForScope(scope);if(!gs.length)return;const a=analyze(gs);const night=scope.startsWith('session:');
+ let sample=null;try{sample=window.claude&&window.claude.use?await window.claude.use('sample'):null}catch(e){}
+ if(!sample){state.coach.err='Live AI features aren’t on the site yet. The saved coaching here is from my real league nights.';render();return}
+ const leaves=Object.entries(a.leaves).sort((x,y)=>y[1]-x[1]).slice(0,10).map(([k,n])=>`${leaveName(k.split('-').map(Number))}: ${n}`).join('; ');
+ const lines=Object.entries(a.lines).map(([k,L])=>`${k} shots ${L.n}, strikes ${L.x}, avg entry board ${r1(L.e/L.n)}`).join('; ');
+ let prompt=`You are a practical bowling coach. Bowler: ${state.settings.hand==='L'?'left':'right'}-handed, boards counted from the ball-side gutter, pocket at board 17.5.
+Balls: ${arsenal().map(b=>{const th=typicalHook(b.name);return `${b.name} (${b.use} ball${b.use==='strike'?`, laydown ${b.offset} inside stance, breakpoint ${b.bf} ft, hook ${th.starter?'unknown':'~'+Math.round(th.v)+' boards'}`:''})`}).join('; ')||'not recorded'}.
+Data from ${a.games} games (oldest to newest scores): ${a.scores.join(', ')}.
+First balls: ${a.fb.length}, strikes ${a.strikes}. Spares made ${a.made}/${a.opp}; single-pin spares ${a.sMade}/${a.sOpp}.
+First-ball entry read from leaves: light ${a.cls.light}, pocket ${a.cls.pocket}, high ${a.cls.high}. Estimated median hook ${median(a.hooks)==null?'unknown':Math.round(median(a.hooks))+' boards'} (breakpoint assumed ${state.settings.bf} ft).
+Hitting the target at the arrows: hit ${a.mk.y} of ${a.mk.n} marked shots, missed left ${a.mk.left}, missed right ${a.mk.right}. Hook spread (std dev) ${a.hooks.length>=3?Math.round(sd(a.hooks))+' boards':'unknown'}. Note: only stance and pins are certain; entry board is inferred from the leave and hook is estimated.
+Most common leaves: ${leaves||'none'}.
+Planned speed changes: ${(()=>{const fb=gs.flatMap(g=>firstBalls(g)).filter(b=>b.gear);if(!fb.length)return 'none';const by={};fb.forEach(b=>{const o=by[b.gear]||(by[b.gear]={n:0,x:0});o.n++;if(!b.standing.length)o.x++});return Object.entries(by).map(([k,o])=>`${k==='slow'?'slower':'faster'} on purpose for ${o.n} first balls, ${o.x} strikes`).join('; ')})()}.
+Stance → target lines used: ${lines||'not recorded'}.
+${night?`These games are one ${typeLabel(gameType(gs[0])).toLowerCase()} night, games in order. Focus on what happened tonight (how the lane changed between games, whether adjustments came too late) and what to bring to next week.`:''}
+Write a short training plan in plain text, no markdown symbols, under 260 words. Use these sections with a plain heading line each: What the data says (2-3 sentences naming the clearest pattern), Line adjustment (specific board moves using the 2-and-1 rule), Spare work (which spares to practice and how), Drills for next practice (3 numbered drills with reps). Be concrete and say when the sample is too small to be sure.`;
+ if(scope.startsWith('advice-'))prompt=advicePrompt(scope,a,gs);
+ state.coach={busy:true,text:'',err:'',scope};render();const outId='coach-out-'+scope.replace(/[^a-z0-9]/gi,'');
+ try{const res=await sample(prompt,{onText:({text})=>{state.coach.text=text;const el=document.getElementById(outId);if(el)el.textContent=text}});state.coach.text=res.text;if(res.text&&!res.truncated)savePlan(scope,gs,res.text)}
+ catch(e){state.coach.err=e&&e.code==='not_granted'?'Claude wasn’t allowed to answer here. You can still ask in your chat.':e&&e.code==='rate_limited'?'Too many requests right now. Try again in a minute.':'Couldn’t get a plan right now. Try again in a moment.';if(e&&e.text)state.coach.text=e.text}
+ state.coach.busy=false;render()}
+
+/* ---------- boot ---------- */
+async function init(){
+ state.mode=new URLSearchParams(location.search).get('mode')==='sandbox'?'sandbox':'real';
+ try{SNAP=await (await fetch('/pocket-log/snapshot.json',{cache:'no-cache'})).json()}catch(e){SNAP={games:[],settings:{},plans:{}}}
+ if(state.mode==='real')fromSnap();
+ else{loadLocal();if(!Object.keys(cache.games).length&&!cache.settings){fromSnap();cache.settings=clone(state.settings);saveLocal()}
+  if(!cache.plans||!Object.keys(cache.plans).length)cache.plans=clone(SNAP.plans||{})}
+ state.tab=state.mode==='real'?'history':'bowl';state.loaded=true;render()}
+init();
+})();
+</script>
+
+</body></html>
