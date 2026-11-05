@@ -4,7 +4,11 @@ role: "For the Senior Software Engineer role on your R&D team."
 date: Nov 2026
 draft: false
 phone: "708-705-8858"
-summary: "You're hiring engineers to build business-critical ticketing software, where the hard problems are specific to your domain. That's the work I've been doing: C# services for a point-of-sale system, designed around what happens when a step fails after the customer has paid."
+summary: |
+  I'm Jacob. I read a lot, I bowl in a Monday league, and I main Azucena in Tekken 8.
+
+  One of my favorite books ever is Jerry Weintraub's memoir, When I Stop Talking, You'll Know I'm Dead. He's the guy who took Elvis on tour. Somebody has to get the fans into the building, and I'd like to write that code.
+greeting: "Hey SeatGeek."
 requirements:
   - { need: "Business-critical software in a fast-paced environment", cases: ["DR-01", "DR-02"] }
   - { need: "Complex technical challenges with custom solutions", cases: ["DR-02"] }

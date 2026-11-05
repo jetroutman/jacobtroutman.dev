@@ -3,7 +3,11 @@ company: Opportunity Engine
 role: "For the Full Stack Engineer role on your client's regulatory-AI team."
 date: Nov 2026
 draft: false
-summary: "Your client needs a full stack engineer who has been through the production grinder: shipping C# and Azure features that hold up for enterprise customers, alongside AI. That's my last eight years: production C# and .NET, point-of-sale flows designed around what fails, and an AI classification system I built and shipped myself."
+summary: |
+  I'm Jacob. I read a ridiculous amount and track every book in Notion, using the method from How to Read a Book: skim it, go deep, then compare books on the same question.
+
+  Your client's AI does that to regulations all day without getting bored. I'd like to help build it. (Also, I bowl. You'll see.)
+greeting: "Hey there."
 requirements:
   - { need: "Production judgment: identify what may break and build durable solutions", cases: ["DR-02", "DR-01"] }
   - { need: "End-to-end features across front-end and back-end systems in C#", cases: ["DR-01", "DR-02"] }

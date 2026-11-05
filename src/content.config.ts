@@ -35,6 +35,8 @@ const companies = defineCollection({
     role: z.string(),
     date: z.string(),
     summary: z.string(),
+    /** Optional opening line, e.g. "Hey SeatGeek." Replaces the default heading and hides the role line. */
+    greeting: z.string().optional(),
     requirements: z.array(z.object({ need: z.string(), cases: z.array(z.string()) })),
     evidence: z.array(z.object({ case: z.string(), relevance: z.string() })),
     plan: z.array(z.object({ days: z.string(), title: z.string(), items: z.array(z.string()) })),

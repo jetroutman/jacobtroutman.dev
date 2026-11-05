@@ -39,7 +39,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 const roleName = data.role.match(/the (.+?) role/i)?.[1] ?? data.role;
 ---
 <Base
-  title={`Why I fit ${data.company}`}
+  title={`${data.company} · ${roleName} · Jacob Troutman`}
   noindex
   footerNote={`Unlisted page for ${data.company}. Not linked from the rest of the site.`}
 >
@@ -55,7 +55,7 @@ const roleName = data.role.match(/the (.+?) role/i)?.[1] ?? data.role;
       <span class="mono-meta bar-pos" aria-live="polite"><span data-pos>01</span> / {pad(slides.length)}<span class="bar-label"> · <span data-label>Intro</span></span></span>
       <div class="hud">
         <span class="mono-meta hud-game dist" title="Cursor distance, in 60 ft bowling lanes"><span data-dist-label>Cursor</span> <span data-dist>0.00 lanes</span></span>
-        <button type="button" class="hud-btn hud-game" data-ach-open aria-expanded="false" aria-controls="ach-panel">Achievements <span data-ach-count>0/12</span></button>
+        <button type="button" class="hud-btn hud-game" data-ach-open aria-expanded="false" aria-controls="ach-panel">Achievements <span data-ach-count>0/18</span></button>
         <button type="button" class="hud-btn game-toggle" data-game-toggle aria-pressed="true">Game <span data-game-state>on</span></button>
       </div>
     </nav>
@@ -63,9 +63,9 @@ const roleName = data.role.match(/the (.+?) role/i)?.[1] ?? data.role;
     <section id="intro" class="slide intro" data-slide>
       <div class="inner">
         <p class="mono-meta reveal"><span class="chip">Unlisted</span> Prepared for {data.company} · {data.date}</p>
-        <h1 class="h1 reveal">Why I fit {data.company}</h1>
-        <p class="role reveal">{data.role}</p>
-        <p class="statement reveal">{data.summary}</p>
+        <h1 class="h1 reveal">{data.greeting ?? `Why I fit ${data.company}`}</h1>
+        {!data.greeting && <p class="role reveal">{data.role}</p>}
+        {data.summary.trim().split(/\n\s*\n/).map((para) => <p class="statement reveal">{para}</p>)}
         <div class="actions reveal">
           <a class="btn btn-primary" href={`mailto:${site.email}`} data-talk={site.email} data-reach>Email me</a>
           {data.phone && <a class="btn btn-secondary" href={`tel:+1${data.phone.replace(/\D/g, '')}`} data-reach>Call {data.phone}</a>}
@@ -376,6 +376,7 @@ const roleName = data.role.match(/the (.+?) role/i)?.[1] ?? data.role;
   .chip { border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px; margin-right: 6px; }
   h1 { margin-top: 18px; font-size: clamp(40px, 6vw, 76px); line-height: 1; }
   .role { margin-top: 16px; font-size: 18px; line-height: 1.45; color: var(--muted); }
+  .statement + .statement { margin-top: 16px; }
   .statement { margin-top: 28px; max-width: 32em; font-size: clamp(20px, 2.2vw, 26px); line-height: 1.4; font-weight: 500; }
   .hint { margin-top: clamp(32px, 6vh, 64px); }
 

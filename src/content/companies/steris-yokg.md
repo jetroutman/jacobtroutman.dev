@@ -3,7 +3,11 @@ company: STERIS
 role: "For the Senior Software Engineer role on your Digital Workflow Solutions team."
 date: Nov 2026
 draft: false
-summary: "You're hiring a senior engineer to design, document and ship features in SPM, software hospitals rely on to track surgical assets. I design C# and .NET services around what happens when a step fails, most recently for a point-of-sale system wired to real store hardware."
+summary: |
+  I'm Jacob: reader, Monday-night bowler, and a guy slowly working toward a planche.
+
+  I keep coming back to Kahneman's Noise. Smart people doing the same job make different calls, especially at the end of a long shift. I'd love to write the software that catches the miss before it ever reaches an operating room.
+greeting: "Hey STERIS."
 requirements:
   - { need: "C#/.NET Microsoft full stack, desktop to services", cases: ["DR-01", "DR-02"] }
   - { need: "Design patterns; refine the design as requirements change", cases: ["DR-01", "DR-02"] }
