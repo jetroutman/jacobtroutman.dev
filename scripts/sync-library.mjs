@@ -3,55 +3,19 @@
 // Only books whose "Inspectional Reading Status" is Published are ever fetched.
 import { writeFile } from 'node:fs/promises';
 
-const TOKEN = process.env.NOTION_TOKEN;
+import { TOKEN, call, text, allBlocks, queryAll, relationIds as relIds } from './notion.mjs';
 const DB = process.env.NOTION_BOOKS_DB || '013be0b5d6394f138c9c139b85cf2358';
 const OUT = new URL('../src/data/library.json', import.meta.url);
-const API = 'https://api.notion.com/v1';
-const HEADERS = { Authorization: `Bearer ${TOKEN}`, 'Notion-Version': '2022-06-28', 'Content-Type': 'application/json' };
 
 if (!TOKEN) {
   console.log('[library] NOTION_TOKEN not set; keeping the committed snapshot.');
   process.exit(0);
 }
 
-// Notion allows ~3 requests/second: space calls out, and on 429 wait as long as Notion asks.
-let last = 0;
-async function call(path, init = {}, tries = 6) {
-  for (let i = 0; ; i++) {
-    const wait = last + 350 - Date.now(); if (wait > 0) await new Promise((r) => setTimeout(r, wait));
-    last = Date.now();
-    const res = await fetch(API + path, { ...init, headers: HEADERS });
-    if ((res.status === 429 || res.status >= 500) && i < tries) {
-      const after = Number(res.headers.get('retry-after')) || 2 ** i;
-      await new Promise((r) => setTimeout(r, (after + 1) * 1000)); continue;
-    }
-    if (!res.ok) throw new Error(`${init.method || 'GET'} ${path} → ${res.status} ${await res.text()}`);
-    return res.json();
-  }
-}
-
-const text = (rich = []) => rich.map((t) => t.plain_text).join('').trim();
 const names = (p) => (p?.multi_select || []).map((o) => o.name.replace(/^[^\p{L}\p{N}$]+/u, '').trim());
 
-async function allBlocks(id) {
-  const out = []; let cursor;
-  do {
-    const r = await call(`/blocks/${id}/children?page_size=100${cursor ? `&start_cursor=${cursor}` : ''}`);
-    out.push(...r.results); cursor = r.has_more ? r.next_cursor : null;
-  } while (cursor);
-  return out;
-}
-
-async function relationIds(pageId, prop) {
-  if (!prop) return [];
-  const ids = []; let cursor;
-  do {
-    const r = await call(`/pages/${pageId}/properties/${prop.id}${cursor ? `?start_cursor=${cursor}` : ''}`);
-    for (const x of r.results || []) if (x.relation?.id) ids.push(x.relation.id);
-    cursor = r.has_more ? r.next_cursor : null;
-  } while (cursor);
-  return ids;
-}
+// Always page through relations here: query results cap relation arrays at 25.
+const relationIds = (pageId, prop) => relIds(pageId, prop?.relation ? { ...prop, has_more: true } : prop);
 
 // Quotes stay short on a public page: anything over ~60 words is cut to 50 with an ellipsis.
 const trimQuote = (q) => { const w = q.split(/\s+/); return w.length > 60 ? `${w.slice(0, 50).join(' ')}…` : q; };
@@ -113,14 +77,7 @@ function extract(blocks) {
 }
 
 try {
-  const pages = []; let cursor;
-  do {
-    const r = await call(`/databases/${DB}/query`, {
-      method: 'POST',
-      body: JSON.stringify({ filter: { property: 'Inspectional Reading Status', status: { equals: 'Published' } }, page_size: 100, ...(cursor ? { start_cursor: cursor } : {}) }),
-    });
-    pages.push(...r.results); cursor = r.has_more ? r.next_cursor : null;
-  } while (cursor);
+  const pages = await queryAll(DB, { filter: { property: 'Inspectional Reading Status', status: { equals: 'Published' } } });
 
   const books = [];
   for (const p of pages) {

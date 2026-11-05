@@ -30,6 +30,10 @@ jobs:
       - run: node scripts/sync-library.mjs
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+      # Notes: the Slip Box (everything not marked Private). Runs after the library so book links resolve.
+      - run: node scripts/sync-notes.mjs
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
       - run: npm run build
         env:
           # PR previews also build draft company pages and "Before launch" notes. Production never does.

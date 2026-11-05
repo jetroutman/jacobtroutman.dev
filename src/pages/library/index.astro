@@ -12,7 +12,7 @@ const fav = books.filter(favorite).length;
   <div class="intro">
     <p class="mono-meta"><a href="/" data-back>← Decision log</a> / Library</p>
     <h1 class="h1">Library</h1>
-    <p class="desc">Books I've read and written up, straight from my Notion catalog. Ranked by my own rating; the ones that changed how I work are marked. Some come with my notes from my Zettelkasten.</p>
+    <p class="desc">Books I've read and written up, straight from my Notion catalog. Ranked by my own rating; the ones that changed how I work are marked. Some come with my notes, which grow into my <a href="/notes/">idea map</a>.</p>
     <p class="mono-meta stats">{books.length} books · {fav} favorites · {books.filter((b) => b.fiction).length} fiction</p>
   </div>
 

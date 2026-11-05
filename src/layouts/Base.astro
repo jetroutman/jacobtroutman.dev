@@ -41,6 +41,7 @@ const fullTitle = title === site.name ? title : `${title} · ${site.name}`;
           <nav class="site-nav" aria-label="Site">
             <a href="/pocket-log/" data-from-link>Pocket Log</a>
             <a href="/library/" data-from-link>Library</a>
+            <a href="/notes/" data-from-link>Notes</a>
           </nav>
           <button class="theme-toggle" type="button" data-theme-toggle>Dark mode</button>
         </div>
@@ -91,6 +92,7 @@ const fullTitle = title === site.name ? title : `${title} · ${site.name}`;
   .site-nav a { position: relative; font-size: 14px; font-weight: 500; text-decoration: none; color: var(--muted); }
   .site-nav a:hover { color: var(--ink); }
   .site-nav a::before { content: ""; position: absolute; inset: -12px -6px; }
+  .name, .site-nav a { white-space: nowrap; }
   .theme-toggle {
     position: relative; cursor: pointer;
     border: 1px solid var(--line); background: var(--surface); border-radius: 999px;
@@ -106,4 +108,11 @@ const fullTitle = title === site.name ? title : `${title} · ${site.name}`;
   }
   .site-footer nav { display: flex; flex-wrap: wrap; gap: 6px 20px; }
   .site-footer a { text-decoration: none; }
+  /* Small phones: tighter nav, and the theme toggle becomes a single glyph (its text stays for screen readers). */
+  @media (max-width: 560px) {
+    .header-right, .site-nav { gap: 12px; }
+    .site-nav a { font-size: 13px; }
+    .theme-toggle { font-size: 0; padding: 6px 9px; }
+    .theme-toggle::after { content: "◐"; font-size: 14px; line-height: 1; }
+  }
 </style>

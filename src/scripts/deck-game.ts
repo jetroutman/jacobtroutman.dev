@@ -365,13 +365,13 @@ export function initDeck(deck: HTMLElement) {
     let read: string[] = [];
     try { read = JSON.parse(localStorage.getItem(`jt-cases-${slug}`) || '[]'); } catch {}
     try { if (localStorage.getItem(`jt-app-${slug}`)) unlock('app'); } catch {}
-    try { if (localStorage.getItem(`jt-lib-${slug}`)) unlock('library'); } catch {}
+    try { if (localStorage.getItem(`jt-lib-${slug}`) || localStorage.getItem(`jt-notes-${slug}`)) unlock('library'); } catch {}
     if (!read.length) return;
     unlock('deep');
     if (pageCases.length && pageCases.every((id) => read.includes(id))) unlock('cases');
   };
   addEventListener('pageshow', () => setTimeout(checkCases, 600));
-  addEventListener('storage', (e) => { if (e.key === `jt-cases-${slug}` || e.key === `jt-app-${slug}` || e.key === `jt-lib-${slug}`) checkCases(); });
+  addEventListener('storage', (e) => { if (e.key === `jt-cases-${slug}` || e.key === `jt-app-${slug}` || e.key === `jt-lib-${slug}` || e.key === `jt-notes-${slug}`) checkCases(); });
   for (const a of $$('[data-reach]')) a.addEventListener('click', () => unlock('reach'));
   document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => unlock('theme'));
 
