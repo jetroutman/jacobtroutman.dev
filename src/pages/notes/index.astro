@@ -57,7 +57,7 @@ const books = new Set(allNotes.flatMap((n) => n.books.map((b) => b.href))).size;
     <p class="mono-meta"><a href="/" data-back>← Decision log</a> / Notes</p>
     <h1 class="h1">Idea map</h1>
     <p class="desc">My Zettelkasten. Every dot is a permanent note in my own words; each cluster grows from one question I keep coming back to. Dashed lines are ideas that connect across threads.</p>
-    <p class="mono-meta stats">{allNotes.length} notes · {threads.length} threads · {related.size} connections · drawn from {books} books in my <a href="/library/">library</a></p>
+    <p class="mono-meta stats">{allNotes.length} notes · {threads.length} threads · {related.size} connections · drawn from {books} books in my <a href="/library/">library</a> · newest first in the <a href="/journal/">journal</a></p>
   </div>
 
   {allNotes.length === 0 ? <p class="empty">The notes sync from Notion on the next build.</p> : (
