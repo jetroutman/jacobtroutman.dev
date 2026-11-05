@@ -31,7 +31,7 @@ books.forEach((b, i) => {
 export const rankedCount = books.filter((b) => b.score != null).length;
 
 // Note types, most useful first (Key Ideas lead).
-export const NOTE_ORDER = ['Key Idea', 'Guide', 'Exercises', 'Inspiration', 'Good Info', 'Impressions', 'Quotes', 'Vocab', 'References'];
+export const NOTE_ORDER = ['Key Idea', 'Guide', 'Exercises', 'Quotes', 'Inspiration', 'Impressions', 'Good Info', 'Vocab', 'References'];
 export const NOTE_LABEL: Record<string, string> = {
   'Key Idea': 'Key ideas', Guide: 'How-tos', Exercises: 'Exercises', Inspiration: 'Inspiration', 'Good Info': 'Good to know',
   Impressions: 'Impressions', Quotes: 'Quotes', Vocab: 'Vocabulary', References: 'References', Other: 'Other notes',
