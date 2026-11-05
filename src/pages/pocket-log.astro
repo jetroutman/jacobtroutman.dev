@@ -2,8 +2,10 @@
 import Base from '../layouts/Base.astro';
 ---
 <Base title="Pocket Log" description="My bowling analytics app, built on my own league data.">
+  <div class="layout">
+  <div class="side">
   <div class="intro">
-    <p class="mono-meta"><a href="/">← Decision log</a> / Pocket Log</p>
+    <p class="mono-meta"><a href="/" data-back>← Decision log</a> / Pocket Log</p>
     <div class="intro-row">
       <div class="left">
         <div class="meta"><span class="pill">In progress</span><span class="mono-meta">LLM</span></div>
@@ -24,11 +26,15 @@ import Base from '../layouts/Base.astro';
     </div>
   </div>
 
+  </div>
+  <div class="main">
   <div class="frame">
     <div class="strip"><span class="mono-label">Pocket Log · phone-first, works best on mobile</span><span class="mono-label" data-source>Data: league snapshot</span></div>
     <iframe class="app" data-app src="/pocket-log/app/?mode=real" title="Pocket Log app" loading="eager"></iframe>
   </div>
   <p class="mono-meta foot">Sandbox data is saved in this browser's local storage and never sent anywhere. Reset restores my real data. Live AI coaching isn't on the site yet; the coaching you see is what the app wrote for my real league nights.</p>
+  </div>
+  </div>
 </Base>
 
 <script>
@@ -39,6 +45,14 @@ import Base from '../layouts/Base.astro';
   const reset = document.querySelector<HTMLButtonElement>('[data-reset]')!;
   const buttons = [...banner.querySelectorAll<HTMLButtonElement>('[data-set]')];
   let mode = 'real';
+  // Opened from a company page: back link returns to the slide they left, and that page plays "Took it for a spin".
+  const from = new URLSearchParams(location.search).get('from');
+  const fromOk = !!from && /^\/for\/[a-z0-9-]+\/(#[a-z0-9-]+)?$/.test(from);
+  if (fromOk) {
+    const back = document.querySelector<HTMLAnchorElement>('[data-back]')!;
+    back.href = from!; back.textContent = '← Back to your page';
+    try { localStorage.setItem(`jt-app-${from!.split('/')[2]}`, '1'); } catch {}
+  }
   function set(next: string, push = true) {
     mode = next;
     banner.dataset.mode = mode;
@@ -49,7 +63,12 @@ import Base from '../layouts/Base.astro';
     reset.hidden = mode !== 'sandbox';
     for (const b of buttons) b.setAttribute('aria-pressed', String(b.dataset.set === mode));
     frame.src = `/pocket-log/app/?mode=${mode}`;
-    if (push) history.replaceState(null, '', mode === 'sandbox' ? '?mode=sandbox' : location.pathname);
+    if (push) {
+      const q = new URLSearchParams();
+      if (mode === 'sandbox') q.set('mode', 'sandbox');
+      if (fromOk) q.set('from', from!);
+      history.replaceState(null, '', q.size ? `?${q}` : location.pathname);
+    }
   }
   buttons.forEach((b) => b.addEventListener('click', () => { if (b.dataset.set !== mode) set(b.dataset.set!); }));
   reset.addEventListener('click', () => {
@@ -112,4 +131,12 @@ import Base from '../layouts/Base.astro';
   @keyframes nudge { 0%, 100% { transform: none; } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
   @media (prefers-reduced-motion: reduce) { .banner.nudge { animation: none; outline: 2px solid var(--amber); } }
   .foot { margin-top: 14px; }
+  /* Wide screens: intro and mode switch sit beside the app, so the featured shot is visible on load. */
+  @media (min-width: 1100px) {
+    .layout { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 40px; align-items: start; }
+    .side { position: sticky; top: 24px; }
+    .banner { position: static; flex-direction: column; align-items: flex-start; padding: 14px 16px; }
+    .main { padding-top: clamp(28px, 5vw, 64px); }
+    .frame { margin-top: 0; }
+  }
 </style>

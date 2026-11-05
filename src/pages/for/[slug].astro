@@ -14,6 +14,11 @@ export async function getStaticPaths() {
 const { data, id: slug } = Astro.props.entry;
 const cases = Object.fromEntries((await getCollection('cases')).map((c) => [c.data.id, c]));
 const evidence = data.evidence.filter((e) => cases[e.case]);
+// Every company page ends its exhibits with the live app (Pocket Log), unless the page already lists it.
+const appCase = Object.values(cases).find((c) => c.data.app);
+if (appCase && !evidence.some((e) => e.case === appCase.data.id)) {
+  evidence.push({ case: appCase.data.id, relevance: "something I built for myself, on my own league nights. Plain code does the scoring and shot projections; the model only coaches. It's live with my real games, so take it for a spin." });
+}
 
 /*
  * The page is a deck: one section per screen, snapped with native CSS scroll-snap
@@ -131,6 +136,7 @@ const roleName = data.role.match(/the (.+?) role/i)?.[1] ?? data.role;
                 {c.data.published
                   ? <a class="btn btn-primary" href={`/case/${c.id}/`} data-case-link data-case-id={c.data.id}>Open the case file →</a>
                   : <span class="mono-meta">Full case file coming soon</span>}
+                {c.data.app && <a class="btn btn-secondary" href={c.data.app} data-app-link>Try the app →</a>}
                 {c.data.published && <span class="mono-meta">{c.data.readMinutes} min read</span>}
               </div>
             </div>
@@ -214,8 +220,8 @@ const roleName = data.role.match(/the (.+?) role/i)?.[1] ?? data.role;
 </Base>
 
 <script>
-  // Case-file links carry this page and the current slide, so the case file's back link returns here.
-  for (const a of document.querySelectorAll<HTMLAnchorElement>('[data-case-link]')) {
+  // Case-file and app links carry this page and the current slide, so the case file's back link returns here.
+  for (const a of document.querySelectorAll<HTMLAnchorElement>('[data-case-link], [data-app-link]')) {
     a.addEventListener('click', () => {
       const slide = a.closest<HTMLElement>('[data-slide]')?.id;
       const from = location.pathname + (slide ? `#${slide}` : '');

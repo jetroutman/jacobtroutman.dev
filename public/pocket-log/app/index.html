@@ -827,10 +827,10 @@ function shotHTML(b,h,eyebrow,extra=''){const s=BP(b.ball),inf=inferEntry(b.stan
    lines.push(t);if(th.starter)lines.push('Mark "Yes" on shots where you know you hit your target. After three of those, this uses your own hook instead of the starter number.')}}
  if(!missed)lines.push(advice(inf.entry,h));
  return `<section class="card"><div class="row between"><div class="grow"><p class="eyebrow">${eyebrow}</p><h2>${esc(leaveName(b.standing))}</h2></div><span class="pill ${inf.tone}">${inf.kind}</span></div>
- <p>${esc(leaveNote(b.standing,h))}</p>${extra}
+ ${state.feat&&b.st!=null&&ax!=null?laneSVG({st:b.st,ax,tg:b.tg,axEst:est,entry:inf.entry,hand:h,offset:s.offset,bf:s.bf,sp:spOf(b),standing:b.standing}):''}<p>${esc(leaveNote(b.standing,h))}</p>${state.feat?'':extra}
  <div class="metrics"><div class="metric"><p>Entry board</p><b>~${r1(inf.entry)}</b></div><div class="metric"><p>Crossed arrows</p><b>${ax==null?'–':est?'~'+Math.round(ax)+' <small>est.</small>':ax}</b></div><div class="metric"><p>Stance → aim</p><b>${b.st??'–'} → ${b.tg??'–'}</b></div><div class="metric"><p>Est. hook</p><b>${he?Math.max(0,Math.round(he.hook))+' bd':'–'}</b></div></div>
- ${lines.map(l=>`<p class="tip">${esc(l)}</p>`).join('')}
- ${b.st!=null&&ax!=null?laneSVG({st:b.st,ax,tg:b.tg,axEst:est,entry:inf.entry,hand:h,offset:s.offset,bf:s.bf,sp:spOf(b),standing:b.standing}):'<p class="muted small">Add where you stood to see the ball path.</p>'}
+ ${state.feat?'':lines.map(l=>`<p class="tip">${esc(l)}</p>`).join('')}
+ ${state.feat?'':b.st!=null&&ax!=null?laneSVG({st:b.st,ax,tg:b.tg,axEst:est,entry:inf.entry,hand:h,offset:s.offset,bf:s.bf,sp:spOf(b),standing:b.standing}):'<p class="muted small">Add where you stood to see the ball path.</p>'}
  <p class="muted small">Facts: your stance and the pins. Entry is read from the leave (about ±1 board); the path${est?' and where it crossed the arrows are':' is'} estimated from that${b.sp?`, with ${b.sp} speed moving the breakpoint`:''}.</p></section>`}
 
 function viewHistory(){if(state.detail){const g=state.games.find(x=>x.id===state.detail);if(g)return viewDetail(g);state.detail=null}
@@ -872,7 +872,7 @@ function delRow(g,inDetail){return state.confirmDel===g.id
  ?`<div class="row between del-confirm"><p class="small grow">Delete this ${score(g).total} game for good? Your stats will update.</p><span class="row"><button class="btn danger" data-act="del-yes" data-id="${g.id}">Delete game</button><button class="btn ghost" data-act="del-no">Keep</button></span></div>`
  :`<div class="row between">${inDetail?'<span></span>':`<button class="btn ghost small" data-act="open" data-id="${g.id}">Open · edit · what if</button>`}<button class="btn ghost danger-text" data-act="del" data-id="${g.id}" aria-label="Delete this game">Delete game</button></div>`}
 function viewDetail(g){const sel=state.viewShot&&state.viewShot.id===g.id?state.viewShot.fi:-1;
- let s=`<button class="btn ghost small back" data-act="close">← All games</button>`+gameHead(g,-1,sel,score(g).total);
+ let s=`<button class="btn ghost small back" data-act="close">← All games</button>`;if(state.feat===g.id)return frameCard(g)+`<p class="muted small">That's one of my shots: frame ${sel+1}, ${esc(fmtDate(g))}. Tap any frame below to read another.</p>`+gameHead(g,-1,sel,score(g).total)+whatIfCard(g)+s;s+=gameHead(g,-1,sel,score(g).total);
  const ec=editCtx();s+=ec&&ec.g.id===g.id?entryCard(ec,state.draft,{edit:true,g,gball:g.ball,footer:editFooter()}):frameCard(g);
  return s+whatIfCard(g)+`<section class="card">${delRow(g,true)}</section>`}
 /* What-if: swap outcomes frame by frame and rescore with real bonus math. */
@@ -1159,7 +1159,7 @@ function act(a,t){const g=active();const findG=id=>state.games.find(x=>x.id===id
  case 'hist':state.histOpen={...(state.histOpen||{}),[t.dataset.id]:!(state.histOpen||{})[t.dataset.id]};break;
  default:return}
  render()}
-app.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(t)state.roMsg='';if(t&&app.contains(t))act(t.dataset.act,t)});
+app.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(t){state.roMsg='';if(state.feat&&t.dataset.act!=='pv-toggle')state.feat=null}if(t&&app.contains(t))act(t.dataset.act,t)});
 app.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('pinbtn')){e.preventDefault();act('pin',e.target)}});
 app.addEventListener('change',e=>{if(e.target.id==='imp-file'){const fs=[...e.target.files];e.target.value='';e.target.blur();importPrintout(fs);return}
  if(e.target.dataset&&e.target.dataset.dn){const g=state.games.find(x=>x.id===e.target.dataset.id);if(g){const ng=clone(g),f=e.target.dataset.dn,v=e.target.value.trim();if(((g.nightNotes||{})[f]||'')!==v){ng.nightNotes={...(ng.nightNotes||{}),[f]:v||null};persist(ng)}}return}const k=e.target.dataset&&e.target.dataset.in;if(k&&k.startsWith('bn-'))renameBall(k.slice(3),e.target.value)});
@@ -1252,7 +1252,9 @@ async function init(){
  if(state.mode==='real')fromSnap();
  else{loadLocal();if(!Object.keys(cache.games).length&&!cache.settings){fromSnap();cache.settings=clone(state.settings);saveLocal()}
   if(!cache.plans||!Object.keys(cache.plans).length)cache.plans=clone(SNAP.plans||{})}
- state.tab=state.mode==='real'?'history':'bowl';state.loaded=true;render()}
+ state.tab=state.mode==='real'?'history':'bowl';
+ const fe=SNAP.featured;if(state.mode==='real'&&fe&&state.games.some(g=>g.id===fe.game)){state.detail=fe.game;state.viewShot={id:fe.game,fi:fe.frame};state.feat=fe.game}
+ state.loaded=true;render()}
 init();
 })();
 </script>
