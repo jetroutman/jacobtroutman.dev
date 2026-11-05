@@ -3,7 +3,7 @@
  *
  * Deck: tracks the current slide, marks slides seen after a short dwell, drives the
  * progress bar, and unlocks the final note once every slide has been seen.
- * Game (on by default, obvious off switch): game-style achievement pops, cursor
+ * Game (on by default, obvious off switch): game-style achievement pops (17, 7 hidden), cursor
  * distance in bowling lanes, hidden achievements, "What would you do?" prompts,
  * and a run summary the reader can email to Jacob.
  */
@@ -14,10 +14,15 @@ const ACHIEVEMENTS: Ach[] = [
   { id: 'start', title: 'Press play', desc: 'You scrolled. Bold opening move.' },
   { id: 'evidence', title: 'Evidence locker', desc: 'Every exhibit, examined.' },
   { id: 'call', title: 'Made a call', desc: 'You weighed in on a real decision I made.' },
-  { id: 'deep', title: 'Deep diver', desc: 'You opened a full case file. Respect.' },
+  { id: 'calls', title: 'Every call made', desc: 'You weighed in on every decision on this page.' },
+  { id: 'deep', title: 'Deep diver', desc: 'You read a full case file. Respect.' },
+  { id: 'cases', title: 'Case closed', desc: 'You read every case file on this page.' },
+  { id: 'answer', title: 'Fair question', desc: 'You answered one of my questions. Now it\'s a conversation.' },
   { id: 'complete', title: 'Run complete', desc: 'You saw every slide. Thanks for sticking around.' },
+  { id: 'reach', title: 'Let\'s talk', desc: 'You reached out. Best achievement on the page.' },
   { id: 'strike', title: 'Strike', desc: 'Your cursor just bowled a full 60 ft lane.' },
   { id: 'same', title: 'Great minds', desc: 'You picked what I actually shipped.', hidden: true },
+  { id: 'sameall', title: 'Same wavelength', desc: 'You picked what I shipped, every time.', hidden: true },
   { id: 'back', title: 'Second look', desc: 'You went back for another look. I do that too.', hidden: true },
   { id: 'theme', title: 'Night vision', desc: 'You found the light switch.', hidden: true },
   { id: 'console', title: 'Under the hood', desc: 'You opened the console. Of course you did.', hidden: true },
@@ -34,6 +39,7 @@ type State = { seen: string[]; ach: string[]; dist: number; ms: number; visits: 
 export function initDeck(deck: HTMLElement) {
   const slug = deck.dataset.deck!;
   const company = deck.dataset.company!;
+  const role = deck.dataset.role || '';
   const key = `jt-deck-${slug}`;
   const root = document.documentElement;
   const $ = <T extends Element = HTMLElement>(sel: string) => deck.querySelector<T>(sel) as T | null;
@@ -196,11 +202,38 @@ export function initDeck(deck: HTMLElement) {
     if (d) d.textContent = `${lanes().toFixed(2)} lanes`;
   };
 
+  // ---------- answers to my questions (work with the game on or off) ----------
+  const qaKey = `jt-qa-${slug}`;
+  let qa: string[] = [];
+  try { qa = JSON.parse(localStorage.getItem(qaKey) || '[]'); } catch {}
+  const answersBlock = () => {
+    const rows = $$<HTMLTextAreaElement>('[data-answer]').map((t) => {
+      const i = Number(t.dataset.answer);
+      const a = (qa[i] || '').trim();
+      return a ? `Q${i + 1}. ${document.querySelector(`[data-qtext="${i}"]`)?.textContent?.trim()}\n${a}` : '';
+    }).filter(Boolean);
+    return rows.length ? `Your questions, answered:\n\n${rows.join('\n\n')}\n\n` : '';
+  };
+  const renderTalk = () => {
+    const subject = role ? `${company} · ${role}` : company;
+    for (const a of $$<HTMLAnchorElement>('[data-talk]'))
+      a.href = `mailto:${a.dataset.talk}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Hi Jacob,\n\n${answersBlock()}`)}`;
+  };
+  for (const t of $$<HTMLTextAreaElement>('[data-answer]')) {
+    t.value = qa[Number(t.dataset.answer)] || '';
+    t.addEventListener('input', () => {
+      qa[Number(t.dataset.answer)] = t.value;
+      try { localStorage.setItem(qaKey, JSON.stringify(qa)); } catch {}
+      renderTalk(); renderSummary();
+    });
+    t.addEventListener('change', () => { if (t.value.trim()) unlock('answer'); });
+  }
+
   const summaryText = () => {
     const found = ACHIEVEMENTS.filter((a) => got.has(a.id)).map((a) => a.title);
     return {
-      subject: `Played your ${company} page: ${got.size}/${ACHIEVEMENTS.length} achievements, ${lanes().toFixed(2)} lanes, ${fmtTime(st.ms)}`,
-      body: `Hi Jacob,\n\nI made it through your ${company} page.\n\nAchievements: ${got.size} of ${ACHIEVEMENTS.length}${found.length ? ` (${found.join(', ')})` : ''}\nCursor distance: ${meters().toFixed(1)} m (${lanes().toFixed(2)} lanes)\nTime on page: ${fmtTime(st.ms)}\nSlides seen: ${seen.size} of ${slides.length}\n\n`,
+      subject: `${company}${role ? ` · ${role}` : ''}: ${got.size}/${ACHIEVEMENTS.length} achievements, ${lanes().toFixed(2)} lanes, ${fmtTime(st.ms)}`,
+      body: `Hi Jacob,\n\nI made it through your ${company} page.\n\nAchievements: ${got.size} of ${ACHIEVEMENTS.length}${found.length ? ` (${found.join(', ')})` : ''}\nCursor distance: ${meters().toFixed(1)} m (${lanes().toFixed(2)} lanes)\nTime on page: ${fmtTime(st.ms)}\nSlides seen: ${seen.size} of ${slides.length}\n\n${answersBlock()}`,
     };
   };
   const renderSummary = () => {
@@ -311,11 +344,31 @@ export function initDeck(deck: HTMLElement) {
       show(i);
       unlock('call');
       if (b.hasAttribute('data-chosen')) unlock('same');
+      checkQuizzes();
     });
+  }
+  function checkQuizzes() {
+    const quizzes = $$<HTMLElement>('[data-quiz]');
+    if (!quizzes.length || !quizzes.every((q) => q.dataset.quiz! in st.answers)) return;
+    unlock('calls');
+    const shipped = (q: HTMLElement) => [...q.querySelectorAll<HTMLElement>('[data-option]')].findIndex((o) => o.hasAttribute('data-chosen'));
+    if (quizzes.every((q) => st.answers[q.dataset.quiz!] === shipped(q))) unlock('sameall');
   }
 
   // ---------- other triggers ----------
-  for (const a of $$('[data-case-link]')) a.addEventListener('click', () => unlock('deep'));
+  // Case files: the case page records that it was read (see case/[slug].astro). The pop plays
+  // when the reader is back on this page, so it isn't cut off by the navigation.
+  const pageCases = [...new Set($$('[data-case-id]').map((a) => a.dataset.caseId!))];
+  const checkCases = () => {
+    let read: string[] = [];
+    try { read = JSON.parse(localStorage.getItem(`jt-cases-${slug}`) || '[]'); } catch {}
+    if (!read.length) return;
+    unlock('deep');
+    if (pageCases.length && pageCases.every((id) => read.includes(id))) unlock('cases');
+  };
+  addEventListener('pageshow', () => setTimeout(checkCases, 600));
+  addEventListener('storage', (e) => { if (e.key === `jt-cases-${slug}`) checkCases(); });
+  for (const a of $$('[data-reach]')) a.addEventListener('click', () => unlock('reach'));
   document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => unlock('theme'));
 
   const konami = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
@@ -367,5 +420,7 @@ export function initDeck(deck: HTMLElement) {
   applyGame();
   updateNoteLock();
   renderPanel();
+  renderTalk();
   update();
+  checkQuizzes();
 }

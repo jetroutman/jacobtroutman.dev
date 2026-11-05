@@ -30,6 +30,8 @@ const slides = [
   ...(data.bonus ? [{ id: 'note', label: data.bonus.label }] : []),
 ];
 const pad = (n: number) => String(n).padStart(2, '0');
+// "For the Senior Software Engineer role on your X team." -> "Senior Software Engineer" (email subjects)
+const roleName = data.role.match(/the (.+?) role/i)?.[1] ?? data.role;
 ---
 <Base
   title={`Why I fit ${data.company}`}
@@ -38,7 +40,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 >
   <script is:inline>document.documentElement.classList.add('deck-js');</script>
 
-  <div class="deck" data-deck={slug} data-company={data.company}>
+  <div class="deck" data-deck={slug} data-company={data.company} data-role={roleName}>
     <nav class="deckbar" aria-label="Sections">
       <ol class="segs">
         {slides.map((s, i) => (
@@ -60,8 +62,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
         <p class="role reveal">{data.role}</p>
         <p class="statement reveal">{data.summary}</p>
         <div class="actions reveal">
-          <a class="btn btn-primary" href={`mailto:${site.email}`}>Email me</a>
-          {data.phone && <a class="btn btn-secondary" href={`tel:+1${data.phone.replace(/\D/g, '')}`}>Call {data.phone}</a>}
+          <a class="btn btn-primary" href={`mailto:${site.email}`} data-talk={site.email} data-reach>Email me</a>
+          {data.phone && <a class="btn btn-secondary" href={`tel:+1${data.phone.replace(/\D/g, '')}`} data-reach>Call {data.phone}</a>}
           <a class="btn btn-secondary" href={site.resume}>Résumé (PDF)</a>
         </div>
         <p class="mono-meta hint reveal" aria-hidden="true">Scroll down, I'll walk you through it ↓</p>
@@ -77,7 +79,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
           {data.requirements.map((r) => (
             <div class="mrow"><span>{r.need}</span><span class="ids">{r.cases.map((c) => (
               cases[c]?.data.published
-                ? <a class="idchip" href={`/case/${cases[c].id}/`} data-case-link>{c}</a>
+                ? <a class="idchip" href={`/case/${cases[c].id}/`} data-case-link data-case-id={c}>{c}</a>
                 : <a class="idchip" href={`#evidence-${evidence.findIndex((e) => e.case === c) + 1}`}>{c}</a>
             ))}</span></div>
           ))}
@@ -127,7 +129,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
               )}
               <div class="reveal ev-cta">
                 {c.data.published
-                  ? <a class="btn btn-primary" href={`/case/${c.id}/`} data-case-link>Open the case file →</a>
+                  ? <a class="btn btn-primary" href={`/case/${c.id}/`} data-case-link data-case-id={c.data.id}>Open the case file →</a>
                   : <span class="mono-meta">Full case file coming soon</span>}
                 {c.data.published && <span class="mono-meta">{c.data.readMinutes} min read</span>}
               </div>
@@ -156,7 +158,15 @@ const pad = (n: number) => String(n).padStart(2, '0');
       <div class="inner">
         <div class="section-head reveal"><span class="num">04</span><h2>Your turn. I've got questions too.</h2></div>
         <ol class="questions">
-          {data.questions.map((q, i) => <li class="reveal"><span class="q">Q{i + 1}</span><span>{q}</span></li>)}
+          {data.questions.map((q, i) => (
+            <li class="reveal">
+              <span class="q">Q{i + 1}</span>
+              <div class="qa">
+                <span data-qtext={i}>{q}</span>
+                <textarea class="answer" data-answer={i} rows="2" aria-label={`Your answer to question ${i + 1}`} placeholder="Your answer, if you want. It goes into the email when you write to me."></textarea>
+              </div>
+            </li>
+          ))}
         </ol>
       </div>
     </section>
@@ -174,7 +184,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
             <p class="mono-label bonus-label">Unlocked · {data.bonus.label}</p>
             <h3>{data.bonus.title}</h3>
             <p>{data.bonus.body}</p>
-            <div class="actions"><a class="btn btn-primary" href={`mailto:${site.email}`}>Let's talk</a>{data.phone && <a class="btn btn-secondary" href={`tel:+1${data.phone.replace(/\D/g, '')}`}>Call {data.phone}</a>}</div>
+            <div class="actions"><a class="btn btn-primary" href={`mailto:${site.email}`} data-talk={site.email} data-reach>Let's talk</a>{data.phone && <a class="btn btn-secondary" href={`tel:+1${data.phone.replace(/\D/g, '')}`} data-reach>Call {data.phone}</a>}</div>
           </aside>
           <div class="summary reveal hud-game" data-summary>
             <p class="mono-label">How your run went</p>
@@ -186,7 +196,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
               <div><dt class="mono-label">Slides</dt><dd data-s-slides>0 / {slides.length}</dd></div>
             </dl>
             <div class="actions">
-              <a class="btn btn-primary" data-mail={site.email} href={`mailto:${site.email}`}>Send me your score</a>
+              <a class="btn btn-primary" data-mail={site.email} href={`mailto:${site.email}`} data-reach>Send me your score</a>
               <button type="button" class="btn btn-secondary" data-copy>Copy score</button>
             </div>
             <p class="mono-meta privacy">I can't see any of this. It's counted in your browser and only reaches me if you send it.</p>
@@ -394,6 +404,14 @@ const pad = (n: number) => String(n).padStart(2, '0');
   .questions { list-style: none; padding: 0; margin-top: 16px; }
   .questions li { display: grid; grid-template-columns: var(--id-col) 1fr; padding: 20px 0; border-bottom: 1px solid var(--line); font-size: clamp(19px, 2.2vw, 26px); line-height: 1.35; font-weight: 500; }
   .q { font: 12px var(--mono); color: var(--amber-ink); padding-top: 8px; }
+  .qa { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .answer {
+    width: 100%; min-height: 44px; padding: 10px 12px; resize: vertical; field-sizing: content; max-height: 40vh;
+    font: 400 16px/1.45 var(--sans); color: var(--ink);
+    border: 1px solid var(--line); border-radius: 8px; background: var(--surface);
+  }
+  .answer::placeholder { color: var(--muted); }
+  .answer:focus-visible { outline: 2px solid var(--amber); outline-offset: 1px; }
 
   .locked, .bonus { margin-top: 32px; padding: clamp(20px, 3vw, 36px); border-radius: 12px; }
   .locked { border: 1px dashed var(--line); background: var(--surface); }

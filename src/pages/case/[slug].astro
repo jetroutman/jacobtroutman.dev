@@ -27,7 +27,7 @@ const nav = [
 ---
 <Base title={data.title} description={data.tldr.problem}>
   <div class="title-block">
-    <p class="mono-meta"><a href="/" data-back>← Decision log</a> / Case file {data.id}</p>
+    <p class="mono-meta" data-case-id={data.id}><a href="/" data-back>← Decision log</a> / Case file {data.id}</p>
     <div class="meta"><StatusMeta status={data.status} stack={data.stack} /></div>
     <h1 class="h1">{data.title}</h1>
     <DevTodo items={data.todo} />
@@ -73,6 +73,14 @@ const nav = [
       a.href = from;
       a.textContent = '← Back to your page';
     }
+    // Tell that company page this case file was read; its deck plays "Deep diver" when the reader returns.
+    const slug = from.split('/')[2];
+    const id = document.querySelector<HTMLElement>('[data-case-id]')?.dataset.caseId;
+    try {
+      const k = `jt-cases-${slug}`;
+      const read: string[] = JSON.parse(localStorage.getItem(k) || '[]');
+      if (id && !read.includes(id)) localStorage.setItem(k, JSON.stringify([...read, id]));
+    } catch {}
     const next = document.querySelector<HTMLAnchorElement>('[data-next]');
     if (next) next.href = `${next.pathname}?from=${encodeURIComponent(from)}`;
   }
