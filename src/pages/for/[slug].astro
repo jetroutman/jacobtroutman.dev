@@ -204,6 +204,17 @@ const pad = (n: number) => String(n).padStart(2, '0');
 </Base>
 
 <script>
+  // Case-file links carry this page and the current slide, so the case file's back link returns here.
+  for (const a of document.querySelectorAll<HTMLAnchorElement>('[data-case-link]')) {
+    a.addEventListener('click', () => {
+      const slide = a.closest<HTMLElement>('[data-slide]')?.id;
+      const from = location.pathname + (slide ? `#${slide}` : '');
+      a.href = `${a.pathname}?from=${encodeURIComponent(from)}`;
+    });
+  }
+</script>
+
+<script>
   import { initDeck } from '../../scripts/deck-game';
   const deck = document.querySelector<HTMLElement>('[data-deck]');
   if (deck) initDeck(deck);

@@ -27,7 +27,7 @@ const nav = [
 ---
 <Base title={data.title} description={data.tldr.problem}>
   <div class="title-block">
-    <p class="mono-meta"><a href="/">← Decision log</a> / Case file {data.id}</p>
+    <p class="mono-meta"><a href="/" data-back>← Decision log</a> / Case file {data.id}</p>
     <div class="meta"><StatusMeta status={data.status} stack={data.stack} /></div>
     <h1 class="h1">{data.title}</h1>
     <DevTodo items={data.todo} />
@@ -55,16 +55,28 @@ const nav = [
       </nav>
       <Content />
       {next && next.id !== entry.id && (
-        <a class="next" href={`/case/${next.id}/`}>
+        <a class="next" href={`/case/${next.id}/`} data-next>
           <span><span class="mono-label">Next case file · {next.data.id}</span><span class="next-title">{next.data.title}</span></span>
           <span class="arrow" aria-hidden="true">→</span>
         </a>
       )}
+      <p class="mono-meta back-bottom"><a href="/" data-back>← Back to the decision log</a></p>
     </article>
   </div>
 </Base>
 
 <script>
+  // Back links: a company page passes ?from=/for/<slug>/#<slide> so readers return to the slide they left.
+  const from = new URLSearchParams(location.search).get('from');
+  if (from && /^\/for\/[a-z0-9-]+\/(#[a-z0-9-]+)?$/.test(from)) {
+    for (const a of document.querySelectorAll<HTMLAnchorElement>('[data-back]')) {
+      a.href = from;
+      a.textContent = '← Back to your page';
+    }
+    const next = document.querySelector<HTMLAnchorElement>('[data-next]');
+    if (next) next.href = `${next.pathname}?from=${encodeURIComponent(from)}`;
+  }
+
   // Scroll-spy: progressive enhancement. The nav works as plain anchors without it.
   const sections = [...document.querySelectorAll<HTMLElement>('[data-section]')];
   const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-nav]')];
@@ -102,6 +114,8 @@ const nav = [
   .nav-item.active { background: var(--hover); color: var(--ink); font-weight: 600; }
   .nav-item.active .n { color: var(--amber-ink); }
   .top { margin-top: 14px; text-decoration: none; }
+  .back-bottom { margin-top: 24px; }
+  .back-bottom a { text-decoration: none; }
 
   article { flex: 1; max-width: 720px; min-width: 0; }
   .chips { display: none; }
