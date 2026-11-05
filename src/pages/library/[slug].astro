@@ -64,7 +64,7 @@ const desc = (b.review || b.impressions || `My notes on ${b.short}.`).split('\n'
           {groups.map((g) => <a href={`#notes-${g.type.replace(/\W+/g, '-').toLowerCase()}`}>{g.label} <span>{g.notes.length}</span></a>)}
         </nav>
         {groups.map((g, gi) => (
-        <details class="group" id={`notes-${g.type.replace(/\W+/g, '-').toLowerCase()}`} open={gi === 0}>
+        <details class="group" name="note-groups" id={`notes-${g.type.replace(/\W+/g, '-').toLowerCase()}`}>
         <summary><h3 class="group-title">{g.label}</h3><span class="mono-meta">{g.notes.length}</span></summary>
         <ol class="note-list">
           {g.notes.map((n) => (
@@ -90,6 +90,10 @@ const desc = (b.review || b.impressions || `My notes on ${b.short}.`).split('\n'
   import { fromCompany } from '../../scripts/from-company';
   fromCompany('jt-lib');
   // Jumping to a note type opens its group.
+  // Note groups start closed and act as an accordion: opening one closes the others
+  // (native via name="note-groups"; this also covers browsers without it).
+  const groups = [...document.querySelectorAll<HTMLDetailsElement>('details.group')];
+  for (const g of groups) g.addEventListener('toggle', () => { if (g.open) for (const o of groups) if (o !== g) o.open = false; });
   const openHash = () => { const el = location.hash && document.querySelector<HTMLDetailsElement>(location.hash); if (el?.tagName === 'DETAILS') el.open = true; };
   addEventListener('hashchange', openHash); openHash();
 </script>
