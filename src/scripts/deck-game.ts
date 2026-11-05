@@ -3,7 +3,7 @@
  *
  * Deck: tracks the current slide, marks slides seen after a short dwell, drives the
  * progress bar, and unlocks the final note once every slide has been seen.
- * Game (on by default, obvious off switch): game-style achievement pops (18, 7 hidden), cursor
+ * Game (on by default, obvious off switch): game-style achievement pops (19, 7 hidden), cursor
  * distance in bowling lanes, hidden achievements, "What would you do?" prompts,
  * and a run summary the reader can email to Jacob.
  */
@@ -18,6 +18,7 @@ const ACHIEVEMENTS: Ach[] = [
   { id: 'deep', title: 'Deep diver', desc: 'You read a full case file. Respect.' },
   { id: 'cases', title: 'Case closed', desc: 'You read every case file on this page.' },
   { id: 'app', title: 'Took it for a spin', desc: 'You tried Pocket Log. My league nights, in an app.' },
+  { id: 'library', title: 'Checked out', desc: 'You browsed my library. Late fees waived.' },
   { id: 'answer', title: 'Fair question', desc: 'You answered one of my questions. Now it\'s a conversation.' },
   { id: 'complete', title: 'Run complete', desc: 'You saw every slide. Thanks for sticking around.' },
   { id: 'reach', title: 'Let\'s talk', desc: 'You reached out. Best achievement on the page.' },
@@ -364,12 +365,13 @@ export function initDeck(deck: HTMLElement) {
     let read: string[] = [];
     try { read = JSON.parse(localStorage.getItem(`jt-cases-${slug}`) || '[]'); } catch {}
     try { if (localStorage.getItem(`jt-app-${slug}`)) unlock('app'); } catch {}
+    try { if (localStorage.getItem(`jt-lib-${slug}`)) unlock('library'); } catch {}
     if (!read.length) return;
     unlock('deep');
     if (pageCases.length && pageCases.every((id) => read.includes(id))) unlock('cases');
   };
   addEventListener('pageshow', () => setTimeout(checkCases, 600));
-  addEventListener('storage', (e) => { if (e.key === `jt-cases-${slug}` || e.key === `jt-app-${slug}`) checkCases(); });
+  addEventListener('storage', (e) => { if (e.key === `jt-cases-${slug}` || e.key === `jt-app-${slug}` || e.key === `jt-lib-${slug}`) checkCases(); });
   for (const a of $$('[data-reach]')) a.addEventListener('click', () => unlock('reach'));
   document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => unlock('theme'));
 

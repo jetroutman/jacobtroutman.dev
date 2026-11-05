@@ -26,7 +26,7 @@ const desc = (b.review || b.impressions || `My notes on ${b.short}.`).split('\n'
 ---
 <Base title={`${b.short} · Library · Jacob Troutman`} description={desc}>
   <article class="wrap">
-    <p class="mono-meta"><a href="/library/">← Library</a> / {b.short}</p>
+    <p class="mono-meta crumbs"><a href="/library/">← Library</a> / {b.short}<a class="back" href="/" data-back hidden>← Back to your page</a></p>
     <div class="meta">
       {favorite(b) && <span class="pill">{b.rating}</span>}
       {b.finishedLabel && <span class="mono-meta">Finished {b.finishedLabel}</span>}
@@ -76,7 +76,14 @@ const desc = (b.review || b.impressions || `My notes on ${b.short}.`).split('\n'
   </article>
 </Base>
 
+<script>
+  import { fromCompany } from '../../scripts/from-company';
+  fromCompany('jt-lib');
+</script>
+
 <style>
+  .crumbs { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+  .back[hidden] { display: none; }
   .wrap { max-width: 720px; padding-top: clamp(28px, 5vw, 64px); }
   .wrap > p a, .meta a { text-decoration: none; }
   .meta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 24px; }

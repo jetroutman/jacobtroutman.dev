@@ -9,7 +9,7 @@ const fav = books.filter(favorite).length;
 ---
 <Base title="Library · Jacob Troutman" description="Books I've read and written up, straight from my Notion catalog.">
   <div class="intro">
-    <p class="mono-meta"><a href="/">← Decision log</a> / Library</p>
+    <p class="mono-meta"><a href="/" data-back>← Decision log</a> / Library</p>
     <h1 class="h1">Library</h1>
     <p class="desc">Books I've read and written up, straight from my Notion catalog. The ones that changed how I work are marked. Some come with my notes from my Zettelkasten.</p>
     <p class="mono-meta stats">{books.length} books · {fav} favorites · {books.filter((b) => b.fiction).length} fiction</p>
@@ -49,6 +49,8 @@ const fav = books.filter(favorite).length;
 </Base>
 
 <script>
+  import { fromCompany } from '../../scripts/from-company';
+  fromCompany('jt-lib');
   const items = [...document.querySelectorAll<HTMLElement>('.book')];
   const kinds = [...document.querySelectorAll<HTMLButtonElement>('[data-kind]')];
   const tags = [...document.querySelectorAll<HTMLButtonElement>('[data-tag]')];

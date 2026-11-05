@@ -37,7 +37,13 @@ const fullTitle = title === site.name ? title : `${title} · ${site.name}`;
     <div class="wrap">
       <header class="site-header">
         <a class="name" href="/">{site.name}</a>
-        <button class="theme-toggle" type="button" data-theme-toggle>Dark mode</button>
+        <div class="header-right">
+          <nav class="site-nav" aria-label="Site">
+            <a href="/pocket-log/" data-from-link>Pocket Log</a>
+            <a href="/library/" data-from-link>Library</a>
+          </nav>
+          <button class="theme-toggle" type="button" data-theme-toggle>Dark mode</button>
+        </div>
       </header>
 
       <slot />
@@ -80,6 +86,11 @@ const fullTitle = title === site.name ? title : `${title} · ${site.name}`;
     padding: 16px 0; border-bottom: 1px solid var(--line);
   }
   .name { font-size: 15px; font-weight: 600; letter-spacing: -0.005em; text-decoration: none; }
+  .header-right { display: flex; align-items: center; gap: clamp(12px, 2.5vw, 24px); }
+  .site-nav { display: flex; gap: clamp(12px, 2.5vw, 20px); }
+  .site-nav a { position: relative; font-size: 14px; font-weight: 500; text-decoration: none; color: var(--muted); }
+  .site-nav a:hover { color: var(--ink); }
+  .site-nav a::before { content: ""; position: absolute; inset: -12px -6px; }
   .theme-toggle {
     position: relative; cursor: pointer;
     border: 1px solid var(--line); background: var(--surface); border-radius: 999px;

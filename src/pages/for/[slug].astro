@@ -36,6 +36,21 @@ const slides = [
 ];
 const pad = (n: number) => String(n).padStart(2, '0');
 // "For the Senior Software Engineer role on your X team." -> "Senior Software Engineer" (email subjects)
+import { books as libBooks } from '../../lib/library';
+// Book titles mentioned in the intro link to their Library page (Published books with a page only).
+const libLinks = libBooks.filter((b) => b.hasPage).map((b) => ({ title: b.short, href: `/library/${b.slug}/` }));
+type Piece = string | { text: string; href: string };
+const linkBooks = (para: string): Piece[] => {
+  let pieces: Piece[] = [para];
+  for (const l of libLinks) {
+    pieces = pieces.flatMap((p) => {
+      if (typeof p !== 'string' || !p.includes(l.title)) return [p];
+      const [a, ...rest] = p.split(l.title);
+      return [a, { text: l.title, href: l.href }, rest.join(l.title)];
+    });
+  }
+  return pieces.filter((p) => p !== '');
+};
 const roleName = data.role.match(/the (.+?) role/i)?.[1] ?? data.role;
 ---
 <Base
@@ -55,7 +70,7 @@ const roleName = data.role.match(/the (.+?) role/i)?.[1] ?? data.role;
       <span class="mono-meta bar-pos" aria-live="polite"><span data-pos>01</span> / {pad(slides.length)}<span class="bar-label"> · <span data-label>Intro</span></span></span>
       <div class="hud">
         <span class="mono-meta hud-game dist" title="Cursor distance, in 60 ft bowling lanes"><span data-dist-label>Cursor</span> <span data-dist>0.00 lanes</span></span>
-        <button type="button" class="hud-btn hud-game" data-ach-open aria-expanded="false" aria-controls="ach-panel">Achievements <span data-ach-count>0/18</span></button>
+        <button type="button" class="hud-btn hud-game" data-ach-open aria-expanded="false" aria-controls="ach-panel">Achievements <span data-ach-count>0/19</span></button>
         <button type="button" class="hud-btn game-toggle" data-game-toggle aria-pressed="true">Game <span data-game-state>on</span></button>
       </div>
     </nav>
@@ -65,7 +80,9 @@ const roleName = data.role.match(/the (.+?) role/i)?.[1] ?? data.role;
         <p class="mono-meta reveal"><span class="chip">Unlisted</span> Prepared for {data.company} · {data.date}</p>
         <h1 class="h1 reveal">{data.greeting ?? `Why I fit ${data.company}`}</h1>
         {!data.greeting && <p class="role reveal">{data.role}</p>}
-        {data.summary.trim().split(/\n\s*\n/).map((para) => <p class="statement reveal">{para}</p>)}
+        {data.summary.trim().split(/\n\s*\n/).map((para) => (
+          <p class="statement reveal">{linkBooks(para).map((p) => typeof p === 'string' ? p : <a class="booklink" href={p.href} data-lib-link>{p.text}</a>)}</p>
+        ))}
         <div class="actions reveal">
           <a class="btn btn-primary" href={`mailto:${site.email}`} data-talk={site.email} data-reach>Email me</a>
           {data.phone && <a class="btn btn-secondary" href={`tel:+1${data.phone.replace(/\D/g, '')}`} data-reach>Call {data.phone}</a>}
@@ -174,6 +191,7 @@ const roleName = data.role.match(/the (.+?) role/i)?.[1] ?? data.role;
             </li>
           ))}
         </ol>
+        <p class="libline reveal">Curious what I read when I'm not coding? <a href="/library/" data-lib-link>Browse my library →</a></p>
       </div>
     </section>
 
@@ -221,7 +239,7 @@ const roleName = data.role.match(/the (.+?) role/i)?.[1] ?? data.role;
 
 <script>
   // Case-file and app links carry this page and the current slide, so the case file's back link returns here.
-  for (const a of document.querySelectorAll<HTMLAnchorElement>('[data-case-link], [data-app-link]')) {
+  for (const a of document.querySelectorAll<HTMLAnchorElement>('[data-case-link], [data-app-link], [data-lib-link], [data-from-link]')) {
     a.addEventListener('click', () => {
       const slide = a.closest<HTMLElement>('[data-slide]')?.id;
       const from = location.pathname + (slide ? `#${slide}` : '');
@@ -377,6 +395,9 @@ const roleName = data.role.match(/the (.+?) role/i)?.[1] ?? data.role;
   h1 { margin-top: 18px; font-size: clamp(40px, 6vw, 76px); line-height: 1; }
   .role { margin-top: 16px; font-size: 18px; line-height: 1.45; color: var(--muted); }
   .statement + .statement { margin-top: 16px; }
+  .booklink { text-decoration: underline; text-decoration-color: var(--amber); text-underline-offset: 4px; }
+  .libline { margin-top: 24px; font-size: 16px; color: var(--muted); }
+  .libline a { font-weight: 600; text-decoration: none; color: var(--ink); }
   .statement { margin-top: 28px; max-width: 32em; font-size: clamp(20px, 2.2vw, 26px); line-height: 1.4; font-weight: 500; }
   .hint { margin-top: clamp(32px, 6vh, 64px); }
 
