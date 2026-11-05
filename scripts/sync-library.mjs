@@ -96,6 +96,8 @@ try {
   }
   await writeFile(OUT, JSON.stringify({ source: 'notion', syncedAt: new Date().toISOString(), books }, null, 1));
   console.log(`[library] Synced ${books.length} published books (${books.filter((b) => b.review).length} with reviews).`);
+  // Short summary for checking the sync from CI logs (all of this is public on the site anyway).
+  for (const b of books.filter((x) => x.review || x.notes)) console.log(`[library]  - ${b.title.slice(0, 40)} | notes ${b.notes ?? 0} | who ${b.who.length} | ${(b.review || '').slice(0, 90).replace(/\n/g, ' ')}`);
 } catch (err) {
   // A Notion hiccup should never block a deploy: keep the last committed snapshot.
   console.warn(`[library] Sync failed, keeping the committed snapshot: ${err.message}`);

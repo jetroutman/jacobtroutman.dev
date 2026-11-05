@@ -30,12 +30,6 @@ jobs:
       - run: node scripts/sync-library.mjs
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-      # Keep what Notion returned, so a session can inspect it without the token.
-      - uses: actions/upload-artifact@v4
-        with:
-          name: notion-data
-          path: src/data/*.json
-          retention-days: 7
       - run: npm run build
         env:
           # PR previews also build draft company pages and "Before launch" notes. Production never does.
