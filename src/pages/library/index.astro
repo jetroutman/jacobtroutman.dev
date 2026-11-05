@@ -11,7 +11,7 @@ const fav = books.filter(favorite).length;
   <div class="intro">
     <p class="mono-meta"><a href="/">← Decision log</a> / Library</p>
     <h1 class="h1">Library</h1>
-    <p class="desc">Books I've read and written up, straight from my Notion catalog. The ones that changed how I work are marked. My Zettelkasten notes are coming next.</p>
+    <p class="desc">Books I've read and written up, straight from my Notion catalog. The ones that changed how I work are marked. Some come with my notes from my Zettelkasten.</p>
     <p class="mono-meta stats">{books.length} books · {fav} favorites · {books.filter((b) => b.fiction).length} fiction</p>
   </div>
 
@@ -34,13 +34,13 @@ const fav = books.filter(favorite).length;
           {favorite(b) && <span class="pill">{b.rating}</span>}
           {b.finishedLabel && <span class="mono-meta">{b.finishedLabel}</span>}
         </div>
-        <h2 class="title">{b.review ? <a href={`/library/${b.slug}/`}>{b.short}</a> : b.short}</h2>
+        <h2 class="title">{b.hasPage ? <a href={`/library/${b.slug}/`}>{b.short}</a> : b.short}</h2>
         {b.subtitle && <p class="sub">{b.subtitle}</p>}
         {b.author && <p class="author">{b.author}</p>}
         {b.tags.length > 0 && <p class="mono-meta btags">{b.tags.slice(0, 4).join(' · ')}</p>}
         <div class="foot">
           {b.notes ? <span class="mono-meta">{b.notes} notes</span> : null}
-          {b.review && <a class="more" href={`/library/${b.slug}/`}>My take →</a>}
+          {b.hasPage && <a class="more" href={`/library/${b.slug}/`}>{b.review || b.impressions ? 'My take →' : 'My notes →'}</a>}
         </div>
       </li>
     ))}
