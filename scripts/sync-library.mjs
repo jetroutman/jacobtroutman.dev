@@ -14,10 +14,17 @@ if (!TOKEN) {
   process.exit(0);
 }
 
-async function call(path, init = {}, tries = 3) {
+// Notion allows ~3 requests/second: space calls out, and on 429 wait as long as Notion asks.
+let last = 0;
+async function call(path, init = {}, tries = 6) {
   for (let i = 0; ; i++) {
+    const wait = last + 350 - Date.now(); if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+    last = Date.now();
     const res = await fetch(API + path, { ...init, headers: HEADERS });
-    if (res.status === 429 && i < tries) { await new Promise((r) => setTimeout(r, 1000 * (i + 1))); continue; }
+    if ((res.status === 429 || res.status >= 500) && i < tries) {
+      const after = Number(res.headers.get('retry-after')) || 2 ** i;
+      await new Promise((r) => setTimeout(r, (after + 1) * 1000)); continue;
+    }
     if (!res.ok) throw new Error(`${init.method || 'GET'} ${path} → ${res.status} ${await res.text()}`);
     return res.json();
   }
