@@ -40,6 +40,8 @@ const companies = defineCollection({
     plan: z.array(z.object({ days: z.string(), title: z.string(), items: z.array(z.string()) })),
     questions: z.array(z.string()),
     draft: z.boolean().default(false),    // drafts are not built in production
+    /** Optional phone shown only on this page, e.g. "708-555-0100". */
+    phone: z.string().optional(),
     /** Final slide; unlocks once the reader has seen every other slide. Must be true, specific to this company, and worth finding. */
     bonus: z.object({ label: z.string(), title: z.string(), body: z.string() }).optional(),
   }),

@@ -61,6 +61,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
         <p class="statement reveal">{data.summary}</p>
         <div class="actions reveal">
           <a class="btn btn-primary" href={`mailto:${site.email}`}>Email me</a>
+          {data.phone && <a class="btn btn-secondary" href={`tel:+1${data.phone.replace(/\D/g, '')}`}>Call {data.phone}</a>}
           <a class="btn btn-secondary" href={site.resume}>Résumé (PDF)</a>
         </div>
         <p class="mono-meta hint reveal" aria-hidden="true">Scroll down, I'll walk you through it ↓</p>
@@ -173,7 +174,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
             <p class="mono-label bonus-label">Unlocked · {data.bonus.label}</p>
             <h3>{data.bonus.title}</h3>
             <p>{data.bonus.body}</p>
-            <div class="actions"><a class="btn btn-primary" href={`mailto:${site.email}`}>Let's talk</a></div>
+            <div class="actions"><a class="btn btn-primary" href={`mailto:${site.email}`}>Let's talk</a>{data.phone && <a class="btn btn-secondary" href={`tel:+1${data.phone.replace(/\D/g, '')}`}>Call {data.phone}</a>}</div>
           </aside>
           <div class="summary reveal hud-game" data-summary>
             <p class="mono-label">How your run went</p>
