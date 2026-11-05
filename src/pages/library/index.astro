@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { books, favorite } from '../../lib/library';
+import { books as allBooks, favorite, rankedCount, type LibBook } from '../../lib/library';
+const books = allBooks as LibBook[];
 
 const counts = new Map<string, number>();
 for (const b of books) for (const t of b.tags) counts.set(t, (counts.get(t) || 0) + 1);
@@ -11,7 +12,7 @@ const fav = books.filter(favorite).length;
   <div class="intro">
     <p class="mono-meta"><a href="/" data-back>← Decision log</a> / Library</p>
     <h1 class="h1">Library</h1>
-    <p class="desc">Books I've read and written up, straight from my Notion catalog. The ones that changed how I work are marked. Some come with my notes from my Zettelkasten.</p>
+    <p class="desc">Books I've read and written up, straight from my Notion catalog. Ranked by my own rating; the ones that changed how I work are marked. Some come with my notes from my Zettelkasten.</p>
     <p class="mono-meta stats">{books.length} books · {fav} favorites · {books.filter((b) => b.fiction).length} fiction</p>
   </div>
 
@@ -31,6 +32,7 @@ const fav = books.filter(favorite).length;
     {books.map((b) => (
       <li class="book" data-fic={b.fiction ? '1' : '0'} data-fav={favorite(b) ? '1' : '0'} data-tags={b.tags.join('|')}>
         <div class="top">
+          <span class="rank" title={b.rank ? `Ranked #${b.rank} of ${rankedCount} by my own rating` : 'Not ranked yet'}>{b.rank ? `#${b.rank}` : '—'}</span>
           {favorite(b) && <span class="pill">{b.rating}</span>}
           {b.finishedLabel && <span class="mono-meta">{b.finishedLabel}</span>}
         </div>
@@ -87,7 +89,9 @@ const fav = books.filter(favorite).length;
   .shelf { list-style: none; padding: 0; margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
   .book { display: flex; flex-direction: column; gap: 6px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
   .book[hidden] { display: none; }
-  .top { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 22px; }
+  .top { display: flex; align-items: center; gap: 8px; min-height: 22px; }
+  .top .mono-meta { margin-left: auto; }
+  .rank { font: 600 15px var(--mono); color: var(--amber-ink); min-width: 2.6em; }
   .title { font-size: 18px; line-height: 1.25; font-weight: 600; }
   .title a { text-decoration: none; }
   .sub { font-size: 14px; line-height: 1.4; color: var(--muted); }

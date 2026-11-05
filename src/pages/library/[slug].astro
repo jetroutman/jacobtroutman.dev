@@ -1,6 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { books, favorite, type LibBook } from '../../lib/library';
+import { books, favorite, rankedCount, groupNotes, type LibBook } from '../../lib/library';
 
 export function getStaticPaths() {
   return books.filter((b) => b.hasPage).map((b) => ({ params: { slug: b.slug }, props: { b } }));
@@ -22,12 +22,14 @@ const sections = [
   { label: 'My impressions', text: b.impressions },
   { label: 'How it changed me', text: b.changed },
 ].filter((s) => s.text);
+const groups = groupNotes(b.refNotes);
 const desc = (b.review || b.impressions || `My notes on ${b.short}.`).split('\n')[0].replace(/^• /, '');
 ---
 <Base title={`${b.short} · Library · Jacob Troutman`} description={desc}>
   <article class="wrap">
     <p class="mono-meta crumbs"><a href="/library/">← Library</a> / {b.short}<a class="back" href="/" data-back hidden>← Back to your page</a></p>
     <div class="meta">
+      {b.rank && <span class="rank">#{b.rank} <span class="of">of {rankedCount}</span></span>}
       {favorite(b) && <span class="pill">{b.rating}</span>}
       {b.finishedLabel && <span class="mono-meta">Finished {b.finishedLabel}</span>}
       {b.refNotes.length > 0 && <a class="mono-meta" href="#notes">{b.refNotes.length} notes ↓</a>}
@@ -58,18 +60,26 @@ const desc = (b.review || b.impressions || `My notes on ${b.short}.`).split('\n'
       <section id="notes" class="notes">
         <p class="mono-label">My notes · {b.refNotes.length}</p>
         <p class="hint">From my Zettelkasten: what stood out, and what I made of it.</p>
+        <nav class="note-jump" aria-label="Note types">
+          {groups.map((g) => <a href={`#notes-${g.type.replace(/\W+/g, '-').toLowerCase()}`}>{g.label} <span>{g.notes.length}</span></a>)}
+        </nav>
+        {groups.map((g, gi) => (
+        <details class="group" id={`notes-${g.type.replace(/\W+/g, '-').toLowerCase()}`} open={gi === 0}>
+        <summary><h3 class="group-title">{g.label}</h3><span class="mono-meta">{g.notes.length}</span></summary>
         <ol class="note-list">
-          {b.refNotes.map((n) => (
+          {g.notes.map((n) => (
             <li class="note">
               <div class="note-head">
-                <h3>{n.title}</h3>
-                <span class="mono-meta">{[n.type, n.page != null ? `p. ${n.page}` : null].filter(Boolean).join(' · ')}</span>
+                <h4>{n.title}</h4>
+                {n.page != null && <span class="mono-meta">p. {n.page}</span>}
               </div>
               {n.interpretation && chunks(n.interpretation).map((c) => c.kind === 'p' ? <p class="interp">{c.text}</p> : <ul class="list">{c.items.map((x) => <li>{x}</li>)}</ul>)}
               {n.quote && <blockquote>{n.quote}</blockquote>}
             </li>
           ))}
         </ol>
+        </details>
+        ))}
       </section>
     )}
     {b.tags.length > 0 && <p class="mono-meta tags">{b.tags.join(' · ')}</p>}
@@ -79,6 +89,9 @@ const desc = (b.review || b.impressions || `My notes on ${b.short}.`).split('\n'
 <script>
   import { fromCompany } from '../../scripts/from-company';
   fromCompany('jt-lib');
+  // Jumping to a note type opens its group.
+  const openHash = () => { const el = location.hash && document.querySelector<HTMLDetailsElement>(location.hash); if (el?.tagName === 'DETAILS') el.open = true; };
+  addEventListener('hashchange', openHash); openHash();
 </script>
 
 <style>
@@ -99,7 +112,19 @@ const desc = (b.review || b.impressions || `My notes on ${b.short}.`).split('\n'
   .note-list { list-style: none; padding: 0; margin-top: 16px; display: grid; gap: 12px; }
   .note { padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
   .note-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-  .note h3 { font-size: 17px; font-weight: 600; line-height: 1.3; }
+  .rank { font: 600 16px var(--mono); color: var(--amber-ink); }
+  .rank .of { font-weight: 400; color: var(--muted); font-size: 13px; }
+  .note-jump { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .note-jump a { padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; text-decoration: none; background: var(--surface); }
+  .note-jump a span { color: var(--muted); margin-left: 4px; }
+  .group { margin-top: 18px; border-top: 1px solid var(--line); }
+  .group > summary { display: flex; justify-content: space-between; align-items: baseline; padding: 14px 0 4px; cursor: pointer; list-style: none; }
+  .group > summary::-webkit-details-marker { display: none; }
+  .group > summary::after { content: '+'; font: 16px var(--mono); color: var(--muted); margin-left: 12px; }
+  .group[open] > summary::after { content: '–'; }
+  .group > summary .mono-meta { margin-left: auto; }
+  .group-title { font-size: 20px; font-weight: 600; }
+  .note h4 { font-size: 17px; font-weight: 600; line-height: 1.3; }
   .interp { margin-top: 8px; font-size: 16px; line-height: 1.55; }
   blockquote { margin: 10px 0 0; padding-left: 12px; border-left: 2px solid var(--line); color: var(--muted); font-size: 15px; line-height: 1.5; }
   .tags { margin-top: 36px; }
