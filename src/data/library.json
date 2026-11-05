@@ -1,0 +1,1215 @@
+{
+ "source": "snapshot",
+ "syncedAt": "2026-11-05",
+ "books": [
+  {
+   "id": "2cd0596e1aaa800694b6febf2f33a077",
+   "title": "A Better Share: How Couples Can Tackle the Mental Load for More Fun, Less Resentment, and Great Sex",
+   "author": "Morgan Cutlip",
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": 6.0,
+   "rating": null,
+   "finished": "2025-12-18",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2cd0596e1aaa800bbe2dc9aace9c32d8",
+   "title": "ChatGPT Productivity Blueprint: Unlock AI Strategies to Automate Tasks, Maximize Efficiency, and Achieve More in Less Time",
+   "author": null,
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": 1.0,
+   "rating": null,
+   "finished": "2025-12-18",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2cd0596e1aaa800c9b77ddb972a411c4",
+   "title": "The Look",
+   "author": "Michelle Obama, Meredith Koop, Farah Jasmine Griffin (Foreword)",
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": 6.0,
+   "rating": null,
+   "finished": "2025-12-18",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2cd0596e1aaa80559230d07a2507cfb0",
+   "title": "AI For Beginners: Grasp Generative AI and Machine Learning, Advance Your Career, and Explore the Ethical Implications of Artificial Intelligence in Just 31 Days",
+   "author": "Tina E. Bradley",
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": 4.0,
+   "rating": null,
+   "finished": "2025-12-18",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2cd0596e1aaa806da2d5d62f19ff1919",
+   "title": "101 Essays That Will Change The Way You Think",
+   "author": "Brianna Wiest",
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [
+    "Psychology",
+    "Personal Reflection",
+    "Journal Writing"
+   ],
+   "score": 8.0,
+   "rating": null,
+   "finished": "2025-12-18",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2cd0596e1aaa80a19508c673b788bf91",
+   "title": "God Chose Me: Untouchable Confidence for the Unstoppable Christian",
+   "author": "Charles Henry Metcalf III",
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [
+    "Spirituality"
+   ],
+   "score": 8.0,
+   "rating": null,
+   "finished": "2025-12-18",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2cd0596e1aaa80d1b97ac8acc33639c5",
+   "title": "Power And Prediction: The Disruptive Economics of Artificial Intelligence",
+   "author": "Ajay Agrawal, Joshua Gans, Avi Goldfarb",
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [
+    "Business",
+    "Economy",
+    "Science"
+   ],
+   "score": 8.0,
+   "rating": null,
+   "finished": "2025-12-18",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2cd0596e1aaa80f8a061f0338eff1c24",
+   "title": "Tiny Experiments: How to Live Freely in a Goal-Obsessed World",
+   "author": "Anne-Laure Le Cunff",
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": 10.0,
+   "rating": null,
+   "finished": "2025-12-18",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "29a0596e1aaa804f91c4f7ca299da828",
+   "title": "Educated",
+   "author": "Tara Westover",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Education",
+    "Mental Health",
+    "Health",
+    "Psychology",
+    "Life Advice"
+   ],
+   "topics": [],
+   "score": 10.015,
+   "rating": null,
+   "finished": "2025-10-28",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2930596e1aaa8007a7f8da1d39de8cf5",
+   "title": "The Half Has Never Been Told: Slavery and the Making of American Capitalism",
+   "author": "Edward E. Baptist",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Economics",
+    "Cultural"
+   ],
+   "topics": [],
+   "score": 10.1,
+   "rating": null,
+   "finished": "2025-10-22",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2930596e1aaa805abbd2eb32daa45101",
+   "title": "Sid Meier's Memoir!: A Life in Computer Games",
+   "author": "Sid Meier",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Game Design",
+    "Biography"
+   ],
+   "topics": [],
+   "score": 7.0,
+   "rating": null,
+   "finished": "2025-08-22",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "20e0596e1aaa806cb88dfae52a4eb826",
+   "title": "Effortless: Make It Easier to Do What Matters Most",
+   "author": "Greg McKeown",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Productivity",
+    "Life Advice"
+   ],
+   "topics": [],
+   "score": 7.85,
+   "rating": null,
+   "finished": "2025-06-10",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "20e0596e1aaa8081bfefe5700b226aef",
+   "title": "The Creative Act: A Way of Being",
+   "author": "Rick Rubin",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Philosophy",
+    "Creativity",
+    "Life Advice"
+   ],
+   "topics": [],
+   "score": null,
+   "rating": null,
+   "finished": "2025-06-10",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "20e0596e1aaa80ef9bfddd83ce84ebae",
+   "title": "$100M Leads: How to Get Strangers To Want To Buy Your Stuff",
+   "author": "Alex Hormozi",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Business"
+   ],
+   "topics": [
+    "Advertisement",
+    "Business"
+   ],
+   "score": 8.9,
+   "rating": null,
+   "finished": "2025-06-10",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2090596e1aaa80219600dcdb12847469",
+   "title": "Trillion Dollar Coach: The Leadership Playbook of Silicon Valley's Bill Campbell",
+   "author": "Eric Schmidt, Jonathan Rosenberg, Alan Eagle",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Business",
+    "Communication",
+    "Leadership"
+   ],
+   "topics": [
+    "Communication"
+   ],
+   "score": 6.0,
+   "rating": null,
+   "finished": "2025-06-05",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2080596e1aaa80de8df9dd08242b2dd9",
+   "title": "Essentialism: The Disciplined Pursuit of Less",
+   "author": "Greg McKeown",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Life Advice",
+    "Productivity"
+   ],
+   "topics": [
+    "Personal Reflection"
+   ],
+   "score": 9.75,
+   "rating": null,
+   "finished": "2025-06-04",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2080596e1aaa80eeb335d07ac5ff4270",
+   "title": "The Diary of a CEO: The 33 Laws of Business and Life",
+   "author": "Steven Bartlett",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Business",
+    "Life Advice"
+   ],
+   "topics": [],
+   "score": 9.0,
+   "rating": null,
+   "finished": "2025-06-04",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "20e0596e1aaa8068b96ce49dac70192d",
+   "title": "Fathered by God: Learning What Your Dad Could Never Teach You",
+   "author": "John Eldredge",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Spirituality",
+    "Life Advice",
+    "Mental Health",
+    "Philosophy",
+    "Parenting"
+   ],
+   "topics": [
+    "Spirituality",
+    "Parenting",
+    "Personal Reflection"
+   ],
+   "score": 9.7,
+   "rating": null,
+   "finished": "2025-06-02",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2080596e1aaa801ca1e9d63a08488518",
+   "title": "Blood, Sweat, and Pixels",
+   "author": null,
+   "kind": "Non-Fiction",
+   "genres": [
+    "Game Design",
+    "Writing",
+    "Business"
+   ],
+   "topics": [],
+   "score": 8.5,
+   "rating": null,
+   "finished": "2025-05-27",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2080596e1aaa80d08fe4e3067a3f632f",
+   "title": "Emotional Intelligence Habits",
+   "author": "Travis Bradberry",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Mental Health",
+    "Life Advice",
+    "Education"
+   ],
+   "topics": [],
+   "score": 6.9,
+   "rating": null,
+   "finished": "2025-05-27",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2080596e1aaa803a974cc3cf417dc193",
+   "title": "Designing Your Life: How to Build a Well-Lived, Joyful Life",
+   "author": "Bill Burnett, Dave Evans",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Productivity",
+    "Life Advice"
+   ],
+   "topics": [],
+   "score": 9.0,
+   "rating": null,
+   "finished": "2025-05-19",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "1f20596e1aaa80859f52fc20527d5b06",
+   "title": "Video Game Storytelling: What Every Developer Needs to Know about Narrative Techniques",
+   "author": "Evan Skolnick",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Game Design",
+    "Writing"
+   ],
+   "topics": [
+    "Writing"
+   ],
+   "score": 8.75,
+   "rating": null,
+   "finished": "2025-05-13",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "1f20596e1aaa80cfa169d54c4ee0dec6",
+   "title": "How to Talk to Anyone: 92 Little Tricks for Big Success in Relationships",
+   "author": "Leil Lowndes",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Education",
+    "Communication",
+    "Life Advice"
+   ],
+   "topics": [
+    "Communication"
+   ],
+   "score": 7.5,
+   "rating": null,
+   "finished": "2025-05-13",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "1f20596e1aaa80d1b147c0780a504617",
+   "title": "Think Like A Game Designer: The Step-by-Step Guide to Unlocking Your Creative Potential",
+   "author": "Justin Gary",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Game Design"
+   ],
+   "topics": [
+    "Personal Reflection"
+   ],
+   "score": 8.8,
+   "rating": null,
+   "finished": "2025-05-13",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "1f20596e1aaa8086b067f10d04398484",
+   "title": "Good Habits, Bad Habits: The Science of Making Positive Changes That Stick",
+   "author": "Wendy Wood",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Productivity",
+    "Life Advice"
+   ],
+   "topics": [
+    "Personal Reflection"
+   ],
+   "score": 8.5,
+   "rating": null,
+   "finished": "2025-05-08",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "1de0596e1aaa8052b58cedfc403c5589",
+   "title": "Uncommon Sense Teaching: Practical Insights in Brain Science to Help Students Learn",
+   "author": "Barbara Oakley, Beth Rogowsky EdD, Terrence J. Sejnowski",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Education",
+    "Study"
+   ],
+   "topics": [
+    "Parenting"
+   ],
+   "score": 9.0,
+   "rating": null,
+   "finished": "2025-04-23",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "1b40596e1aaa804a9c81d5b6f5d01bdb",
+   "title": "Alphabet Squadron",
+   "author": "Alexander Freed",
+   "kind": "Fiction",
+   "genres": [
+    "Sci-Fi",
+    "Young Adult",
+    "Action",
+    "War"
+   ],
+   "topics": [],
+   "score": 7.0,
+   "rating": null,
+   "finished": "2025-03-12",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "1a10596e1aaa80a98edcf85c613f2556",
+   "title": "A Game of Thrones",
+   "author": "George R.R. Martin",
+   "kind": "Fiction-Series",
+   "genres": [
+    "Fantasy",
+    "Action",
+    "Mature"
+   ],
+   "topics": [
+    "Power Dynamics"
+   ],
+   "score": 9.5,
+   "rating": null,
+   "finished": "2025-02-21",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "1990596e1aaa8065853fcfbd4680dc65",
+   "title": "Breath of the Dragon",
+   "author": "Shannon Lee, Fonda Lee",
+   "kind": "Fiction",
+   "genres": [
+    "Fantasy",
+    "Young Adult",
+    "Action"
+   ],
+   "topics": [
+    "Magic System",
+    "Martial Arts"
+   ],
+   "score": 11.1,
+   "rating": null,
+   "finished": "2025-02-12",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "1970596e1aaa8086a492dc70fa98fa15",
+   "title": "Heart of the Sun Warrior",
+   "author": "Sue Lynn Tan",
+   "kind": "Fiction-Series",
+   "genres": [
+    "Fantasy",
+    "Romance",
+    "Adventure",
+    "War",
+    "Magic",
+    "Action",
+    "Young Adult"
+   ],
+   "topics": [],
+   "score": 7.0,
+   "rating": null,
+   "finished": "2025-02-11",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "1900596e1aaa80f7bd76da341b96f083",
+   "title": "Beasts of Prey",
+   "author": "Ayana Gray",
+   "kind": "Fiction",
+   "genres": [
+    "Cultural",
+    "Fantasy",
+    "Romance",
+    "Adventure",
+    "Magic",
+    "Action",
+    "Young Adult"
+   ],
+   "topics": [],
+   "score": 7.5,
+   "rating": null,
+   "finished": "2025-02-04",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "18b0596e1aaa805386f1dbb4283e55d4",
+   "title": "Four Ruined Realms",
+   "author": "Mai Corland",
+   "kind": "Fiction-Series",
+   "genres": [
+    "Fantasy",
+    "Romance",
+    "Adventure",
+    "New Adult",
+    "Action",
+    "LGBT",
+    "Sexuality"
+   ],
+   "topics": [
+    "Power Dynamics"
+   ],
+   "score": 9.6,
+   "rating": null,
+   "finished": "2025-01-30",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "1850596e1aaa804ab7c0e78fcad85315",
+   "title": "Onyx Storm",
+   "author": "Rebecca Yarros",
+   "kind": "Fiction-Series",
+   "genres": [
+    "Fantasy",
+    "Romance",
+    "War",
+    "New Adult",
+    "Magic",
+    "Action"
+   ],
+   "topics": [
+    "Magic System"
+   ],
+   "score": null,
+   "rating": null,
+   "finished": "2025-01-24",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "1820596e1aaa803ba326c857401d9e9e",
+   "title": "Daughter of the Moon Goddess",
+   "author": "Sue Lynn Tan",
+   "kind": "Fiction-Series",
+   "genres": [
+    "Cultural",
+    "Fantasy",
+    "Romance",
+    "Adventure",
+    "Young Adult"
+   ],
+   "topics": [
+    "Mythology"
+   ],
+   "score": 9.4,
+   "rating": null,
+   "finished": "2025-01-21",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "17d0596e1aaa80279d8dfa2317f96d61",
+   "title": "Heavenly Tyrant (Iron Widow, #2)",
+   "author": "Xiran Jay Zhao",
+   "kind": "Fiction-Series",
+   "genres": [
+    "War",
+    "Cultural",
+    "Sci-Fi",
+    "Fantasy",
+    "Romance",
+    "Young Adult",
+    "Sexuality",
+    "LGBT",
+    "Mature"
+   ],
+   "topics": [
+    "Power Dynamics"
+   ],
+   "score": 9.23,
+   "rating": null,
+   "finished": "2025-01-16",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "1730596e1aaa801da40cd614946e7903",
+   "title": "Ashes of Gold",
+   "author": "J. Elle",
+   "kind": "Fiction",
+   "genres": [
+    "War",
+    "Fantasy",
+    "Adventure",
+    "Young Adult"
+   ],
+   "topics": [],
+   "score": 7.0,
+   "rating": null,
+   "finished": "2025-01-06",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "1700596e1aaa80f6b0d2eaf35654e3d8",
+   "title": "The Song of Achilles",
+   "author": "Madeline Miller",
+   "kind": "Fiction",
+   "genres": [
+    "History",
+    "War",
+    "Sexuality",
+    "Mature",
+    "LGBT"
+   ],
+   "topics": [],
+   "score": 7.5,
+   "rating": null,
+   "finished": "2025-01-03",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "1730596e1aaa800bb775dff2ee92ed9e",
+   "title": "A Novel Christmas",
+   "author": "Charity Shane",
+   "kind": "Fiction",
+   "genres": [
+    "Romance",
+    "Mature"
+   ],
+   "topics": [],
+   "score": 8.5,
+   "rating": null,
+   "finished": "2024-12-27",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "197a5bd5b9c0402c86a5148e3cb539c3",
+   "title": "Conquering Writer's Block and Summoning Inspiration",
+   "author": "K.M. Weiland",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Writing"
+   ],
+   "topics": [
+    "Writing"
+   ],
+   "score": 8.0,
+   "rating": null,
+   "finished": "2024-03-20",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "21565551eb0941ba8354b2fe70aee48c",
+   "title": "Writing Your Story's Theme: The Writer's Guide to Plotting Stories That Matter",
+   "author": "K.M. Weiland",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Writing"
+   ],
+   "topics": [
+    "Writing"
+   ],
+   "score": 8.0,
+   "rating": null,
+   "finished": "2024-03-20",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "4947084369b74690b1c9a794a46032ef",
+   "title": "5 Secrets of Story Structure: How to Write a Novel That Stands Out",
+   "author": "K.M. Weiland",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Writing"
+   ],
+   "topics": [
+    "Writing"
+   ],
+   "score": 8.0,
+   "rating": null,
+   "finished": "2024-03-20",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "55200e5796614fe7af68a99e8aaa25c5",
+   "title": "Writing Archetypal Character Arcs: The Hero's Journey and Beyond",
+   "author": "K. M. Weiland",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Writing"
+   ],
+   "topics": [
+    "Writing"
+   ],
+   "score": 8.0,
+   "rating": null,
+   "finished": "2024-03-20",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "5ed8d706654c4dafa0bda8d55e334027",
+   "title": "Creating Character Arcs: The Masterful Author's Guide to Uniting Story Structure, Plot, and Character Development",
+   "author": "K.M. Weiland",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Writing"
+   ],
+   "topics": [
+    "Writing"
+   ],
+   "score": 8.0,
+   "rating": null,
+   "finished": "2024-03-20",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "4f4a02a20b704123bc3faf616b05c2be",
+   "title": "How to Take Smart Notes",
+   "author": "Sonke Ahrens",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Writing"
+   ],
+   "topics": [
+    "Writing"
+   ],
+   "score": 10.9,
+   "rating": "5-Star",
+   "finished": "2024-01-01",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "97df72cce37549eaa07551b9d96d59cd",
+   "title": "How to Read a Book: The Classic Guide to Intelligent Reading",
+   "author": "Mortimer J. Adler, Charles Van Doren",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Study"
+   ],
+   "topics": [
+    "Personal Reflection"
+   ],
+   "score": 19.0,
+   "rating": "Lifechanging",
+   "finished": "2023-12-27",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "17d0596e1aaa80a4b081cf194c8ee8ca",
+   "title": "Iron Widow",
+   "author": "Xiran Jay Zhao",
+   "kind": "Fiction",
+   "genres": [
+    "War",
+    "Sci-Fi",
+    "Fantasy",
+    "Romance",
+    "LGBT",
+    "Sexuality"
+   ],
+   "topics": [
+    "Power Dynamics"
+   ],
+   "score": 8.5,
+   "rating": null,
+   "finished": "2023-12-21",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "f905710f4e1b44ed839528866c3c017f",
+   "title": "Writing Your Story's Theme",
+   "author": "K. M. Weiland",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Writing",
+    "Study",
+    "Education",
+    "Creativity"
+   ],
+   "topics": [
+    "Writing"
+   ],
+   "score": 8.5,
+   "rating": null,
+   "finished": "2022-10-26",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "63276c4e647c4f50a33459123e16c608",
+   "title": "Building a Second Brain: A Proven Method to Organize Your Digital Life and Unlock Your Creative Potential",
+   "author": "Tiago Forte",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Life Advice",
+    "Productivity",
+    "Study",
+    "Creativity"
+   ],
+   "topics": [
+    "Personal Reflection"
+   ],
+   "score": 9.9,
+   "rating": "Lifechanging",
+   "finished": "2022-09-12",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "8922953fdc214beb94fe4ccafbf1c6d1",
+   "title": "The Bullet Journal Method",
+   "author": "Ryder Carroll",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Philosophy",
+    "Life Advice"
+   ],
+   "topics": [
+    "Journal Writing"
+   ],
+   "score": 11.85,
+   "rating": "Lifechanging",
+   "finished": "2022-05-27",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "8b05d5944a7d44e1872ea29836954eab",
+   "title": "Make It Stick: The Science of Successful Learning",
+   "author": "Peter C. Brown, Henry L. Roediger III, Mark A. McDaniel",
+   "kind": "Non-Fiction",
+   "genres": [
+    "Psychology",
+    "Life Advice",
+    "Study"
+   ],
+   "topics": [
+    "Metacognition"
+   ],
+   "score": 12.0,
+   "rating": "Lifechanging",
+   "finished": "2019-08-01",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2570596e1aaa8000b75cd42bb23a18fc",
+   "title": "10 Steps to Earning Awesome Grades",
+   "author": null,
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": null,
+   "rating": null,
+   "finished": "2025-08-22",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2570596e1aaa800183e2f86424d54613",
+   "title": "Thinking in Bets: Making Smarter Decisions When You Don't Have All the Facts",
+   "author": null,
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": null,
+   "rating": null,
+   "finished": "2025-08-22",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2570596e1aaa800582aed08e13716f67",
+   "title": "Your Next Five Moves: Master the Art of Business Strategy",
+   "author": null,
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": null,
+   "rating": null,
+   "finished": "2025-08-22",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2570596e1aaa802599a7f8e3486e4abf",
+   "title": "Never Split the Difference: Negotiating As If Your Life Depended On It",
+   "author": null,
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": null,
+   "rating": null,
+   "finished": "2025-08-22",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2570596e1aaa802bae87d63936a47ff8",
+   "title": "8 Rules of Love: How to Find it, Keep It, and Let It Go",
+   "author": null,
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": null,
+   "rating": null,
+   "finished": "2025-08-22",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2570596e1aaa8033b4cfca83a9cb29cf",
+   "title": "So You Want to Start a Podcast",
+   "author": null,
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": null,
+   "rating": null,
+   "finished": "2025-08-22",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2570596e1aaa803f9d01c31121c32178",
+   "title": "Astrophysics for Young People in a Hurry",
+   "author": null,
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": null,
+   "rating": null,
+   "finished": "2025-08-22",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2570596e1aaa8066b3a2e42ad84452de",
+   "title": "The Light We Carry: Overcoming in Uncertain Times",
+   "author": null,
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": null,
+   "rating": null,
+   "finished": "2025-08-22",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2570596e1aaa80808e34c575e0be7bbc",
+   "title": "Norse Mythology",
+   "author": null,
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": null,
+   "rating": null,
+   "finished": "2025-08-22",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2570596e1aaa8084ba26fdbaa1d59897",
+   "title": "Algorithms to Live By: The Computer Science of Human Decisions",
+   "author": null,
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": null,
+   "rating": null,
+   "finished": "2025-08-22",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2570596e1aaa8085a6dee4cfa32a13ee",
+   "title": "Drop the Ball: Achieving More by Doing Less",
+   "author": null,
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": null,
+   "rating": null,
+   "finished": "2025-08-22",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2570596e1aaa808e9032d35c5aa9c498",
+   "title": "Defining Moments in Black History: Reading Between the Lies",
+   "author": null,
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": null,
+   "rating": null,
+   "finished": "2025-08-22",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2570596e1aaa80a894a7c33f9e8576b7",
+   "title": "Think Like a Monk: Train Your Mind for Peace and Purpose Every Day",
+   "author": null,
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": null,
+   "rating": null,
+   "finished": "2025-08-22",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2570596e1aaa80b2b30dffd29e8ddec4",
+   "title": "The 5 Second Rule: Transform your Life, Work, and Confidence with Everyday Courage",
+   "author": null,
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": null,
+   "rating": null,
+   "finished": "2025-08-22",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2570596e1aaa80c6ad90d4030ed84fa5",
+   "title": "Four Thousand Weeks: Time Management for Mortals",
+   "author": null,
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": null,
+   "rating": null,
+   "finished": "2025-08-22",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2570596e1aaa80c9bd65f640ddd1c931",
+   "title": "The Minuteman: The Forgotten Legacy of Nat Arno and the Fight Against Newark's Nazis",
+   "author": null,
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": null,
+   "rating": null,
+   "finished": "2025-08-22",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2570596e1aaa80dcae81f61dcc0acffd",
+   "title": "Tribe: On Homecoming and Belonging",
+   "author": null,
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": null,
+   "rating": null,
+   "finished": "2025-08-22",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2570596e1aaa80f3b40be2b13131e10b",
+   "title": "Total Recall: My Unbelievably True Life Story",
+   "author": null,
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": null,
+   "rating": null,
+   "finished": "2025-08-22",
+   "notes": null,
+   "review": null,
+   "who": []
+  },
+  {
+   "id": "2570596e1aaa80ff855fd03f923c27fd",
+   "title": "True Believer: The Rise and Fall of Stan Lee",
+   "author": null,
+   "kind": "Non-Fiction",
+   "genres": [],
+   "topics": [],
+   "score": null,
+   "rating": null,
+   "finished": "2025-08-22",
+   "notes": null,
+   "review": null,
+   "who": []
+  }
+ ]
+}

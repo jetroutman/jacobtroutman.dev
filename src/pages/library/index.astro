@@ -1,0 +1,97 @@
+---
+import Base from '../../layouts/Base.astro';
+import { books, favorite } from '../../lib/library';
+
+const counts = new Map<string, number>();
+for (const b of books) for (const t of b.tags) counts.set(t, (counts.get(t) || 0) + 1);
+const topTags = [...counts].filter(([, n]) => n >= 3).sort((a, b) => b[1] - a[1]).slice(0, 14).map(([t]) => t);
+const fav = books.filter(favorite).length;
+---
+<Base title="Library · Jacob Troutman" description="Books I've read and written up, straight from my Notion catalog.">
+  <div class="intro">
+    <p class="mono-meta"><a href="/">← Decision log</a> / Library</p>
+    <h1 class="h1">Library</h1>
+    <p class="desc">Books I've read and written up, straight from my Notion catalog. The ones that changed how I work are marked. My Zettelkasten notes are coming next.</p>
+    <p class="mono-meta stats">{books.length} books · {fav} favorites · {books.filter((b) => b.fiction).length} fiction</p>
+  </div>
+
+  <div class="filters" role="group" aria-label="Filter books">
+    <div class="seg" role="group" aria-label="Kind">
+      <button type="button" data-kind="all" aria-pressed="true">All</button>
+      <button type="button" data-kind="non" aria-pressed="false">Non-fiction</button>
+      <button type="button" data-kind="fic" aria-pressed="false">Fiction</button>
+      <button type="button" data-kind="fav" aria-pressed="false">Favorites</button>
+    </div>
+    <div class="tags">
+      {topTags.map((t) => <button type="button" class="tag" data-tag={t} aria-pressed="false">{t}</button>)}
+    </div>
+  </div>
+
+  <ul class="shelf" data-shelf>
+    {books.map((b) => (
+      <li class="book" data-fic={b.fiction ? '1' : '0'} data-fav={favorite(b) ? '1' : '0'} data-tags={b.tags.join('|')}>
+        <div class="top">
+          {favorite(b) && <span class="pill">{b.rating}</span>}
+          {b.finishedLabel && <span class="mono-meta">{b.finishedLabel}</span>}
+        </div>
+        <h2 class="title">{b.review ? <a href={`/library/${b.slug}/`}>{b.short}</a> : b.short}</h2>
+        {b.subtitle && <p class="sub">{b.subtitle}</p>}
+        {b.author && <p class="author">{b.author}</p>}
+        {b.tags.length > 0 && <p class="mono-meta btags">{b.tags.slice(0, 4).join(' · ')}</p>}
+        <div class="foot">
+          {b.notes ? <span class="mono-meta">{b.notes} notes</span> : null}
+          {b.review && <a class="more" href={`/library/${b.slug}/`}>My take →</a>}
+        </div>
+      </li>
+    ))}
+  </ul>
+  <p class="mono-meta empty" data-empty hidden>Nothing matches that filter.</p>
+</Base>
+
+<script>
+  const items = [...document.querySelectorAll<HTMLElement>('.book')];
+  const kinds = [...document.querySelectorAll<HTMLButtonElement>('[data-kind]')];
+  const tags = [...document.querySelectorAll<HTMLButtonElement>('[data-tag]')];
+  const empty = document.querySelector<HTMLElement>('[data-empty]')!;
+  let kind = 'all', tag: string | null = null;
+  function apply() {
+    let shown = 0;
+    for (const el of items) {
+      const okKind = kind === 'all' || (kind === 'fic' ? el.dataset.fic === '1' : kind === 'non' ? el.dataset.fic === '0' : el.dataset.fav === '1');
+      const okTag = !tag || el.dataset.tags!.split('|').includes(tag);
+      el.hidden = !(okKind && okTag); if (!el.hidden) shown++;
+    }
+    empty.hidden = shown > 0;
+    kinds.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.kind === kind)));
+    tags.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.tag === tag)));
+  }
+  kinds.forEach((b) => b.addEventListener('click', () => { kind = b.dataset.kind!; apply(); }));
+  tags.forEach((b) => b.addEventListener('click', () => { tag = tag === b.dataset.tag ? null : b.dataset.tag!; apply(); }));
+</script>
+
+<style>
+  .intro { padding-top: clamp(28px, 5vw, 64px); max-width: 720px; }
+  .intro a { text-decoration: none; }
+  h1 { margin-top: 18px; font-size: clamp(34px, 4.4vw, 52px); line-height: 1.02; }
+  .desc { margin-top: 12px; font-size: 17px; line-height: 1.5; color: var(--muted); }
+  .stats { margin-top: 14px; }
+  .filters { position: sticky; top: 0; z-index: 5; display: flex; flex-direction: column; gap: 10px; margin-top: clamp(24px, 4vw, 40px); padding: 12px 0; background: var(--bg); border-bottom: 1px solid var(--line); }
+  .seg { display: inline-flex; align-self: flex-start; padding: 3px; border: 1px solid var(--line); border-radius: 999px; }
+  .seg button { min-height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { min-height: 32px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: 13px; cursor: pointer; }
+  .tag[aria-pressed="true"] { border-color: var(--amber); background: var(--amber-tint); }
+  .shelf { list-style: none; padding: 0; margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .book { display: flex; flex-direction: column; gap: 6px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+  .book[hidden] { display: none; }
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 22px; }
+  .title { font-size: 18px; line-height: 1.25; font-weight: 600; }
+  .title a { text-decoration: none; }
+  .sub { font-size: 14px; line-height: 1.4; color: var(--muted); }
+  .author { font-size: 14px; }
+  .btags { margin-top: 2px; }
+  .foot { margin-top: auto; padding-top: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .more { font-size: 14px; font-weight: 600; text-decoration: none; }
+  .empty { margin-top: 24px; }
+</style>
