@@ -11,6 +11,12 @@
       }
     },
     {
+      "route": "/drafts*",
+      "headers": {
+        "X-Robots-Tag": "noindex, nofollow"
+      }
+    },
+    {
       "route": "/for/*",
       "headers": {
         "X-Robots-Tag": "noindex, nofollow"
@@ -24,6 +30,9 @@
     "401": {
       "redirect": "/.auth/login/github?post_login_redirect_uri=.referrer",
       "statusCode": 302
+    },
+    "403": {
+      "rewrite": "/signin-again/index.html"
     }
   },
   "globalHeaders": {

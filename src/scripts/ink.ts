@@ -139,7 +139,7 @@ export function initInk() {
   if (from) grant(from);
 
   // ---------- admin test controls ----------
-  document.querySelector('[data-ink-reset]')?.addEventListener('click', () => { st = fresh(); save(); shown = 0; paint(); location.reload(); });
+  document.querySelector('[data-ink-reset]')?.addEventListener('click', () => { st = fresh(); save(); try { sessionStorage.removeItem('jt-from'); } catch {} history.scrollRestoration = 'manual'; scrollTo(0, 0); location.replace(location.pathname); });
   document.querySelector('[data-ink-recruiter]')?.addEventListener('click', () => { st.welcomed = null; grant('/for/test/'); });
 
   paint();

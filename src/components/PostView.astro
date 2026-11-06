@@ -4,7 +4,7 @@
 // Used by /posts/<slug>/ (Published) and /admin/<slug>/ (any status, locked to the admin role).
 import InkCard from './InkCard.astro';
 import { INK, inline, published, type Post } from '../lib/posts';
-interface Props { post: Post; admin?: boolean }
+interface Props { post: Post; admin?: string | false } // admin = the list's base path, e.g. /admin/
 const { post, admin = false } = Astro.props;
 const drop = 'M12 2.5C12 2.5 5.2 10.4 5.2 15.2a6.8 6.8 0 0 0 13.6 0C18.8 10.4 12 2.5 12 2.5Z';
 
@@ -30,6 +30,15 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
       {all.map((s, i) => <li><a class="seg" href={`#${s.id}`} data-seg={s.id} aria-label={`${pad(i + 1)}: ${label(s)}`}><span></span></a></li>)}
     </ol>
     <span class="mono-meta bar-pos" aria-live="polite"><span data-pos>01</span> / {pad(all.length)}<span class="bar-label"> · <span data-label>Intro</span></span></span>
+    {admin && (
+      <span class="test">
+        <button type="button" class="test-btn" data-test-toggle aria-expanded="false" aria-controls="test-menu">Test</button>
+        <span class="test-menu" id="test-menu" data-test-menu hidden>
+          <button type="button" data-ink-reset>Reset my ink</button>
+          <button type="button" data-ink-recruiter>Arrive as a recruiter (+100)</button>
+        </span>
+      </span>
+    )}
     <span class="hud" data-hud aria-label="Your ink">
       <span class="hud-gain" data-gain aria-live="polite"></span>
       <span class="hud-pill" data-hud-pill>
@@ -45,7 +54,7 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
       <div class="inner">
         {s.id === 'intro' && (
           <>
-            <p class="mono-meta reveal crumbs">{admin ? <a href="/admin/">← All posts</a> : <a href="/" data-back>← Decision log</a>} <span class="chip">{admin ? post.status : 'Post'}</span> {fmt(post.published) || (admin ? `Edited ${fmt(post.edited)}` : '')} · {post.minutes} min</p>
+            <p class="mono-meta reveal crumbs">{admin ? <a href={admin}>← All posts</a> : <a href="/" data-back>← Decision log</a>} <span class="chip">{admin ? post.status : 'Post'}</span> {fmt(post.published) || (admin ? `Edited ${fmt(post.edited)}` : '')} · {post.minutes} min</p>
             <h1 class="p-title reveal">{post.title}</h1>
             {post.hook && <p class="p-hook reveal">{post.hook}</p>}
           </>
@@ -91,11 +100,18 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
   import { initPostDeck } from '../scripts/post-deck';
   initPostDeck();
   initInk();
+  // Admin test menu
+  const tb = document.querySelector<HTMLButtonElement>('[data-test-toggle]'), tm = document.querySelector<HTMLElement>('[data-test-menu]');
+  if (tb && tm) {
+    tb.addEventListener('click', () => { tm.hidden = !tm.hidden; tb.setAttribute('aria-expanded', String(!tm.hidden)); });
+    for (const b of tm.querySelectorAll('button')) b.addEventListener('click', () => { tm.hidden = true; tb.setAttribute('aria-expanded', 'false'); });
+    document.addEventListener('click', (e) => { if (!tm.hidden && !(e.target as Element).closest('.test')) { tm.hidden = true; tb.setAttribute('aria-expanded', 'false'); } });
+  }
 </script>
 
 <style>
   :global(html:has(.pdeck)) { scroll-snap-type: y proximity; scroll-padding-top: var(--bar-h); --bar-h: 48px; }
-  .deckbar { position: sticky; top: 0; z-index: 30; height: var(--bar-h); display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 16px; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter); background: var(--bg); border-bottom: 1px solid var(--line); }
+  .deckbar { position: sticky; top: 0; z-index: 30; height: var(--bar-h); display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 16px; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter); background: var(--bg); border-bottom: 1px solid var(--line); }
   .segs { list-style: none; margin: 0; padding: 0; display: flex; gap: 4px; }
   .segs li { flex: 1; }
   .seg { position: relative; display: block; padding: 10px 0; }
@@ -105,8 +121,14 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
   .seg:hover span { background: var(--muted); }
   .bar-pos { white-space: nowrap; }
   @media (max-width: 900px) { .bar-label { display: none; } }
-  @media (max-width: 520px) { .bar-pos { display: none; } .deckbar { grid-template-columns: 1fr auto; gap: 10px; } }
+  @media (max-width: 520px) { .bar-pos { display: none; } .deckbar { grid-template-columns: 1fr auto auto; gap: 10px; } }
 
+  .test { position: relative; }
+  .test-btn { min-height: 32px; padding: 0 12px; border: 1px dashed var(--amber); border-radius: 999px; background: var(--amber-tint); color: var(--amber-ink); font: 12px var(--mono); cursor: pointer; }
+  .test-menu { position: absolute; right: 0; top: calc(100% + 8px); z-index: 40; display: grid; gap: 4px; min-width: 240px; padding: 6px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: 0 10px 30px rgb(0 0 0 / .12); }
+  .test-menu[hidden] { display: none; }
+  .test-menu button { min-height: 40px; padding: 0 12px; border: 0; border-radius: 8px; background: none; text-align: left; font-size: 14px; cursor: pointer; }
+  .test-menu button:hover { background: var(--hover); }
   .hud { position: relative; display: flex; align-items: center; }
   .hud-pill { display: inline-flex; align-items: center; gap: 7px; padding: 4px 11px 4px 8px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
   .hud-pill svg { width: 18px; height: 18px; }
