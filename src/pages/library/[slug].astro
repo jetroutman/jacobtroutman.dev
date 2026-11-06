@@ -2,6 +2,9 @@
 import Base from '../../layouts/Base.astro';
 import { books, favorite, rankedCount, groupNotes, type LibBook } from '../../lib/library';
 import { fedBy, noteHref } from '../../lib/notes';
+import { INK } from '../../lib/posts';
+import InkHud from '../../components/InkHud.astro';
+import InkLayer from '../../components/InkLayer.astro';
 
 export function getStaticPaths() {
   return books.filter((b) => b.hasPage).map((b) => ({ params: { slug: b.slug }, props: { b } }));
@@ -60,7 +63,7 @@ const desc = (b.review || b.impressions || `My notes on ${b.short}.`).split('\n'
     {b.refNotes.length > 0 && (
       <section id="notes" class="notes">
         <p class="mono-label">My notes · {b.refNotes.length}</p>
-        <p class="hint">From my Zettelkasten: what stood out, and what I made of it.</p>
+        <p class="hint">From my Zettelkasten: what stood out, and what I made of it. Each note opens for {INK.refNoteCost} ink; you earn ink by reading my <a href="/posts/">posts</a>.</p>
         <nav class="note-jump" aria-label="Note types">
           {groups.map((g) => <a href={`#notes-${g.type.replace(/\W+/g, '-').toLowerCase()}`}>{g.label} <span>{g.notes.length}</span></a>)}
         </nav>
@@ -74,9 +77,17 @@ const desc = (b.review || b.impressions || `My notes on ${b.short}.`).split('\n'
                 <h4>{n.title}</h4>
                 {n.page != null && <span class="mono-meta">p. {n.page}</span>}
               </div>
-              {n.interpretation && chunks(n.interpretation).map((c) => c.kind === 'p' ? <p class="interp">{c.text}</p> : <ul class="list">{c.items.map((x) => <li>{x}</li>)}</ul>)}
-              {n.quote && <blockquote>{n.quote}</blockquote>}
-              {fedBy.get(n.id) && <p class="went"><span class="mono-label">Where this went</span>{fedBy.get(n.id)!.map((p) => <a href={noteHref(p)}>{p.fid ? `${p.fid} ` : ''}{p.label}</a>)}</p>}
+              {(n.interpretation || n.quote || fedBy.get(n.id)) && (
+                <div class="ink-layer" data-layer={`ref:${n.id}`} data-cost={INK.refNoteCost}>
+                  <div class="ink-content">
+                    {n.interpretation && chunks(n.interpretation).map((c) => c.kind === 'p' ? <p class="interp">{c.text}</p> : <ul class="list">{c.items.map((x) => <li>{x}</li>)}</ul>)}
+                    {n.quote && <blockquote>{n.quote}</blockquote>}
+                    {fedBy.get(n.id) && <p class="went"><span class="mono-label">Where this went</span>{fedBy.get(n.id)!.map((p) => <a href={noteHref(p)}>{p.fid ? `${p.fid} ` : ''}{p.label}</a>)}</p>}
+                  </div>
+                  <span class="ink-flood" aria-hidden="true"></span>
+                  <button type="button" class="ink-seal" data-unseal><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5C12 2.5 5.2 10.4 5.2 15.2a6.8 6.8 0 0 0 13.6 0C18.8 10.4 12 2.5 12 2.5Z"></path></svg><span data-seal-label>Unseal · {INK.refNoteCost}</span></button>
+                </div>
+              )}
             </li>
           ))}
         </ol>
@@ -86,6 +97,7 @@ const desc = (b.review || b.impressions || `My notes on ${b.short}.`).split('\n'
     )}
     {b.tags.length > 0 && <p class="mono-meta tags">{b.tags.join(' · ')}</p>}
   </article>
+  {b.refNotes.length > 0 && <><InkHud variant="float" /><InkLayer /></>}
 </Base>
 
 <script>
@@ -136,4 +148,18 @@ const desc = (b.review || b.impressions || `My notes on ${b.short}.`).split('\n'
   .tags { margin-top: 36px; }
   .went { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 14px; }
   .went a { padding: 4px 10px; border: 1px dashed var(--amber); border-radius: 999px; text-decoration: none; }
+
+  /* Ink: each Reference note's content is sealed until opened (src/scripts/ink.ts). */
+  .ink-layer { position: relative; overflow: hidden; margin-top: 10px; border-radius: 10px; }
+  .ink-layer:not(:global(.open)) { padding: 10px 12px; background: var(--hover); min-height: 64px; }
+  .ink-content { transition: filter .5s ease .35s, opacity .5s ease .35s; }
+  .ink-layer:not(:global(.open)) .ink-content { filter: blur(5px); opacity: .5; user-select: none; pointer-events: none; max-height: 72px; overflow: hidden; }
+  .ink-flood { position: absolute; inset: 0; background: var(--ink); clip-path: circle(0% at 90% 70%); pointer-events: none; opacity: 0; }
+  .ink-layer:global(.flooding) .ink-flood { animation: ink-flood 1.1s cubic-bezier(.5, 0, .3, 1) both; }
+  @keyframes ink-flood { 0% { clip-path: circle(0% at 90% 70%); opacity: 1; } 50% { clip-path: circle(150% at 90% 70%); opacity: 1; } 100% { clip-path: circle(150% at 90% 70%); opacity: 0; } }
+  .ink-seal { position: absolute; right: 10px; bottom: 10px; min-height: 40px; display: inline-flex; align-items: center; gap: 7px; padding: 0 14px 0 10px; border: 1px dashed var(--amber); border-radius: 999px; background: var(--surface); color: var(--amber-ink); font: 600 13px var(--mono); cursor: pointer; }
+  .ink-seal svg { width: 15px; height: 15px; fill: var(--ink); }
+  .ink-seal:disabled { cursor: not-allowed; border-style: solid; border-color: var(--line); color: var(--muted); }
+  .ink-layer:global(.open) .ink-seal { display: none; }
+  @media (prefers-reduced-motion: reduce) { .ink-layer:global(.flooding) .ink-flood { animation: none; } .ink-content { transition: none; } }
 </style>

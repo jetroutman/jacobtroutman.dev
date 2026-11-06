@@ -1,0 +1,16 @@
+---
+// PR previews only (PUBLIC_DRAFTS): the admin pages without the role lock, because preview
+// environments don't carry the production role. Production builds no /drafts/ pages at all.
+import Base from '../../layouts/Base.astro';
+import AdminList from '../../components/AdminList.astro';
+import PostView from '../../components/PostView.astro';
+import { posts, type Post } from '../../lib/posts';
+export function getStaticPaths() {
+  if (!(import.meta.env.DEV || import.meta.env.PUBLIC_DRAFTS === 'true')) return [];
+  return [{ params: { path: undefined }, props: { post: null } }, ...posts.map((post) => ({ params: { path: post.slug }, props: { post } }))];
+}
+const { post } = Astro.props as { post: Post | null };
+---
+{post
+  ? <Base title={`Preview · ${post.title}`} noindex><PostView post={post} admin="/drafts/" /></Base>
+  : <AdminList base="/drafts/" note="Preview build · drafts are unlocked here only" />}

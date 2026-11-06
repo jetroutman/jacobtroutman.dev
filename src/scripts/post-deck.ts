@@ -1,33 +1,63 @@
-// Slide nav for posts: progress segments, position label, and content that rises in as each slide arrives.
+// Post deck: slides side by side, one at a time. Swipe, the bar's arrows and segments, Next buttons, or ← →.
+// The deck pins under the bar on first move; content rises in as each slide arrives.
 export function initPostDeck() {
   document.documentElement.classList.add('deck-js');
-  const slides = [...document.querySelectorAll<HTMLElement>('[data-slide]')];
-  const segs = new Map([...document.querySelectorAll<HTMLAnchorElement>('[data-seg]')].map((a) => [a.dataset.seg!, a]));
+  const track = document.querySelector<HTMLElement>('[data-track]');
+  if (!track) return;
+  const slides = [...track.querySelectorAll<HTMLElement>('[data-slide]')];
+  const segs = [...document.querySelectorAll<HTMLAnchorElement>('[data-seg]')];
   const pos = document.querySelector('[data-pos]'), label = document.querySelector('[data-label]');
+  const prev = document.querySelector<HTMLButtonElement>('[data-prev]'), nextBar = document.querySelector<HTMLButtonElement>('[data-nextbar]');
+  const bar = document.querySelector<HTMLElement>('.deckbar')!;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const seen = new Set<number>();
-  const update = (cur: number) => {
-    seen.add(cur);
-    slides.forEach((s, i) => {
-      const seg = segs.get(s.id)!;
-      seg.classList.toggle('current', i === cur);
-      seg.classList.toggle('done', seen.has(i) && i !== cur);
-      if (i === cur) seg.setAttribute('aria-current', 'step'); else seg.removeAttribute('aria-current');
+  let cur = -1;
+
+  const update = (i: number) => {
+    if (i === cur) return;
+    cur = i; seen.add(i);
+    slides[i].classList.add('shown');
+    segs.forEach((a, k) => {
+      a.classList.toggle('current', k === i);
+      a.classList.toggle('done', seen.has(k) && k !== i);
+      if (k === i) a.setAttribute('aria-current', 'step'); else a.removeAttribute('aria-current');
     });
-    if (pos) pos.textContent = String(cur + 1).padStart(2, '0');
-    if (label) label.textContent = slides[cur].dataset.title || '';
+    if (pos) pos.textContent = String(i + 1).padStart(2, '0');
+    if (label) label.textContent = slides[i].dataset.title || '';
+    if (prev) prev.disabled = i === 0;
+    if (nextBar) nextBar.disabled = i === slides.length - 1;
+    history.replaceState(null, '', i === 0 ? location.pathname + location.search : `#${slides[i].id}`);
   };
-  const io = new IntersectionObserver((entries) => {
-    for (const e of entries) {
-      if (!e.isIntersecting) continue;
-      const s = e.target as HTMLElement;
-      s.classList.add('shown');
-      update(slides.indexOf(s));
-    }
-  }, { rootMargin: '-45% 0px -45% 0px' }); // the slide crossing the middle of the screen is current
-  slides.forEach((s) => io.observe(s));
-  // Anything already above the fold shows at once.
-  requestAnimationFrame(() => { for (const s of slides) if (s.getBoundingClientRect().top < innerHeight * 0.9) s.classList.add('shown'); });
-  // Slides further down reveal as soon as they start to enter.
-  const pre = new IntersectionObserver((entries) => { for (const e of entries) if (e.isIntersecting) (e.target as HTMLElement).classList.add('shown'); }, { rootMargin: '0px 0px -15% 0px' });
-  slides.forEach((s) => pre.observe(s));
+
+  let pinned = false;
+  const pin = () => {
+    if (pinned) return; pinned = true;
+    const top = scrollY + bar.getBoundingClientRect().top;
+    if (top > scrollY + 1) scrollTo({ top, behavior: reduced ? 'auto' : 'smooth' });
+  };
+  const go = (i: number) => {
+    i = Math.max(0, Math.min(slides.length - 1, i));
+    pin();
+    slides[i].scrollTop = 0;
+    track.scrollTo({ left: i * track.clientWidth, behavior: reduced ? 'auto' : 'smooth' });
+  };
+
+  track.addEventListener('scroll', () => { pin(); update(Math.round(track.scrollLeft / track.clientWidth)); }, { passive: true });
+  segs.forEach((a, i) => a.addEventListener('click', (e) => { e.preventDefault(); go(i); }));
+  prev?.addEventListener('click', () => go(cur - 1));
+  nextBar?.addEventListener('click', () => go(cur + 1));
+  for (const b of track.querySelectorAll<HTMLButtonElement>('[data-next]')) b.addEventListener('click', () => go(cur + 1));
+  document.addEventListener('keydown', (e) => {
+    if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+    const t = e.target as HTMLElement;
+    if (t.closest('input, textarea, select, [contenteditable], [role=dialog]')) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); go(cur + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(cur - 1); }
+  });
+  addEventListener('resize', () => track.scrollTo({ left: cur * track.clientWidth }));
+
+  // Open on the slide in the URL, if any.
+  const start = Math.max(0, slides.findIndex((s) => `#${s.id}` === location.hash));
+  update(start);
+  if (start > 0) requestAnimationFrame(() => track.scrollTo({ left: start * track.clientWidth }));
 }

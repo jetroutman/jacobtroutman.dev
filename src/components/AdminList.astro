@@ -1,0 +1,44 @@
+---
+// The list of posts to test, any status. Used by /admin/ (role-locked) and /drafts/ (PR previews only).
+import Base from '../layouts/Base.astro';
+import { posts, syncedAt } from '../lib/posts';
+interface Props { base: string; note: string }
+const { base, note } = Astro.props;
+const fmt = (d: string | null) => (d ? new Date(`${d.slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : '—');
+---
+<Base title="Admin · Posts" noindex>
+  <div class="wrap">
+    <p class="mono-meta">{note}</p>
+    <h1 class="h1">Posts</h1>
+    <p class="desc">Play a draft exactly as a reader would. When it feels right, set its Status to <strong>Published</strong> in Notion; it goes live on the next build.</p>
+    <p class="mono-meta">Last sync: {syncedAt ? new Date(syncedAt).toLocaleString('en-US', { timeZone: 'America/Chicago', dateStyle: 'medium', timeStyle: 'short' }) : 'never (no Notion data in this build)'}</p>
+    {posts.length === 0 ? <p class="empty">No posts synced. If the build log says 404, share the Posts database with the Notion integration.</p> : (
+      <ul class="list">
+        {posts.map((p) => (
+          <li>
+            <a href={`${base}${p.slug}/`}>
+              <span class:list={['pill', p.status === 'Published' && 'pub']}>{p.status}</span>
+              <span class="t">{p.title}</span>
+              {p.hook && <span class="hook">{p.hook}</span>}
+              <span class="mono-meta">{p.cardCount} cards · {p.minutes} min · edited {fmt(p.edited)}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</Base>
+<style>
+  .wrap { max-width: 720px; padding-top: clamp(28px, 5vw, 64px); }
+  h1 { margin-top: 14px; }
+  .desc { margin-top: 10px; color: var(--muted); font-size: 17px; line-height: 1.5; }
+  .desc + .mono-meta { margin-top: 10px; }
+  .empty { margin-top: 28px; color: var(--muted); }
+  .list { list-style: none; padding: 0; margin: 28px 0 0; border-top: 1px solid var(--line); }
+  .list a { display: grid; gap: 6px; padding: 18px 0; border-bottom: 1px solid var(--line); text-decoration: none; }
+  .list a:hover .t { text-decoration: underline; }
+  .pill { justify-self: start; font: 12px var(--mono); padding: 2px 9px; border-radius: 999px; background: var(--hover); color: var(--muted); }
+  .pill.pub { background: var(--amber-tint); color: var(--amber-ink); }
+  .t { font-size: 21px; font-weight: 600; letter-spacing: -0.01em; }
+  .hook { color: var(--muted); line-height: 1.45; }
+</style>

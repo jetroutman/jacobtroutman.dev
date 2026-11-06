@@ -9,8 +9,11 @@ export const INK = {
   cardReached: 10,   // a card's claim scrolls into view
   postFinished: 25,  // the end of a post scrolls into view
   welcome: 100,      // arriving from a company page
-  sourceCost: 15,
-  branchesCost: 10,
+  starter: 20,       // everyone's first visit to a post or a book page
+  noteCost: 10,      // a card's note (my explanation of the claim)
+  sourceCost: 15,    // where the card came from: the Reference note and book
+  branchesCost: 10,  // where the idea went next
+  refNoteCost: 5,    // one Reference note on a book page
   levels: [
     { name: 'Elementary', at: 0, desc: 'You read what the page says.' },
     { name: 'Inspectional', at: 60, desc: 'You skim for the shape of an argument before committing.' },
