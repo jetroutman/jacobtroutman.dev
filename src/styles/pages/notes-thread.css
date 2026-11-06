@@ -37,3 +37,20 @@ h1:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { margin: 14px 0 8px;
 .chip.book:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { border-color: var(--amber); }
 .chip.arc:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { border-style: dashed; border-color: var(--amber); }
 .other:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { color: var(--muted); }
+
+/* Ink: parent link, sources, and which notes you've opened. */
+.parent:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { margin-top: 8px; }
+.parent a:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { color: var(--ink); text-decoration: none; }
+.parent a:hover:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { text-decoration: underline; }
+.src + .src:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { margin-top: 12px; }
+.src-title:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { font-weight: 600; }
+.src-title a:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { text-decoration: none; }
+.src blockquote:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { margin: 8px 0 0; padding-left: 12px; border-left: 2px solid var(--line); color: var(--muted); }
+.tree-tools:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; min-height: 28px; }
+.tree-filter:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { min-height: 28px; padding: 0 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font: 12px var(--mono); color: var(--muted); cursor: pointer; }
+.tree-filter[aria-pressed="true"]:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { border-color: var(--ink); color: var(--ink); }
+.tree-filter[hidden]:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { display: none; }
+.tree a[data-state="locked"] .lbl:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { color: var(--muted); }
+.tree a[data-state="open"] .fid:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { color: var(--amber-ink); }
+.tree a[data-state="open"]:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *))::after { content: ""; flex: none; width: 6px; height: 6px; margin: 7px 0 0 auto; border-radius: 50%; background: var(--amber); }
+.tree li[hidden]:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { display: none; }

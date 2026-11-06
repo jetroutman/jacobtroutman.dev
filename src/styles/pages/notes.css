@@ -18,3 +18,19 @@ figcaption:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { margin-top: 8px; p
 .threads a:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { display: flex; flex-direction: column; gap: 6px; height: 100%; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); text-decoration: none; }
 .threads a:hover:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { border-color: var(--ink); }
 .t-title:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { font-size: 17px; font-weight: 600; line-height: 1.3; }
+
+/* Ink: notes you've opened. */
+.node.opened circle:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { fill: var(--amber); }
+.mine:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { margin-top: 28px; padding: 16px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.mine[hidden]:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { display: none; }
+.mine-head:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { display: flex; justify-content: space-between; align-items: baseline; }
+.mine-head h2:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { font-weight: 400; }
+.mine-list:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; }
+.mine-list li:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; }
+.mine-list a:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { text-decoration: none; }
+.mine-list a:hover:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { text-decoration: underline; }
+.thread-tools:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { margin-top: 24px; }
+.thread-filter:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { min-height: 36px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font: 12px var(--mono); color: var(--muted); cursor: pointer; }
+.thread-filter[aria-pressed="true"]:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { border-color: var(--ink); color: var(--ink); }
+.thread-filter[hidden]:where(.pg-notes > .wrap *):not(:where(.c, .c *)), .threads li[hidden]:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { display: none; }
+.opened-n:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { color: var(--amber-ink); }

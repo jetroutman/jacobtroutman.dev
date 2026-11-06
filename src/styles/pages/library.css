@@ -25,3 +25,9 @@ h1:where(.pg-library > .wrap *):not(:where(.c, .c *)) { margin-top: 18px; font-s
 .foot:where(.pg-library > .wrap *):not(:where(.c, .c *)) { margin-top: auto; padding-top: 8px; display: flex; justify-content: space-between; align-items: center; }
 .more:where(.pg-library > .wrap *):not(:where(.c, .c *)) { font-size: 14px; font-weight: 600; text-decoration: none; }
 .empty:where(.pg-library > .wrap *):not(:where(.c, .c *)) { margin-top: 24px; }
+
+/* Ink: books whose notes you've opened. */
+.opened-n:where(.pg-library > .wrap *):not(:where(.c, .c *)) { color: var(--amber-ink); }
+.sort:where(.pg-library > .wrap *):not(:where(.c, .c *)) { display: inline-flex; align-items: center; gap: 8px; }
+.sort[hidden]:where(.pg-library > .wrap *):not(:where(.c, .c *)), .seg button[hidden]:where(.pg-library > .wrap *):not(:where(.c, .c *)) { display: none; }
+.sort select:where(.pg-library > .wrap *):not(:where(.c, .c *)) { min-height: 32px; padding: 0 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); font: 12px var(--mono); }

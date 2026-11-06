@@ -1,44 +1,43 @@
 ---
 // A Slip Box card inside a post. The claim is free and earns ink when you reach it (the badge shows how much).
-// Going deeper costs ink, one layer at a time: my note → where it came from → where it went.
-import { INK, type CardView } from '../lib/posts';
+// Going deeper costs ink, in order: my note, then where it came from. Reading what you open earns some back.
+// The links (where it grew from, where it went) are free; following one earns a little.
+import InkSeal from './InkSeal.astro';
+import { INK, claimInk, wordCount, type CardView } from '../lib/posts';
 import '../styles/components/ink-card.css';
-interface Props { card: CardView }
-const { card } = Astro.props;
+interface Props { card: CardView; post: string }
+const { card, post } = Astro.props;
 const drop = 'M12 2.5C12 2.5 5.2 10.4 5.2 15.2a6.8 6.8 0 0 0 13.6 0C18.8 10.4 12 2.5 12 2.5Z';
 const srcBooks = card.sources.map((s) => s.book).filter((x, i, a) => a.indexOf(x) === i).join(', ');
-const layers: { key: string; label: string; cost: number }[] = [];
-if (card.body.length) layers.push({ key: `${card.id}:note`, label: 'My note', cost: INK.noteCost });
-if (card.sources.length) layers.push({ key: `${card.id}:src`, label: `Where this came from · ${srcBooks}`, cost: INK.sourceCost });
-if (card.branches.length) layers.push({ key: `${card.id}:br`, label: `Where it went · ${card.branches.length} ${card.branches.length === 1 ? 'idea' : 'ideas'}`, cost: INK.branchesCost });
-const after = (i: number) => (i > 0 ? layers[i - 1].key : undefined);
+const claim = claimInk(card.label);
+const start = card.depth === 0; // a thread's starting question: its note is free
 ---
 <section class="card c c-ink-card" data-card={card.id} aria-label={`Card ${card.fid || ''}: ${card.label}`}>
   <div class="c-head">
     <h3 class="c-title">{card.fid && <span class="fid">{card.fid}</span>}{card.label}</h3>
-    <span class="earn" data-earn title={`Reaching this claim earns ${INK.cardReached} ink`}>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d={drop}></path></svg>+{INK.cardReached}
+    <span class="earn" data-claim={`${post}:${card.id}`} data-ink={claim} title={`Reaching this claim earns ${claim} ink`}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d={drop}></path></svg>+{claim}
     </span>
   </div>
-  {layers.map((l, i) => (
-    <div class="layer" data-layer={l.key} data-cost={l.cost} data-after={after(i)}>
-      <p class="mono-label l-label">{l.label}</p>
-      <div class="l-content">
-        {l.key.endsWith(':note') && card.body.map((t) => <p class="c-body">{t}</p>)}
-        {l.key.endsWith(':src') && card.sources.map((s) => (
-          <div class="src">
-            <p class="src-title"><a href={s.bookHref} tabindex="-1">{s.title}</a></p>
-            {s.interpretation && <p>{s.interpretation}</p>}
-            {s.quote && <blockquote>{s.quote}</blockquote>}
-          </div>
-        ))}
-        {l.key.endsWith(':br') && (
-          <ul class="br">{card.branches.map((x) => <li><a href={x.href} tabindex="-1">{x.fid && <span class="fid">{x.fid}</span>}{x.label}</a></li>)}</ul>
-        )}
-      </div>
-      <span class="flood" aria-hidden="true"></span>
-      <button type="button" class="seal" data-unseal><svg viewBox="0 0 24 24" aria-hidden="true"><path d={drop}></path></svg><span data-seal-label>Unseal · {l.cost}</span></button>
+  {card.parent && <p class="c-parent mono-meta">Grew from <a href={card.parent.href} data-trail={card.parent.id}>{card.parent.fid && <span class="fid">{card.parent.fid}</span>}{card.parent.label}</a></p>}
+  {card.body.length > 0 && (start
+    ? <div class="c-free" data-read={`${card.id}:note:read`} data-words={wordCount(...card.body)}>{card.body.map((t) => <p class="c-body">{t}</p>)}</div>
+    : <InkSeal id={`${card.id}:note`} cost={INK.noteCost} label="My note" words={wordCount(...card.body)}>{card.body.map((t) => <p class="c-body">{t}</p>)}</InkSeal>)}
+  {card.sources.length > 0 && (
+    <InkSeal id={`${card.id}:src`} cost={INK.sourceCost} label={`Where this came from · ${srcBooks}`} after={card.body.length && !start ? `${card.id}:note` : undefined} also={card.sources.map((s) => `ref:${s.id}`)} words={wordCount(...card.sources.map((s) => `${s.interpretation || ''} ${s.quote || ''}`))}>
+      {card.sources.map((s) => (
+        <div class="src">
+          <p class="src-title"><a href={s.bookHref} tabindex="-1">{s.title}</a></p>
+          {s.interpretation && <p>{s.interpretation}</p>}
+          {s.quote && <blockquote>{s.quote}</blockquote>}
+        </div>
+      ))}
+    </InkSeal>
+  )}
+  {card.branches.length > 0 && (
+    <div class="c-went"><p class="mono-label">Where it went</p>
+      <ul class="br">{card.branches.map((x) => <li><a href={x.href} data-trail={x.id}>{x.fid && <span class="fid">{x.fid}</span>}{x.label}</a></li>)}</ul>
     </div>
-  ))}
-  <a class="c-link mono-meta" href={card.href}>Open in its thread →</a>
+  )}
+  <a class="c-link mono-meta" href={card.href} data-trail={card.id}>Open in its thread →</a>
 </section>

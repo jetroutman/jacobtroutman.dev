@@ -2,7 +2,8 @@
 import Base from '../../layouts/Base.astro';
 import { books, favorite, rankedCount, groupNotes, type LibBook } from '../../lib/library';
 import { fedBy, noteHref } from '../../lib/notes';
-import { INK } from '../../lib/posts';
+import { INK, wordCount } from '../../lib/posts';
+import InkSeal from '../../components/InkSeal.astro';
 import InkHud from '../../components/InkHud.astro';
 import InkLayer from '../../components/InkLayer.astro';
 import '../../styles/pages/library-book.css';
@@ -45,7 +46,7 @@ const desc = (b.review || b.impressions || `My notes on ${b.short}.`).split('\n'
 
     {sections.map((s, i) => (
       <>
-        <section>
+        <section data-read={`book:${b.slug}:${i}`} data-words={wordCount(s.text)}>
           <p class="mono-label">{s.label}</p>
           {chunks(s.text).map((c) => c.kind === 'p' ? <p class="body">{c.text}</p> : <ul class="list">{c.items.map((x) => <li>{x}</li>)}</ul>)}
         </section>
@@ -64,7 +65,7 @@ const desc = (b.review || b.impressions || `My notes on ${b.short}.`).split('\n'
     {b.refNotes.length > 0 && (
       <section id="notes" class="notes">
         <p class="mono-label">My notes · {b.refNotes.length}</p>
-        <p class="hint">From my Zettelkasten: what stood out, and what I made of it. Each note opens for {INK.refNoteCost} ink; you earn ink by reading my <a href="/posts/">posts</a>.</p>
+        <p class="hint">From my Zettelkasten: what stood out, and what I made of it. Each note opens for {INK.refNoteCost} ink. Reading earns it: this page, my <a href="/posts/">posts</a> and my <a href="/notes/">notes</a>.</p>
         <nav class="note-jump" aria-label="Note types">
           {groups.map((g) => <a href={`#notes-${g.type.replace(/\W+/g, '-').toLowerCase()}`}>{g.label} <span>{g.notes.length}</span></a>)}
         </nav>
@@ -78,17 +79,13 @@ const desc = (b.review || b.impressions || `My notes on ${b.short}.`).split('\n'
                 <h4>{n.title}</h4>
                 {n.page != null && <span class="mono-meta">p. {n.page}</span>}
               </div>
-              {(n.interpretation || n.quote || fedBy.get(n.id)) && (
-                <div class="ink-layer" data-layer={`ref:${n.id}`} data-cost={INK.refNoteCost}>
-                  <div class="ink-content">
-                    {n.interpretation && chunks(n.interpretation).map((c) => c.kind === 'p' ? <p class="interp">{c.text}</p> : <ul class="list">{c.items.map((x) => <li>{x}</li>)}</ul>)}
-                    {n.quote && <blockquote>{n.quote}</blockquote>}
-                    {fedBy.get(n.id) && <p class="went"><span class="mono-label">Where this went</span>{fedBy.get(n.id)!.map((p) => <a href={noteHref(p)}>{p.fid ? `${p.fid} ` : ''}{p.label}</a>)}</p>}
-                  </div>
-                  <span class="ink-flood" aria-hidden="true"></span>
-                  <button type="button" class="ink-seal" data-unseal><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5C12 2.5 5.2 10.4 5.2 15.2a6.8 6.8 0 0 0 13.6 0C18.8 10.4 12 2.5 12 2.5Z"></path></svg><span data-seal-label>Unseal · {INK.refNoteCost}</span></button>
-                </div>
+              {(n.interpretation || n.quote) && (
+                <InkSeal id={`ref:${n.id}`} cost={INK.refNoteCost} label="" plain words={wordCount(n.interpretation, n.quote)}>
+                  {n.interpretation && chunks(n.interpretation).map((c) => c.kind === 'p' ? <p class="interp">{c.text}</p> : <ul class="list">{c.items.map((x) => <li>{x}</li>)}</ul>)}
+                  {n.quote && <blockquote>{n.quote}</blockquote>}
+                </InkSeal>
               )}
+              {fedBy.get(n.id) && <p class="went"><span class="mono-label">Where this went</span>{fedBy.get(n.id)!.map((p) => <a href={noteHref(p)} data-trail={p.id}>{p.fid ? `${p.fid} ` : ''}{p.label}</a>)}</p>}
             </li>
           ))}
         </ol>
@@ -98,7 +95,7 @@ const desc = (b.review || b.impressions || `My notes on ${b.short}.`).split('\n'
     )}
     {b.tags.length > 0 && <p class="mono-meta tags">{b.tags.join(' · ')}</p>}
   </article>
-  {b.refNotes.length > 0 && <><InkHud variant="float" /><InkLayer /></>}
+  <InkHud variant="float" /><InkLayer />
 </Base>
 
 <script>

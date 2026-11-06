@@ -1,6 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { books as allBooks, favorite, rankedCount, type LibBook } from '../../lib/library';
+import InkHud from '../../components/InkHud.astro';
+import InkLayer from '../../components/InkLayer.astro';
 import '../../styles/pages/library.css';
 const books = allBooks as LibBook[];
 
@@ -23,7 +25,9 @@ const fav = books.filter(favorite).length;
       <button type="button" data-kind="non" aria-pressed="false">Non-fiction</button>
       <button type="button" data-kind="fic" aria-pressed="false">Fiction</button>
       <button type="button" data-kind="fav" aria-pressed="false">Favorites</button>
+      <button type="button" data-kind="mine" aria-pressed="false" hidden data-mine-btn>Notes I've opened</button>
     </div>
+    <label class="sort mono-meta" data-sort-wrap hidden>Sort <select data-sort><option value="rank">My ranking</option><option value="recent">Recently opened</option></select></label>
     <div class="tags">
       {topTags.map((t) => <button type="button" class="tag" data-tag={t} aria-pressed="false">{t}</button>)}
     </div>
@@ -31,7 +35,7 @@ const fav = books.filter(favorite).length;
 
   <ul class="shelf" data-shelf>
     {books.map((b) => (
-      <li class="book" data-fic={b.fiction ? '1' : '0'} data-fav={favorite(b) ? '1' : '0'} data-tags={b.tags.join('|')}>
+      <li class="book" data-refs={b.refNotes.map((r) => r.id).join('|') || undefined} data-fic={b.fiction ? '1' : '0'} data-fav={favorite(b) ? '1' : '0'} data-tags={b.tags.join('|')}>
         <div class="top">
           <span class="rank" title={b.rank ? `Ranked #${b.rank} of ${rankedCount} by my own rating` : 'Not ranked yet'}>{b.rank ? `#${b.rank}` : '—'}</span>
           {favorite(b) && <span class="pill">{b.rating}</span>}
@@ -42,34 +46,58 @@ const fav = books.filter(favorite).length;
         {b.author && <p class="author">{b.author}</p>}
         {b.tags.length > 0 && <p class="mono-meta btags">{b.tags.slice(0, 4).join(' · ')}</p>}
         <div class="foot">
-          {b.notes ? <span class="mono-meta">{b.notes} notes</span> : null}
+          {b.notes ? <span class="mono-meta">{b.notes} notes<span class="opened-n" data-opened-n></span></span> : null}
           {b.hasPage && <a class="more" href={`/library/${b.slug}/`}>{b.review || b.impressions ? 'My take →' : 'My notes →'}</a>}
         </div>
       </li>
     ))}
   </ul>
   <p class="mono-meta empty" data-empty hidden>Nothing matches that filter.</p>
+  <InkHud variant="float" /><InkLayer />
 </Base>
 
 <script>
   import { fromCompany } from '../../scripts/from-company';
   fromCompany('jt-lib');
+  import { readInk, type InkState } from '../../scripts/ink';
+  const shelf = document.querySelector<HTMLElement>('[data-shelf]')!;
   const items = [...document.querySelectorAll<HTMLElement>('.book')];
+  const order = new Map(items.map((el, i) => [el, i]));
   const kinds = [...document.querySelectorAll<HTMLButtonElement>('[data-kind]')];
   const tags = [...document.querySelectorAll<HTMLButtonElement>('[data-tag]')];
   const empty = document.querySelector<HTMLElement>('[data-empty]')!;
+  const mineBtn = document.querySelector<HTMLButtonElement>('[data-mine-btn]')!;
+  const sortWrap = document.querySelector<HTMLElement>('[data-sort-wrap]')!, sortSel = document.querySelector<HTMLSelectElement>('[data-sort]')!;
   let kind = 'all', tag: string | null = null;
+  // For each book: how many of its notes you've opened with ink, and when you last opened one.
+  let opened = new Map<HTMLElement, { n: number; last: number }>();
+  const tally = (st: InkState) => {
+    opened = new Map();
+    for (const el of items) {
+      const refs = (el.dataset.refs || '').split('|').filter(Boolean);
+      let n = 0, last = 0;
+      for (const r of refs) if (st.unlocked.includes(`ref:${r}`)) { n++; last = Math.max(last, st.at[`ref:${r}`] || 0); }
+      if (n) opened.set(el, { n, last });
+      const label = el.querySelector('[data-opened-n]'); if (label) label.textContent = n ? ` · ${n} opened` : '';
+    }
+    mineBtn.hidden = sortWrap.hidden = opened.size === 0;
+  };
   function apply() {
     let shown = 0;
     for (const el of items) {
-      const okKind = kind === 'all' || (kind === 'fic' ? el.dataset.fic === '1' : kind === 'non' ? el.dataset.fic === '0' : el.dataset.fav === '1');
+      const okKind = kind === 'all' || (kind === 'mine' ? opened.has(el) : kind === 'fic' ? el.dataset.fic === '1' : kind === 'non' ? el.dataset.fic === '0' : el.dataset.fav === '1');
       const okTag = !tag || el.dataset.tags!.split('|').includes(tag);
       el.hidden = !(okKind && okTag); if (!el.hidden) shown++;
     }
+    const sorted = [...items].sort((a, b) => sortSel.value === 'recent' ? (opened.get(b)?.last || 0) - (opened.get(a)?.last || 0) || order.get(a)! - order.get(b)! : order.get(a)! - order.get(b)!);
+    shelf.append(...sorted);
     empty.hidden = shown > 0;
     kinds.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.kind === kind)));
     tags.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.tag === tag)));
   }
   kinds.forEach((b) => b.addEventListener('click', () => { kind = b.dataset.kind!; apply(); }));
   tags.forEach((b) => b.addEventListener('click', () => { tag = tag === b.dataset.tag ? null : b.dataset.tag!; apply(); }));
+  sortSel.addEventListener('change', apply);
+  document.addEventListener('ink:change', (e) => { tally((e as CustomEvent).detail); apply(); });
+  tally(readInk()); apply();
 </script>

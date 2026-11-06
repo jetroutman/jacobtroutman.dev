@@ -2,7 +2,7 @@
 .hud:where(.c-ink-hud, .c-ink-hud *) { position: relative; display: flex; align-items: center; }
 .hud.float:where(.c-ink-hud, .c-ink-hud *) { position: fixed; z-index: 50; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); }
 .hud.float .hud-pill:where(.c-ink-hud, .c-ink-hud *) { box-shadow: 0 6px 20px rgb(0 0 0 / .1); padding: 7px 14px 7px 10px; }
-.hud-pill:where(.c-ink-hud, .c-ink-hud *) { display: inline-flex; align-items: center; gap: 7px; padding: 4px 11px 4px 8px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+.hud-pill:where(.c-ink-hud, .c-ink-hud *) { position: relative; overflow: hidden; display: inline-flex; align-items: center; gap: 7px; padding: 4px 11px 4px 8px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
 .hud-pill svg:where(.c-ink-hud, .c-ink-hud *) { width: 18px; height: 18px; }
 .hud-drop:where(.c-ink-hud, .c-ink-hud *) { fill: var(--ink); } .hud-nib:where(.c-ink-hud, .c-ink-hud *) { stroke: var(--surface); stroke-width: 1.4; stroke-linecap: round; } .hud-hole:where(.c-ink-hud, .c-ink-hud *) { fill: var(--surface); }
 .hud-n:where(.c-ink-hud, .c-ink-hud *) { font: 600 14px var(--mono); color: var(--amber-ink); min-width: 2ch; font-variant-numeric: tabular-nums; }
@@ -17,3 +17,5 @@
 .hud-gain.show:where(.c-ink-hud, .c-ink-hud *) { animation: gain 1.4s ease-out both; }
 @keyframes gain { 0% { opacity: 0; transform: translateY(-6px) scale(.9); } 15% { opacity: 1; transform: none; } 75% { opacity: 1; } 100% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .hud-pill.bumpA:where(.c-ink-hud, .c-ink-hud *), .hud-pill.bumpB:where(.c-ink-hud, .c-ink-hud *), .hud-pill.drainA:where(.c-ink-hud, .c-ink-hud *), .hud-pill.drainB:where(.c-ink-hud, .c-ink-hud *), .hud-gain.show:where(.c-ink-hud, .c-ink-hud *) { animation: none; } }
+.hud-meter:where(.c-ink-hud *) { position: absolute; left: 10px; right: 10px; bottom: 2px; height: 2px; border-radius: 2px; background: var(--hover); }
+.hud-meter > span:where(.c-ink-hud *) { display: block; height: 100%; width: calc(var(--bonus, 0) * 100%); border-radius: inherit; background: var(--amber); transition: width .5s ease; }

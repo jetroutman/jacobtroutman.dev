@@ -32,3 +32,6 @@
   .ink-toasts .it, .ink-toasts .it.out, .ink-gift, .ink-gift .g-card { animation-duration: .01s; }
   .g-well .g-fall, .g-well .g-ripple { display: none; }
 }
+.ink-toasts .it.bonus { background: var(--amber); color: var(--ink); }
+.ink-toasts .it.bonus .it-badge { background: var(--ink); color: var(--amber); }
+.ink-toasts .it.bonus .it-title { font: 600 24px/1.1 var(--mono); }

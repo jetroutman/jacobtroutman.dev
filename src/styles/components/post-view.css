@@ -3,12 +3,12 @@
 html:has(.pdeck) { --bar-h: 48px; }
 .track:where(.c-post-view, .c-post-view *) { display: flex; height: calc(100svh - var(--bar-h)); overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; margin: 0 calc(-1 * var(--gutter)); }
 .track:where(.c-post-view, .c-post-view *)::-webkit-scrollbar { display: none; }
-.track > .slide:where(.c-post-view, .c-post-view *) { flex: 0 0 100%; height: 100%; overflow-y: auto; overscroll-behavior-y: contain; scroll-snap-align: start; scroll-snap-stop: always; padding: clamp(28px, 6vh, 72px) var(--gutter) 56px; box-sizing: border-box; display: grid; align-content: safe center; }
+.track > .slide:where(.c-post-view, .c-post-view *) { flex: 0 0 100%; height: 100%; overflow-y: auto; overscroll-behavior-y: contain; scroll-snap-align: start; scroll-snap-stop: always; padding: clamp(28px, 6vh, 72px) var(--gutter) 56px; box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr); align-content: safe center; }
 @media (min-width: 900px) { .inner:where(.c-post-view, .c-post-view *) { margin: 0 auto; } }
 .h-swipe:where(.c-post-view, .c-post-view *) { display: none; }
 @media (pointer: coarse) { .h-scroll:where(.c-post-view, .c-post-view *) { display: none; } .h-swipe:where(.c-post-view, .c-post-view *) { display: inline; } }
 .next:where(.c-post-view, .c-post-view *) { margin-top: 36px; justify-self: start; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; max-width: 100%; padding: 0 18px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); font: 600 15px var(--sans); cursor: pointer; text-align: left; }
-.next span:where(.c-post-view, .c-post-view *) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 400; color: var(--muted); }
+.next span:where(.c-post-view, .c-post-view *) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 400; color: var(--muted); }
 .next:hover:where(.c-post-view, .c-post-view *) { border-color: var(--ink); }
 .arrows:where(.c-post-view, .c-post-view *) { display: flex; gap: 4px; }
 .arrows button:where(.c-post-view, .c-post-view *) { width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); color: var(--ink); cursor: pointer; font: 15px var(--mono); }

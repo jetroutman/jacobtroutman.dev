@@ -5,7 +5,7 @@
 import InkCard from './InkCard.astro';
 import InkHud from './InkHud.astro';
 import InkLayer from './InkLayer.astro';
-import { INK, inline, published, type Post } from '../lib/posts';
+import { INK, inline, published, wordCount, type Post } from '../lib/posts';
 import '../styles/components/post-view.css';
 interface Props { post: Post; admin?: string | false } // admin = the list's base path, e.g. /admin/
 const { post, admin = false } = Astro.props;
@@ -24,7 +24,8 @@ const label = (s: { id: string; title: string | null }) => (s.title ? plain(s.ti
 const plain = (t: string) => t.replace(/\*+/g, '');
 const pad = (n: number) => String(n).padStart(2, '0');
 const fmt = (d: string | null) => (d ? new Date(`${d.slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : null);
-const maxInk = post.cardCount * INK.cardReached + INK.postFinished;
+// Words of prose on each slide (cards earn on their own), for the ink you get for reading the slide.
+const proseWords = (bl: B[]) => wordCount(...bl.map((b) => (b.k === 'card' ? '' : b.t)));
 const others = published.filter((p) => p.id !== post.id).slice(0, 3);
 ---
 <div class="pdeck c c-post-view" data-post={post.id} data-admin={admin ? '1' : undefined}>
@@ -59,9 +60,9 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
         )}
         {s.title && s.id !== 'end' && <div class="section-head reveal"><span class="num">{pad(i)}</span><h2 set:html={inline(s.title)} /></div>}
         {s.blocks.length > 0 && (
-          <div class="flow">
+          <div class="flow" data-read={proseWords(s.blocks) > 8 ? `${post.id}:${s.id}` : undefined} data-words={proseWords(s.blocks)}>
             {s.blocks.map((b) => b.k === 'card'
-              ? (b.card ? <div class="reveal"><InkCard card={b.card} /></div> : admin ? <p class="missing mono-meta reveal">Card {b.id.slice(0, 8)} isn't on the site (Private, or not synced yet).</p> : null)
+              ? (b.card ? <div class="reveal"><InkCard card={b.card} post={post.id} /></div> : admin ? <p class="missing mono-meta reveal">Card {b.id.slice(0, 8)} isn't on the site (Private, or not synced yet).</p> : null)
               : b.k === 'q' ? <blockquote class="p-q reveal" set:html={inline(b.t)} />
               : b.k === 'li' ? <p class="p-li reveal" set:html={inline(b.t)} />
               : <p class="p-p reveal" set:html={inline(b.t)} />)}
@@ -70,14 +71,14 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
         {s.id === 'intro' && (
           <div class="howto reveal">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d={drop}></path></svg>
-            <p>Reading earns ink: <strong>+{INK.cardReached}</strong> for every claim you reach, <strong>+{INK.postFinished}</strong> for finishing (up to {maxInk} here). Under each claim, spend it to go deeper: my note, then where it came from, then where it went.</p>
+            <p>Reading earns ink: the more you read, the more you get, and every so often a bonus. Spend it under each claim to go deeper: my note first, then where it came from.</p>
           </div>
         )}
         {s.id === 'intro' && <p class="mono-meta hint reveal" aria-hidden="true"><span class="h-scroll">Press → or use Next</span><span class="h-swipe">Swipe to start →</span></p>}
         {s.id === 'end' && (
           <div class="end-box" data-post-end>
             <div class="section-head reveal"><span class="num">{pad(i)}</span><h2>That's the post</h2></div>
-            <p class="p-p reveal">You earned <strong data-earned-here>0</strong> of {maxInk} ink here. Anything you unsealed stays open in my <a href="/library/">library</a> and <a href="/notes/">notes</a>.</p>
+            <p class="p-p reveal">You earned <strong data-earned-here>0</strong> ink on this post. Anything you unsealed stays open in my <a href="/library/">library</a> and <a href="/notes/">notes</a>.</p>
             {post.bookLinks.length > 0 && <p class="p-p reveal">This post drew on {post.bookLinks.map((b, k) => <>{k > 0 && ', '}<a href={b.href}><em>{b.title}</em></a></>)}.</p>}
             {others.length > 0 && (
               <ul class="more reveal">
