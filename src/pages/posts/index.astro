@@ -1,0 +1,37 @@
+---
+// Published posts, newest first.
+import Base from '../../layouts/Base.astro';
+import { published } from '../../lib/posts';
+const fmt = (d: string | null) => (d ? new Date(`${d.slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : '');
+---
+<Base title="Posts · Jacob Troutman" description="Essays built from my reading notes. Reading them earns ink; ink opens my notes.">
+  <div class="wrap">
+    <p class="mono-meta"><a href="/" data-back>← Decision log</a> / Posts</p>
+    <h1 class="h1">Posts</h1>
+    <p class="desc">Essays built from the claims in my <a href="/notes/">Zettelkasten</a>. Reading them earns ink, and ink opens what I wrote underneath: my notes, the books they came from, and where each idea went.</p>
+    {published.length === 0 ? <p class="empty">The first post is on its way.</p> : (
+      <ul class="list">
+        {published.map((p) => (
+          <li><a href={`/posts/${p.slug}/`}><span class="mono-meta">{fmt(p.published)} · {p.minutes} min · {p.cardCount} claims</span><span class="t">{p.title}</span>{p.hook && <span class="hook">{p.hook}</span>}</a></li>
+        ))}
+      </ul>
+    )}
+  </div>
+</Base>
+<script>
+  import { fromCompany } from '../../scripts/from-company';
+  fromCompany('jt-notes');
+</script>
+<style>
+  .wrap { max-width: 720px; padding-top: clamp(28px, 5vw, 64px); }
+  .wrap > .mono-meta a { text-decoration: none; }
+  h1 { margin-top: 14px; }
+  .desc { margin-top: 12px; color: var(--muted); font-size: 17px; line-height: 1.5; }
+  .desc a { color: var(--ink); }
+  .empty { margin-top: 28px; color: var(--muted); }
+  .list { list-style: none; padding: 0; margin: 28px 0 0; border-top: 1px solid var(--line); }
+  .list a { display: grid; gap: 6px; padding: 20px 0; border-bottom: 1px solid var(--line); text-decoration: none; }
+  .list a:hover .t { text-decoration: underline; }
+  .t { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+  .hook { color: var(--muted); line-height: 1.45; }
+</style>

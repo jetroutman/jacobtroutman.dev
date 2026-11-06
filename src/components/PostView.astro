@@ -3,6 +3,8 @@
 // Free claims earn ink; sealed layers cost ink (src/scripts/ink.ts). Slide nav: src/scripts/post-deck.ts.
 // Used by /posts/<slug>/ (Published) and /admin/<slug>/ (any status, locked to the admin role).
 import InkCard from './InkCard.astro';
+import InkHud from './InkHud.astro';
+import InkLayer from './InkLayer.astro';
 import { INK, inline, published, type Post } from '../lib/posts';
 interface Props { post: Post; admin?: string | false } // admin = the list's base path, e.g. /admin/
 const { post, admin = false } = Astro.props;
@@ -30,6 +32,7 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
       {all.map((s, i) => <li><a class="seg" href={`#${s.id}`} data-seg={s.id} aria-label={`${pad(i + 1)}: ${label(s)}`}><span></span></a></li>)}
     </ol>
     <span class="mono-meta bar-pos" aria-live="polite"><span data-pos>01</span> / {pad(all.length)}<span class="bar-label"> · <span data-label>Intro</span></span></span>
+    <span class="arrows"><button type="button" data-prev aria-label="Previous section">←</button><button type="button" data-nextbar aria-label="Next section">→</button></span>
     {admin && (
       <span class="test">
         <button type="button" class="test-btn" data-test-toggle aria-expanded="false" aria-controls="test-menu">Test</button>
@@ -39,14 +42,7 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
         </span>
       </span>
     )}
-    <span class="hud" data-hud aria-label="Your ink">
-      <span class="hud-gain" data-gain aria-live="polite"></span>
-      <span class="hud-pill" data-hud-pill>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d={drop} class="hud-drop"></path><path d="M12 10.6V16.4" class="hud-nib"></path><circle cx="12" cy="9.4" r="1.25" class="hud-hole"></circle></svg>
-        <span class="hud-n" data-wallet>0</span>
-        <span class="hud-lv mono-meta" data-level>Elementary</span>
-      </span>
-    </span>
+    <InkHud />
   </nav>
 
   <div class="track" data-track>
@@ -73,10 +69,10 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
         {s.id === 'intro' && (
           <div class="howto reveal">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d={drop}></path></svg>
-            <p>Reading earns ink: {INK.cardReached} for every card you reach, {INK.postFinished} for finishing. Spend it to unseal where an idea came from and where it went. Up to {maxInk} ink in this post.</p>
+            <p>Reading earns ink: <strong>+{INK.cardReached}</strong> for every claim you reach, <strong>+{INK.postFinished}</strong> for finishing (up to {maxInk} here). Under each claim, spend it to go deeper: my note, then where it came from, then where it went.</p>
           </div>
         )}
-        {s.id === 'intro' && <p class="mono-meta hint reveal" aria-hidden="true"><span class="h-scroll">Scroll down ↓</span><span class="h-swipe">Swipe to start →</span></p>}
+        {s.id === 'intro' && <p class="mono-meta hint reveal" aria-hidden="true"><span class="h-scroll">Press → or use Next</span><span class="h-swipe">Swipe to start →</span></p>}
         {s.id === 'end' && (
           <div class="end-box" data-post-end>
             <div class="section-head reveal"><span class="num">{pad(i)}</span><h2>That's the post</h2></div>
@@ -89,19 +85,19 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
             )}
           </div>
         )}
+        {i < all.length - 1 && <button type="button" class="next reveal" data-next>Next <span>{label(all[i + 1])}</span> →</button>}
       </div>
     </section>
   ))}
   </div>
 </div>
-<div class="ink-toasts" data-ink-toasts aria-live="polite"></div>
-<script type="application/json" data-ink-config set:html={JSON.stringify(INK)} />
+<InkLayer />
 
 <script>
-  import { initInk } from '../scripts/ink';
   import { initPostDeck } from '../scripts/post-deck';
+  import { fromCompany } from '../scripts/from-company';
+  fromCompany('jt-notes'); // counts as browsing the reading side for the company pages
   initPostDeck();
-  initInk();
   // Admin test menu
   const tb = document.querySelector<HTMLButtonElement>('[data-test-toggle]'), tm = document.querySelector<HTMLElement>('[data-test-menu]');
   if (tb && tm) {
@@ -112,18 +108,23 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
 </script>
 
 <style>
-  :global(html:has(.pdeck)) { scroll-snap-type: y proximity; scroll-padding-top: var(--bar-h); --bar-h: 48px; }
+  /* Slides sit side by side and page one at a time on every screen: swipe, the arrows, or ← →. Each slide scrolls on its own. */
+  :global(html:has(.pdeck)) { --bar-h: 48px; }
+  .track { display: flex; height: calc(100svh - var(--bar-h)); overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; margin: 0 calc(-1 * var(--gutter)); }
+  .track::-webkit-scrollbar { display: none; }
+  .track > .slide { flex: 0 0 100%; height: 100%; overflow-y: auto; overscroll-behavior-y: contain; scroll-snap-align: start; scroll-snap-stop: always; padding: clamp(28px, 6vh, 72px) var(--gutter) 56px; box-sizing: border-box; display: grid; align-content: safe center; }
+  @media (min-width: 900px) { .inner { margin: 0 auto; } }
   .h-swipe { display: none; }
-  /* Phones: slides sit side by side and you swipe between them, like stories. Each slide scrolls on its own. */
-  @media (max-width: 700px) {
-    :global(html:has(.pdeck)) { scroll-snap-type: none; }
-    .track { display: flex; height: calc(100svh - var(--bar-h)); overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; margin: 0 calc(-1 * var(--gutter)); }
-    .track::-webkit-scrollbar { display: none; }
-    .track > .slide { flex: 0 0 100%; min-height: 0; height: 100%; overflow-y: auto; overscroll-behavior-y: contain; scroll-snap-align: start; scroll-snap-stop: always; padding: 28px var(--gutter) 48px; align-content: start; box-sizing: border-box; }
-    .track > .slide.intro, .track > .slide.end { align-content: center; }
-    .h-scroll { display: none; } .h-swipe { display: inline; }
-  }
-  .deckbar { position: sticky; top: 0; z-index: 30; height: var(--bar-h); display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 16px; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter); background: var(--bg); border-bottom: 1px solid var(--line); }
+  @media (pointer: coarse) { .h-scroll { display: none; } .h-swipe { display: inline; } }
+  .next { margin-top: 36px; justify-self: start; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; max-width: 100%; padding: 0 18px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); font: 600 15px var(--sans); cursor: pointer; text-align: left; }
+  .next span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 400; color: var(--muted); }
+  .next:hover { border-color: var(--ink); }
+  .arrows { display: flex; gap: 4px; }
+  .arrows button { width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); color: var(--ink); cursor: pointer; font: 15px var(--mono); }
+  .arrows button:disabled { opacity: .35; cursor: default; }
+  .arrows button:hover:not(:disabled) { border-color: var(--ink); }
+  @media (max-width: 520px) { .arrows { display: none; } }
+  .deckbar { position: sticky; top: 0; z-index: 30; height: var(--bar-h); display: grid; grid-template-columns: 1fr auto auto auto auto; align-items: center; gap: 16px; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter); background: var(--bg); border-bottom: 1px solid var(--line); }
   .segs { list-style: none; margin: 0; padding: 0; display: flex; gap: 4px; }
   .segs li { flex: 1; }
   .seg { position: relative; display: block; padding: 10px 0; }
@@ -133,7 +134,7 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
   .seg:hover span { background: var(--muted); }
   .bar-pos { white-space: nowrap; }
   @media (max-width: 900px) { .bar-label { display: none; } }
-  @media (max-width: 520px) { .bar-pos { display: none; } .deckbar { grid-template-columns: 1fr auto auto; gap: 10px; } }
+  @media (max-width: 520px) { .bar-pos { display: none; } .deckbar { grid-template-columns: 1fr auto auto auto auto; gap: 10px; } }
 
   .test { position: relative; }
   .test-btn { min-height: 32px; padding: 0 12px; border: 1px dashed var(--amber); border-radius: 999px; background: var(--amber-tint); color: var(--amber-ink); font: 12px var(--mono); cursor: pointer; }
@@ -141,20 +142,7 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
   .test-menu[hidden] { display: none; }
   .test-menu button { min-height: 40px; padding: 0 12px; border: 0; border-radius: 8px; background: none; text-align: left; font-size: 14px; cursor: pointer; }
   .test-menu button:hover { background: var(--hover); }
-  .hud { position: relative; display: flex; align-items: center; }
-  .hud-pill { display: inline-flex; align-items: center; gap: 7px; padding: 4px 11px 4px 8px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
-  .hud-pill svg { width: 18px; height: 18px; }
-  .hud-drop { fill: var(--ink); } .hud-nib { stroke: var(--surface); stroke-width: 1.4; stroke-linecap: round; } .hud-hole { fill: var(--surface); }
-  .hud-n { font: 600 14px var(--mono); color: var(--amber-ink); min-width: 2ch; font-variant-numeric: tabular-nums; }
-  .hud-lv { font-size: 11px; }
-  @media (max-width: 420px) { .hud-lv { display: none; } }
-  .hud-pill:global(.bumpA) { animation: bumpA .45s cubic-bezier(.3, 1.6, .5, 1); } .hud-pill:global(.bumpB) { animation: bumpB .45s cubic-bezier(.3, 1.6, .5, 1); }
-  @keyframes bumpA { 35% { transform: scale(1.12); } } @keyframes bumpB { 35% { transform: scale(1.12); } }
-  .hud-gain { position: absolute; right: 0; top: calc(100% + 6px); white-space: nowrap; font: 600 12px var(--mono); color: var(--amber-ink); background: var(--amber-tint); padding: 3px 9px; border-radius: 999px; opacity: 0; pointer-events: none; }
-  .hud-gain:global(.show) { animation: drop-in 1.3s ease-out both; }
-  @keyframes drop-in { 0% { opacity: 0; transform: translateY(-6px); } 18% { opacity: 1; transform: none; } 75% { opacity: 1; } 100% { opacity: 0; transform: translateY(4px); } }
 
-  .slide { min-height: calc(100svh - var(--bar-h)); scroll-snap-align: start; display: grid; align-content: center; padding: clamp(44px, 7vh, 80px) 0; }
   .inner { width: 100%; max-width: 760px; }
   :global(.deck-js) .reveal { opacity: 0; transform: translateY(14px); transition: opacity 420ms ease-out, transform 420ms ease-out; }
   :global(.deck-js) .shown .reveal { opacity: 1; transform: none; }
@@ -183,19 +171,8 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
   .more .t { font-weight: 600; } .more .h { color: var(--muted); font-size: 15px; }
   .more a:hover .t { text-decoration: underline; }
 
-  .ink-toasts { position: fixed; z-index: 60; top: calc(var(--bar-h) + 10px); left: 50%; transform: translateX(-50%); width: min(420px, calc(100vw - 24px)); display: grid; gap: 8px; pointer-events: none; }
-  .ink-toasts :global(.it) { pointer-events: auto; display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: center; padding: 14px 16px; border-radius: 14px; background: var(--ink); color: var(--bg); box-shadow: 0 14px 34px rgb(0 0 0 / .2); animation: it-in .5s cubic-bezier(.3, 1.4, .5, 1) both; }
-  .ink-toasts :global(.it.out) { animation: it-out .3s ease-in forwards; }
-  .ink-toasts :global(.it-badge) { width: 44px; height: 44px; border-radius: 50%; background: var(--amber); color: var(--ink); display: grid; place-items: center; font: 600 15px var(--mono); }
-  .ink-toasts :global(.it-tag) { display: block; font: 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; opacity: .65; }
-  .ink-toasts :global(.it-title) { display: block; font-weight: 600; font-size: 16px; }
-  .ink-toasts :global(.it-desc) { display: block; font-size: 13px; opacity: .8; line-height: 1.4; }
-  @keyframes it-in { from { opacity: 0; transform: translateY(-14px) scale(.97); } to { opacity: 1; transform: none; } }
-  @keyframes it-out { to { opacity: 0; transform: translateY(-8px); } }
 
   @media (prefers-reduced-motion: reduce) {
     :global(.deck-js) .reveal { transform: none; transition: opacity 200ms linear; transition-delay: 0ms !important; }
-    .hud-pill:global(.bumpA), .hud-pill:global(.bumpB), .hud-gain:global(.show) { animation: none; }
-    .ink-toasts :global(.it), .ink-toasts :global(.it.out) { animation-duration: .01s; }
   }
 </style>

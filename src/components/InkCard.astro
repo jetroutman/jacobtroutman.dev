@@ -1,67 +1,78 @@
 ---
-// A Slip Box card inside a post: claim and note are free; source and branches are sealed layers.
+// A Slip Box card inside a post. The claim is free and earns ink when you reach it (the badge shows how much).
+// Going deeper costs ink, one layer at a time: my note → where it came from → where it went.
 import { INK, type CardView } from '../lib/posts';
 interface Props { card: CardView }
 const { card } = Astro.props;
 const drop = 'M12 2.5C12 2.5 5.2 10.4 5.2 15.2a6.8 6.8 0 0 0 13.6 0C18.8 10.4 12 2.5 12 2.5Z';
 const srcBooks = card.sources.map((s) => s.book).filter((x, i, a) => a.indexOf(x) === i).join(', ');
+const layers: { key: string; label: string; cost: number }[] = [];
+if (card.body.length) layers.push({ key: `${card.id}:note`, label: 'My note', cost: INK.noteCost });
+if (card.sources.length) layers.push({ key: `${card.id}:src`, label: `Where this came from · ${srcBooks}`, cost: INK.sourceCost });
+if (card.branches.length) layers.push({ key: `${card.id}:br`, label: `Where it went · ${card.branches.length} ${card.branches.length === 1 ? 'idea' : 'ideas'}`, cost: INK.branchesCost });
+const after = (i: number) => (i > 0 ? layers[i - 1].key : undefined);
 ---
 <section class="card" data-card={card.id} aria-label={`Card ${card.fid || ''}: ${card.label}`}>
-  <h3 class="c-title">{card.fid && <span class="fid">{card.fid}</span>}{card.label}</h3>
-  {card.body.map((t) => <p class="c-body">{t}</p>)}
-  {card.sources.length > 0 && (
-    <div class="layer" data-layer={`${card.id}:src`} data-cost={INK.sourceCost}>
-      <p class="mono-label l-label">Where this came from · {srcBooks}</p>
+  <div class="c-head">
+    <h3 class="c-title">{card.fid && <span class="fid">{card.fid}</span>}{card.label}</h3>
+    <span class="earn" data-earn title={`Reaching this claim earns ${INK.cardReached} ink`}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d={drop}></path></svg>+{INK.cardReached}
+    </span>
+  </div>
+  {layers.map((l, i) => (
+    <div class="layer" data-layer={l.key} data-cost={l.cost} data-after={after(i)}>
+      <p class="mono-label l-label">{l.label}</p>
       <div class="l-content">
-        {card.sources.map((s) => (
+        {l.key.endsWith(':note') && card.body.map((t) => <p class="c-body">{t}</p>)}
+        {l.key.endsWith(':src') && card.sources.map((s) => (
           <div class="src">
             <p class="src-title"><a href={s.bookHref} tabindex="-1">{s.title}</a></p>
             {s.interpretation && <p>{s.interpretation}</p>}
             {s.quote && <blockquote>{s.quote}</blockquote>}
           </div>
         ))}
+        {l.key.endsWith(':br') && (
+          <ul class="br">{card.branches.map((x) => <li><a href={x.href} tabindex="-1">{x.fid && <span class="fid">{x.fid}</span>}{x.label}</a></li>)}</ul>
+        )}
       </div>
       <span class="flood" aria-hidden="true"></span>
-      <button type="button" class="seal" data-unseal><svg viewBox="0 0 24 24" aria-hidden="true"><path d={drop}></path></svg><span data-seal-label>Unseal · {INK.sourceCost}</span></button>
+      <button type="button" class="seal" data-unseal><svg viewBox="0 0 24 24" aria-hidden="true"><path d={drop}></path></svg><span data-seal-label>Unseal · {l.cost}</span></button>
     </div>
-  )}
-  {card.branches.length > 0 && (
-    <div class="layer" data-layer={`${card.id}:br`} data-cost={INK.branchesCost}>
-      <p class="mono-label l-label">Where it went · {card.branches.length} {card.branches.length === 1 ? 'idea' : 'ideas'}</p>
-      <ul class="l-content br">
-        {card.branches.map((x) => <li><a href={x.href} tabindex="-1">{x.fid && <span class="fid">{x.fid}</span>}{x.label}</a></li>)}
-      </ul>
-      <span class="flood" aria-hidden="true"></span>
-      <button type="button" class="seal" data-unseal><svg viewBox="0 0 24 24" aria-hidden="true"><path d={drop}></path></svg><span data-seal-label>Unseal · {INK.branchesCost}</span></button>
-    </div>
-  )}
+  ))}
   <a class="c-link mono-meta" href={card.href}>Open in its thread →</a>
 </section>
 
 <style>
-  .card { padding: 20px 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); font-family: var(--sans); font-size: 16px; line-height: 1.55; transition: border-color .4s; }
-  .card:global(.reached) { border-color: color-mix(in srgb, var(--amber) 45%, var(--line)); }
-  .c-title { font-size: 19px; line-height: 1.3; letter-spacing: -0.01em; text-wrap: pretty; }
-  .fid { font: 500 0.72em var(--mono); color: var(--amber-ink); margin-right: 9px; }
-  .c-body { margin-top: 10px; }
+  .card { position: relative; padding: 20px 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); font-family: var(--sans); font-size: 16px; line-height: 1.55; transition: border-color .4s, box-shadow .4s; }
+  .card:global(.reached) { border-color: color-mix(in srgb, var(--amber) 55%, var(--line)); }
+  .c-head { display: flex; gap: 14px; align-items: flex-start; justify-content: space-between; }
+  .c-title { font-size: 20px; line-height: 1.3; letter-spacing: -0.01em; text-wrap: pretty; }
+  .fid { font: 500 0.7em var(--mono); color: var(--amber-ink); margin-right: 9px; }
+  .earn { flex: none; display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px 3px 7px; border: 1px dashed var(--amber); border-radius: 999px; font: 600 12px var(--mono); color: var(--amber-ink); white-space: nowrap; transition: background .3s, color .3s, border-color .3s; }
+  .earn svg { width: 12px; height: 12px; fill: currentColor; }
+  .card:global(.reached) .earn { border-style: solid; border-color: var(--amber); background: var(--amber); color: var(--ink); }
+  .earn:global(.pop) { animation: pop .5s cubic-bezier(.3, 1.8, .5, 1); }
+  @keyframes pop { 40% { transform: scale(1.25); } }
+  .c-body + .c-body { margin-top: 10px; }
   .c-link { display: inline-block; margin-top: 14px; text-decoration: none; }
   .c-link:hover { color: var(--ink); }
-  .layer { position: relative; overflow: hidden; margin-top: 14px; padding: 14px 16px; border-radius: 10px; background: var(--hover); }
+  .layer { position: relative; overflow: hidden; margin-top: 12px; padding: 14px 16px; border-radius: 10px; background: var(--hover); }
+  .layer:global(.locked) { opacity: .55; }
   .l-label { margin-bottom: 8px; }
-  .l-content { font-size: 15px; line-height: 1.5; transition: filter .5s ease .35s, opacity .5s ease .35s; }
-  .layer:not(:global(.open)) .l-content { filter: blur(5px); opacity: .5; user-select: none; pointer-events: none; min-height: 44px; }
+  .l-content { font-size: 15.5px; line-height: 1.55; transition: filter .5s ease .35s, opacity .5s ease .35s; }
+  .layer:not(:global(.open)) .l-content { filter: blur(5px); opacity: .5; user-select: none; pointer-events: none; min-height: 44px; max-height: 88px; overflow: hidden; }
   .src + .src { margin-top: 12px; }
   .src-title { font-weight: 600; } .src-title a { text-decoration: none; }
   .src blockquote { margin: 8px 0 0; padding-left: 12px; border-left: 2px solid var(--line); color: var(--muted); }
   .br { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
   .br a { text-decoration: none; } .br a:hover { text-decoration: underline; }
   .flood { position: absolute; inset: 0; background: var(--ink); clip-path: circle(0% at 90% 70%); pointer-events: none; opacity: 0; }
-  .layer:global(.flooding) .flood { animation: flood 1s cubic-bezier(.5, 0, .3, 1) both; }
-  @keyframes flood { 0% { clip-path: circle(0% at 90% 70%); opacity: 1; } 55% { clip-path: circle(150% at 90% 70%); opacity: 1; } 100% { clip-path: circle(150% at 90% 70%); opacity: 0; } }
+  .layer:global(.flooding) .flood { animation: flood 1.1s cubic-bezier(.5, 0, .3, 1) both; }
+  @keyframes flood { 0% { clip-path: circle(0% at 90% 70%); opacity: 1; } 50% { clip-path: circle(150% at 90% 70%); opacity: 1; } 100% { clip-path: circle(150% at 90% 70%); opacity: 0; } }
   .seal { position: absolute; right: 12px; bottom: 12px; min-height: 40px; display: inline-flex; align-items: center; gap: 7px; padding: 0 14px 0 10px; border: 1px dashed var(--amber); border-radius: 999px; background: var(--surface); color: var(--amber-ink); font: 600 13px var(--mono); cursor: pointer; transition: transform .15s; }
   .seal svg { width: 15px; height: 15px; fill: var(--ink); }
   .seal:hover:not(:disabled) { transform: translateY(-2px); }
   .seal:disabled { cursor: not-allowed; border-style: solid; border-color: var(--line); color: var(--muted); }
   .layer:global(.open) .seal { display: none; }
-  @media (prefers-reduced-motion: reduce) { .layer:global(.flooding) .flood { animation: none; } .l-content { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .layer:global(.flooding) .flood { animation: none; } .l-content { transition: none; } .earn:global(.pop) { animation: none; } }
 </style>
