@@ -1,0 +1,22 @@
+---
+// Admin player: one post, any status, with test controls for the ink economy.
+import Base from '../../layouts/Base.astro';
+import PostView from '../../components/PostView.astro';
+import { posts, type Post } from '../../lib/posts';
+export function getStaticPaths() { return posts.map((post) => ({ params: { slug: post.slug }, props: { post } })); }
+const { post } = Astro.props as { post: Post };
+---
+<Base title={`Admin · ${post.title}`} noindex>
+  <div class="bar" role="region" aria-label="Test controls">
+    <span class="mono-meta">Testing · {post.status}</span>
+    <button type="button" data-ink-recruiter>Arrive as a recruiter (+100)</button>
+    <button type="button" data-ink-reset>Reset my ink</button>
+  </div>
+  <PostView post={post} admin />
+</Base>
+<style>
+  .bar { position: sticky; top: 0; z-index: 40; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 16px; padding: 8px 12px; border: 1px dashed var(--amber); border-radius: 10px; background: var(--bg); }
+  .bar span { margin-right: auto; color: var(--amber-ink); }
+  .bar button { min-height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); cursor: pointer; font-size: 14px; }
+  .bar button:hover { border-color: var(--ink); }
+</style>
