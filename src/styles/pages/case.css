@@ -1,0 +1,48 @@
+/* Page: case. Moved out of src/pages/case/[slug].astro; scoped to the page body.pg-case (inside the site wrapper, outside components). */
+.title-block:where(.pg-case > .wrap *):not(:where(.c, .c *)) { max-width: 1000px; padding-top: clamp(28px, 5vw, 64px); }
+.title-block a:where(.pg-case > .wrap *):not(:where(.c, .c *)) { text-decoration: none; }
+.meta:where(.pg-case > .wrap *):not(:where(.c, .c *)) { margin-top: clamp(24px, 4vw, 40px); }
+h1:where(.pg-case > .wrap *):not(:where(.c, .c *)) { margin-top: 14px; max-width: 18em; font-size: clamp(30px, 4.2vw, 50px); line-height: 1.06; }
+.tldr:where(.pg-case > .wrap *):not(:where(.c, .c *)) { margin-top: clamp(28px, 4vw, 44px); padding: clamp(18px, 2.4vw, 28px); border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.tldr-head:where(.pg-case > .wrap *):not(:where(.c, .c *)) { display: flex; justify-content: space-between; }
+.tldr-facts:where(.pg-case > .wrap *):not(:where(.c, .c *)) { display: flex; flex-wrap: wrap; gap: 8px 32px; margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 14px; }
+
+.body:where(.pg-case > .wrap *):not(:where(.c, .c *)) { display: flex; gap: 64px; margin-top: clamp(40px, 6vw, 72px); }
+.rail:where(.pg-case > .wrap *):not(:where(.c, .c *)) { width: 200px; flex: none; }
+.rail-inner:where(.pg-case > .wrap *):not(:where(.c, .c *)) { position: sticky; top: 24px; display: flex; flex-direction: column; }
+.rail-head:where(.pg-case > .wrap *):not(:where(.c, .c *)) { color: var(--ink); padding-bottom: 10px; border-bottom: 1px solid var(--ink); margin-bottom: 6px; }
+.nav-item:where(.pg-case > .wrap *):not(:where(.c, .c *)) { display: flex; padding: 8px 10px; border-radius: 6px; font-size: 14px; line-height: 1.35; color: var(--muted); text-decoration: none; }
+.nav-item .n:where(.pg-case > .wrap *):not(:where(.c, .c *)) { width: 22px; flex: none; font: 11px/1.9 var(--mono); }
+.nav-item.active:where(.pg-case > .wrap *):not(:where(.c, .c *)) { background: var(--hover); color: var(--ink); font-weight: 600; }
+.nav-item.active .n:where(.pg-case > .wrap *):not(:where(.c, .c *)) { color: var(--amber-ink); }
+.top:where(.pg-case > .wrap *):not(:where(.c, .c *)) { margin-top: 14px; text-decoration: none; }
+.back-bottom:where(.pg-case > .wrap *):not(:where(.c, .c *)) { margin-top: 24px; }
+.back-bottom a:where(.pg-case > .wrap *):not(:where(.c, .c *)) { text-decoration: none; }
+
+article:where(.pg-case > .wrap *):not(:where(.c, .c *)) { flex: 1; max-width: 720px; min-width: 0; }
+.chips:where(.pg-case > .wrap *):not(:where(.c, .c *)) { display: none; }
+@media (max-width: 959px) {
+  .rail:where(.pg-case > .wrap *):not(:where(.c, .c *)) { display: none; }
+  .chips:where(.pg-case > .wrap *):not(:where(.c, .c *)) {
+    display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none;
+    position: sticky; top: 0; z-index: 5; background: var(--bg);
+    margin: 0 calc(-1 * var(--gutter)) 28px; padding: 6px var(--gutter);
+    border-bottom: 1px solid var(--line);
+  }
+  .chip:where(.pg-case > .wrap *):not(:where(.c, .c *)) {
+    flex: none; display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px;
+    border: 1px solid var(--line); border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none;
+  }
+  .chip.active:where(.pg-case > .wrap *):not(:where(.c, .c *)) { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+}
+
+.next:where(.pg-case > .wrap *):not(:where(.c, .c *)) {
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px;
+  margin-top: var(--section); padding: 20px 0; text-decoration: none;
+  border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line);
+}
+.next:hover:where(.pg-case > .wrap *):not(:where(.c, .c *)) { background: var(--hover); color: var(--ink); }
+.next > span:first-child:where(.pg-case > .wrap *):not(:where(.c, .c *)) { display: flex; flex-direction: column; gap: 6px; }
+.next-title:where(.pg-case > .wrap *):not(:where(.c, .c *)) { font-size: 18px; font-weight: 500; }
+.arrow:where(.pg-case > .wrap *):not(:where(.c, .c *)) { font: 18px var(--mono); color: var(--muted); }
+.tldr-pdo:where(.pg-case > .wrap *):not(:where(.c, .c *)) { margin-top: 16px; }

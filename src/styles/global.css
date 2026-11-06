@@ -1,3 +1,6 @@
+/* Site-wide base styles. In a cascade layer so page and component stylesheets (src/styles/pages, components)
+   win ties no matter what order the build puts the files in. */
+@layer base {
 /* Design tokens from the "Decision log" handoff. Amber is the only accent:
    use it for status and change, never decoration. */
 :root {
@@ -63,6 +66,7 @@ button { font: inherit; color: inherit; }
   font: 11px var(--mono); text-transform: uppercase;
   letter-spacing: 0.08em; color: var(--muted);
 }
+.mono-label.strong { color: var(--ink); }
 .mono-meta { font: 12px var(--mono); color: var(--muted); }
 
 .pill {
@@ -110,3 +114,4 @@ button { font: inherit; color: inherit; }
   padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 15px;
 }
 .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+}

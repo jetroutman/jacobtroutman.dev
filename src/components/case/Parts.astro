@@ -1,16 +1,9 @@
 ---
+import '../../styles/components/parts.css';
 interface Props { label?: string; items: [string, string][] }
 const { label, items } = Astro.props;
 ---
-{label && <p class="mono-label parts-label">{label}</p>}
-<dl class="parts">
+{label && <p class="mono-label parts-label c c-parts">{label}</p>}
+<dl class="parts c c-parts">
   {items.map(([term, def]) => <div><dt>{term}</dt><dd>{def}</dd></div>)}
 </dl>
-<style>
-  .parts-label { margin-top: 24px; }
-  .parts { margin-top: 24px; border-top: 1px solid var(--line); }
-  .parts-label + .parts { margin-top: 10px; }
-  .parts div { display: flex; flex-wrap: wrap; gap: 4px 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
-  dt { width: 120px; font: 13px var(--mono); }
-  dd { flex: 1 1 240px; font-size: 16px; line-height: 1.5; }
-</style>

@@ -4,10 +4,11 @@ import Base from '../layouts/Base.astro';
 import StatusMeta from '../components/StatusMeta.astro';
 import Pdo from '../components/Pdo.astro';
 import { site } from '../site';
+import '../styles/pages/home.css';
 
 const cases = (await getCollection('cases')).sort((a, b) => a.data.order - b.data.order);
 ---
-<Base title={site.name}>
+<Base page="home" title={site.name}>
   <main class="panes">
     <div class="pane-pitch">
       <p class="avail mono-meta"><span class="dot"></span>Open to new roles</p>
@@ -19,13 +20,13 @@ const cases = (await getCollection('cases')).sort((a, b) => a.data.order - b.dat
         <div><dt class="mono-label">Focus</dt><dd>APIs, design systems</dd></div>
       </dl>
       <div class="actions">
-        <a class="btn btn-primary" style="padding:10px 16px" href={site.resume}>Résumé (PDF)</a>
+        <a class="btn btn-primary resume-btn" href={site.resume}>Résumé (PDF)</a>
         <a class="btn btn-secondary" href={`mailto:${site.email}`}>Email me</a>
       </div>
     </div>
 
     <div class="pane-main">
-      <div class="log-head"><span class="mono-label">ID</span><span class="mono-label" style="color:var(--ink)">Decision log</span></div>
+      <div class="log-head"><span class="mono-label">ID</span><span class="mono-label strong">Decision log</span></div>
       {cases.map(({ id, data }) => (
         <details class="log-row">
           <summary>
@@ -72,41 +73,3 @@ const cases = (await getCollection('cases')).sort((a, b) => a.data.order - b.dat
     </div>
   </main>
 </Base>
-
-<style>
-  .avail { display: flex; align-items: center; gap: 8px; }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); }
-  .home-h1 { margin-top: 18px; font-size: clamp(34px, 4vw, 52px); line-height: 1.04; }
-  .sub { margin-top: 18px; font-size: 18px; line-height: 1.45; color: var(--muted); }
-
-  .log-head, .log-row summary, .panel {
-    display: grid; grid-template-columns: var(--id-col) 1fr 28px; column-gap: clamp(8px, 1.5vw, 16px);
-  }
-  .log-head { grid-template-columns: var(--id-col) 1fr; padding-bottom: 10px; border-bottom: 1px solid var(--ink); }
-  .log-row { border-bottom: 1px solid var(--line); }
-  .log-row summary { padding: 20px 0; cursor: pointer; list-style: none; }
-  .log-row summary::-webkit-details-marker { display: none; }
-  .log-row summary:hover { background: var(--hover); }
-  .id { font: 12px var(--mono); color: var(--muted); padding-top: 4px; }
-  .main { display: flex; flex-direction: column; gap: 10px; }
-  .title { font-size: clamp(17px, 1.6vw, 19px); line-height: 1.4; font-weight: 500; text-wrap: pretty; }
-  .toggle {
-    width: 28px; height: 28px; border: 1px solid var(--line); border-radius: 50%;
-    display: grid; place-items: center; font: 14px var(--mono); color: var(--muted);
-  }
-  .toggle::after { content: "+"; }
-  .log-row[open] .toggle::after { content: "−"; }
-  .panel { grid-template-columns: var(--id-col) 1fr; padding-bottom: 24px; }
-  .row-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 20px; }
-  .open { padding: 9px 14px; font-size: 14px; }
-
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 48px; }
-  .card {
-    display: flex; flex-direction: column; gap: 6px; padding: 20px; text-decoration: none;
-    border: 1px solid var(--line); border-radius: 12px; background: var(--surface);
-  }
-  .card:hover { color: var(--ink); border-color: var(--ink); }
-  .card-top { display: flex; justify-content: space-between; }
-  .card-title { margin-top: 18px; font-size: 21px; font-weight: 600; letter-spacing: -0.01em; }
-  .card-desc { font-size: 15px; line-height: 1.5; color: var(--muted); }
-</style>

@@ -1,0 +1,20 @@
+/* Page: notes. Moved out of src/pages/notes/index.astro; scoped to the page body.pg-notes (inside the site wrapper, outside components). */
+.intro:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { padding-top: clamp(28px, 5vw, 64px); max-width: 760px; }
+.intro > p a:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { text-decoration: none; }
+h1:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { margin-top: 18px; font-size: clamp(34px, 4.4vw, 52px); line-height: 1.02; }
+.desc:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { margin-top: 12px; font-size: 17px; line-height: 1.5; color: var(--muted); }
+.stats:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { margin-top: 14px; }
+.empty:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { margin-top: 32px; color: var(--muted); }
+.map:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { margin: 28px 0 0; padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.map svg:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { width: 100%; height: auto; display: block; }
+.edges line:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { stroke: var(--line); stroke-width: 1.4; }
+.arcs path:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { fill: none; stroke: var(--amber); stroke-width: 1.2; stroke-dasharray: 4 4; opacity: 0.7; }
+.node circle:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { fill: var(--muted); transition: r 0.15s, fill 0.15s; }
+.node.hub circle:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { fill: var(--ink); }
+.node:hover circle:where(.pg-notes > .wrap *):not(:where(.c, .c *)), .node:focus-visible circle:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { fill: var(--amber); r: 8; }
+.hub-label:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { font: 600 11px var(--sans); fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; }
+figcaption:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { margin-top: 8px; padding: 0 4px; }
+.threads:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { list-style: none; padding: 0; margin-top: 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.threads a:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { display: flex; flex-direction: column; gap: 6px; height: 100%; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); text-decoration: none; }
+.threads a:hover:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { border-color: var(--ink); }
+.t-title:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { font-size: 17px; font-weight: 600; line-height: 1.3; }

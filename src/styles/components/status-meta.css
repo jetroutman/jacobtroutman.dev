@@ -1,0 +1,2 @@
+/* Component: status-meta. Moved out of src/components/StatusMeta.astro; scoped to .c-status-meta. */
+.meta:where(.c-status-meta, .c-status-meta *) { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }

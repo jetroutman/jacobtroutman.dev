@@ -6,6 +6,7 @@ import InkCard from './InkCard.astro';
 import InkHud from './InkHud.astro';
 import InkLayer from './InkLayer.astro';
 import { INK, inline, published, type Post } from '../lib/posts';
+import '../styles/components/post-view.css';
 interface Props { post: Post; admin?: string | false } // admin = the list's base path, e.g. /admin/
 const { post, admin = false } = Astro.props;
 const drop = 'M12 2.5C12 2.5 5.2 10.4 5.2 15.2a6.8 6.8 0 0 0 13.6 0C18.8 10.4 12 2.5 12 2.5Z';
@@ -26,7 +27,7 @@ const fmt = (d: string | null) => (d ? new Date(`${d.slice(0, 10)}T12:00:00Z`).t
 const maxInk = post.cardCount * INK.cardReached + INK.postFinished;
 const others = published.filter((p) => p.id !== post.id).slice(0, 3);
 ---
-<div class="pdeck" data-post={post.id} data-admin={admin ? '1' : undefined}>
+<div class="pdeck c c-post-view" data-post={post.id} data-admin={admin ? '1' : undefined}>
   <nav class="deckbar" aria-label="Sections">
     <ol class="segs">
       {all.map((s, i) => <li><a class="seg" href={`#${s.id}`} data-seg={s.id} aria-label={`${pad(i + 1)}: ${label(s)}`}><span></span></a></li>)}
@@ -106,73 +107,3 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
     document.addEventListener('click', (e) => { if (!tm.hidden && !(e.target as Element).closest('.test')) { tm.hidden = true; tb.setAttribute('aria-expanded', 'false'); } });
   }
 </script>
-
-<style>
-  /* Slides sit side by side and page one at a time on every screen: swipe, the arrows, or ← →. Each slide scrolls on its own. */
-  :global(html:has(.pdeck)) { --bar-h: 48px; }
-  .track { display: flex; height: calc(100svh - var(--bar-h)); overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; margin: 0 calc(-1 * var(--gutter)); }
-  .track::-webkit-scrollbar { display: none; }
-  .track > .slide { flex: 0 0 100%; height: 100%; overflow-y: auto; overscroll-behavior-y: contain; scroll-snap-align: start; scroll-snap-stop: always; padding: clamp(28px, 6vh, 72px) var(--gutter) 56px; box-sizing: border-box; display: grid; align-content: safe center; }
-  @media (min-width: 900px) { .inner { margin: 0 auto; } }
-  .h-swipe { display: none; }
-  @media (pointer: coarse) { .h-scroll { display: none; } .h-swipe { display: inline; } }
-  .next { margin-top: 36px; justify-self: start; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; max-width: 100%; padding: 0 18px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); font: 600 15px var(--sans); cursor: pointer; text-align: left; }
-  .next span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 400; color: var(--muted); }
-  .next:hover { border-color: var(--ink); }
-  .arrows { display: flex; gap: 4px; }
-  .arrows button { width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); color: var(--ink); cursor: pointer; font: 15px var(--mono); }
-  .arrows button:disabled { opacity: .35; cursor: default; }
-  .arrows button:hover:not(:disabled) { border-color: var(--ink); }
-  @media (max-width: 520px) { .arrows { display: none; } }
-  .deckbar { position: sticky; top: 0; z-index: 30; height: var(--bar-h); display: grid; grid-template-columns: 1fr auto auto auto auto; align-items: center; gap: 16px; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter); background: var(--bg); border-bottom: 1px solid var(--line); }
-  .segs { list-style: none; margin: 0; padding: 0; display: flex; gap: 4px; }
-  .segs li { flex: 1; }
-  .seg { position: relative; display: block; padding: 10px 0; }
-  .seg span { display: block; height: 4px; border-radius: 999px; background: var(--line); transition: background 200ms ease-out; }
-  .seg:global(.done) span { background: var(--amber); }
-  .seg:global(.current) span { background: var(--ink); }
-  .seg:hover span { background: var(--muted); }
-  .bar-pos { white-space: nowrap; }
-  @media (max-width: 900px) { .bar-label { display: none; } }
-  @media (max-width: 520px) { .bar-pos { display: none; } .deckbar { grid-template-columns: 1fr auto auto auto auto; gap: 10px; } }
-
-  .test { position: relative; }
-  .test-btn { min-height: 32px; padding: 0 12px; border: 1px dashed var(--amber); border-radius: 999px; background: var(--amber-tint); color: var(--amber-ink); font: 12px var(--mono); cursor: pointer; }
-  .test-menu { position: absolute; right: 0; top: calc(100% + 8px); z-index: 40; display: grid; gap: 4px; min-width: 240px; padding: 6px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: 0 10px 30px rgb(0 0 0 / .12); }
-  .test-menu[hidden] { display: none; }
-  .test-menu button { min-height: 40px; padding: 0 12px; border: 0; border-radius: 8px; background: none; text-align: left; font-size: 14px; cursor: pointer; }
-  .test-menu button:hover { background: var(--hover); }
-
-  .inner { width: 100%; max-width: 760px; }
-  :global(.deck-js) .reveal { opacity: 0; transform: translateY(14px); transition: opacity 420ms ease-out, transform 420ms ease-out; }
-  :global(.deck-js) .shown .reveal { opacity: 1; transform: none; }
-  .shown .reveal:nth-child(2) { transition-delay: 70ms; }
-  .shown .reveal:nth-child(3) { transition-delay: 140ms; }
-  .shown .reveal:nth-child(n+4) { transition-delay: 210ms; }
-
-  .crumbs a { text-decoration: none; } .crumbs a:hover { text-decoration: underline; }
-  .chip { border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px; margin: 0 4px; }
-  .p-title { margin-top: 18px; font-size: clamp(38px, 6vw, 72px); line-height: 1.02; letter-spacing: -0.03em; text-wrap: balance; }
-  .p-hook { margin-top: 20px; max-width: 32em; font-size: clamp(20px, 2.2vw, 25px); line-height: 1.4; font-weight: 500; }
-  .howto { margin-top: 32px; display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: start; max-width: 36em; padding: 14px 16px; border: 1px dashed var(--amber); border-radius: 12px; color: var(--muted); font-size: 15px; line-height: 1.5; }
-  .howto svg { width: 20px; height: 20px; fill: var(--ink); margin-top: 1px; }
-  .hint { margin-top: clamp(28px, 5vh, 56px); }
-
-  .section-head h2 { font-size: clamp(26px, 3vw, 38px); font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; text-wrap: balance; }
-  .flow { margin-top: 24px; display: grid; gap: 18px; font-family: var(--reading); font-size: clamp(17px, 1.6vw, 19px); line-height: 1.6; }
-  .intro .flow { margin-top: 28px; }
-  .p-li { padding-left: 18px; position: relative; } .p-li::before { content: "–"; position: absolute; left: 0; color: var(--muted); }
-  .p-q { margin: 0; padding-left: 16px; border-left: 2px solid var(--line); color: var(--muted); }
-  .missing { padding: 10px 12px; border: 1px dashed var(--line); border-radius: 8px; }
-
-  .end-box .p-p { margin-top: 18px; font-size: 18px; line-height: 1.6; }
-  .more { list-style: none; padding: 0; margin: 28px 0 0; border-top: 1px solid var(--line); }
-  .more a { display: grid; gap: 4px; padding: 14px 0; border-bottom: 1px solid var(--line); text-decoration: none; }
-  .more .t { font-weight: 600; } .more .h { color: var(--muted); font-size: 15px; }
-  .more a:hover .t { text-decoration: underline; }
-
-
-  @media (prefers-reduced-motion: reduce) {
-    :global(.deck-js) .reveal { transform: none; transition: opacity 200ms linear; transition-delay: 0ms !important; }
-  }
-</style>

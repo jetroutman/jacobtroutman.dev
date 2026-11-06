@@ -1,13 +1,10 @@
 ---
+import '../styles/components/dev-todo.css';
 // Shows unconfirmed claims in dev and PR previews. Never rendered in a production build.
 interface Props { items: string[] }
 const { items } = Astro.props;
 const show = (import.meta.env.DEV || import.meta.env.PUBLIC_DRAFTS === 'true') && items.length > 0;
 ---
 {show && (
-  <div class="todo"><p class="mono-label">Before launch (preview only)</p><ul>{items.map((t) => <li>{t}</li>)}</ul></div>
+  <div class="todo c c-dev-todo"><p class="mono-label">Before launch (preview only)</p><ul>{items.map((t) => <li>{t}</li>)}</ul></div>
 )}
-<style>
-  .todo { margin: 16px 0; padding: 12px 16px; border: 1px dashed var(--amber); border-radius: 8px; background: var(--amber-tint); font-size: 14px; }
-  ul { margin-top: 6px; padding-left: 1.2em; }
-</style>

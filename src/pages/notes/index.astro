@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { threads, allNotes, noteById, noteHref } from '../../lib/notes';
+import '../../styles/pages/notes.css';
 
 // Idea map: each thread is a radial cluster around its starting question; branches fan out by depth.
 // Dashed arcs are "Related" links, often between threads. Laid out at build time, no client library.
@@ -52,7 +53,7 @@ const arcs = allNotes.flatMap((n) => n.related.filter((r) => noteById.has(r)).ma
 }).filter(Boolean)) as string[];
 const books = new Set(allNotes.flatMap((n) => n.books.map((b) => b.href))).size;
 ---
-<Base title="Notes · Jacob Troutman" description="My Zettelkasten: permanent notes in my own words, grown into threads of ideas.">
+<Base page="notes" title="Notes · Jacob Troutman" description="My Zettelkasten: permanent notes in my own words, grown into threads of ideas.">
   <div class="intro">
     <p class="mono-meta"><a href="/" data-back>← Decision log</a> / Notes</p>
     <h1 class="h1">Idea map</h1>
@@ -102,25 +103,3 @@ const books = new Set(allNotes.flatMap((n) => n.books.map((b) => b.href))).size;
   import { fromCompany } from '../../scripts/from-company';
   fromCompany('jt-notes');
 </script>
-
-<style>
-  .intro { padding-top: clamp(28px, 5vw, 64px); max-width: 760px; }
-  .intro > p a { text-decoration: none; }
-  h1 { margin-top: 18px; font-size: clamp(34px, 4.4vw, 52px); line-height: 1.02; }
-  .desc { margin-top: 12px; font-size: 17px; line-height: 1.5; color: var(--muted); }
-  .stats { margin-top: 14px; }
-  .empty { margin-top: 32px; color: var(--muted); }
-  .map { margin: 28px 0 0; padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
-  .map svg { width: 100%; height: auto; display: block; }
-  .edges line { stroke: var(--line); stroke-width: 1.4; }
-  .arcs path { fill: none; stroke: var(--amber); stroke-width: 1.2; stroke-dasharray: 4 4; opacity: 0.7; }
-  .node circle { fill: var(--muted); transition: r 0.15s, fill 0.15s; }
-  .node.hub circle { fill: var(--ink); }
-  .node:hover circle, .node:focus-visible circle { fill: var(--amber); r: 8; }
-  .hub-label { font: 600 11px var(--sans); fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; }
-  figcaption { margin-top: 8px; padding: 0 4px; }
-  .threads { list-style: none; padding: 0; margin-top: 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
-  .threads a { display: flex; flex-direction: column; gap: 6px; height: 100%; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); text-decoration: none; }
-  .threads a:hover { border-color: var(--ink); }
-  .t-title { font-size: 17px; font-weight: 600; line-height: 1.3; }
-</style>

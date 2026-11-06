@@ -1,0 +1,2 @@
+/* Component: options. Moved out of src/components/case/Options.astro; scoped to .c-options. */
+.options:where(.c-options, .c-options *) { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 24px; }

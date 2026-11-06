@@ -1,0 +1,33 @@
+/* Component: ink-card. Moved out of src/components/InkCard.astro; scoped to .c-ink-card. */
+.card:where(.c-ink-card, .c-ink-card *) { position: relative; padding: 20px 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); font-family: var(--sans); font-size: 16px; line-height: 1.55; transition: border-color .4s, box-shadow .4s; }
+.card.reached:where(.c-ink-card, .c-ink-card *) { border-color: color-mix(in srgb, var(--amber) 55%, var(--line)); }
+.c-head:where(.c-ink-card, .c-ink-card *) { display: flex; gap: 14px; align-items: flex-start; justify-content: space-between; }
+.c-title:where(.c-ink-card, .c-ink-card *) { font-size: 20px; line-height: 1.3; letter-spacing: -0.01em; text-wrap: pretty; }
+.fid:where(.c-ink-card, .c-ink-card *) { font: 500 0.7em var(--mono); color: var(--amber-ink); margin-right: 9px; }
+.earn:where(.c-ink-card, .c-ink-card *) { flex: none; display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px 3px 7px; border: 1px dashed var(--amber); border-radius: 999px; font: 600 12px var(--mono); color: var(--amber-ink); white-space: nowrap; transition: background .3s, color .3s, border-color .3s; }
+.earn svg:where(.c-ink-card, .c-ink-card *) { width: 12px; height: 12px; fill: currentColor; }
+.card.reached .earn:where(.c-ink-card, .c-ink-card *) { border-style: solid; border-color: var(--amber); background: var(--amber); color: var(--ink); }
+.earn.pop:where(.c-ink-card, .c-ink-card *) { animation: pop .5s cubic-bezier(.3, 1.8, .5, 1); }
+@keyframes pop { 40% { transform: scale(1.25); } }
+.c-body + .c-body:where(.c-ink-card, .c-ink-card *) { margin-top: 10px; }
+.c-link:where(.c-ink-card, .c-ink-card *) { display: inline-block; margin-top: 14px; text-decoration: none; }
+.c-link:hover:where(.c-ink-card, .c-ink-card *) { color: var(--ink); }
+.layer:where(.c-ink-card, .c-ink-card *) { position: relative; overflow: hidden; margin-top: 12px; padding: 14px 16px; border-radius: 10px; background: var(--hover); }
+.layer.locked:where(.c-ink-card, .c-ink-card *) { opacity: .55; }
+.l-label:where(.c-ink-card, .c-ink-card *) { margin-bottom: 8px; }
+.l-content:where(.c-ink-card, .c-ink-card *) { font-size: 15.5px; line-height: 1.55; transition: filter .5s ease .35s, opacity .5s ease .35s; }
+.layer:not(.open) .l-content:where(.c-ink-card, .c-ink-card *) { filter: blur(5px); opacity: .5; user-select: none; pointer-events: none; min-height: 44px; max-height: 88px; overflow: hidden; }
+.src + .src:where(.c-ink-card, .c-ink-card *) { margin-top: 12px; }
+.src-title:where(.c-ink-card, .c-ink-card *) { font-weight: 600; } .src-title a:where(.c-ink-card, .c-ink-card *) { text-decoration: none; }
+.src blockquote:where(.c-ink-card, .c-ink-card *) { margin: 8px 0 0; padding-left: 12px; border-left: 2px solid var(--line); color: var(--muted); }
+.br:where(.c-ink-card, .c-ink-card *) { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.br a:where(.c-ink-card, .c-ink-card *) { text-decoration: none; } .br a:hover:where(.c-ink-card, .c-ink-card *) { text-decoration: underline; }
+.flood:where(.c-ink-card, .c-ink-card *) { position: absolute; inset: 0; background: var(--ink); clip-path: circle(0% at 90% 70%); pointer-events: none; opacity: 0; }
+.layer.flooding .flood:where(.c-ink-card, .c-ink-card *) { animation: flood 1.1s cubic-bezier(.5, 0, .3, 1) both; }
+@keyframes flood { 0% { clip-path: circle(0% at 90% 70%); opacity: 1; } 50% { clip-path: circle(150% at 90% 70%); opacity: 1; } 100% { clip-path: circle(150% at 90% 70%); opacity: 0; } }
+.seal:where(.c-ink-card, .c-ink-card *) { position: absolute; right: 12px; bottom: 12px; min-height: 40px; display: inline-flex; align-items: center; gap: 7px; padding: 0 14px 0 10px; border: 1px dashed var(--amber); border-radius: 999px; background: var(--surface); color: var(--amber-ink); font: 600 13px var(--mono); cursor: pointer; transition: transform .15s; }
+.seal svg:where(.c-ink-card, .c-ink-card *) { width: 15px; height: 15px; fill: var(--ink); }
+.seal:hover:not(:disabled):where(.c-ink-card, .c-ink-card *) { transform: translateY(-2px); }
+.seal:disabled:where(.c-ink-card, .c-ink-card *) { cursor: not-allowed; border-style: solid; border-color: var(--line); color: var(--muted); }
+.layer.open .seal:where(.c-ink-card, .c-ink-card *) { display: none; }
+@media (prefers-reduced-motion: reduce) { .layer.flooding .flood:where(.c-ink-card, .c-ink-card *) { animation: none; } .l-content:where(.c-ink-card, .c-ink-card *) { transition: none; } .earn.pop:where(.c-ink-card, .c-ink-card *) { animation: none; } }

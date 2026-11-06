@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { threads, noteById, noteHref, anchor, type Note, type Thread, type Block } from '../../lib/notes';
+import '../../styles/pages/notes-thread.css';
 
 export function getStaticPaths() {
   return threads.map((t) => ({ params: { thread: t.slug }, props: { t } }));
@@ -23,7 +24,7 @@ const chunks = (body: Block[]): Chunk[] => {
 const notes = t.notes.filter((n) => n.id !== 'loose');
 const first = t.slug === 'loose-notes' ? notes[0] : t.root;
 ---
-<Base title={`${t.root.label} · Notes · Jacob Troutman`} description={`A thread from my Zettelkasten: ${t.root.label}`}>
+<Base page="notes-thread" title={`${t.root.label} · Notes · Jacob Troutman`} description={`A thread from my Zettelkasten: ${t.root.label}`}>
   <div class="head">
     <p class="mono-meta crumbs"><a href="/notes/">← Idea map</a> / {t.root.fid ? `Thread ${t.root.fid}` : 'Thread'}<a class="back" href="/" data-back hidden>← Back to your page</a></p>
     <h1 class="h1">{t.root.label}</h1>
@@ -93,44 +94,3 @@ const first = t.slug === 'loose-notes' ? notes[0] : t.root;
   const fromHash = () => { if (location.hash) show(location.hash.slice(1), false); else show(arts.find((a) => !a.hidden)?.id || '', false); };
   addEventListener('hashchange', fromHash); fromHash();
 </script>
-
-<style>
-  .head { padding-top: clamp(28px, 5vw, 64px); max-width: 760px; }
-  .crumbs { display: flex; flex-wrap: wrap; gap: 6px 16px; }
-  .crumbs a { text-decoration: none; }
-  .back[hidden] { display: none; }
-  h1 { margin: 14px 0 8px; font-size: clamp(28px, 3.6vw, 44px); line-height: 1.08; }
-  .layout { display: grid; gap: 24px; margin-top: 28px; }
-  @media (min-width: 900px) { .layout { grid-template-columns: minmax(260px, 340px) 1fr; align-items: start; } .reader { position: sticky; top: 16px; } }
-
-  .tree { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 10px 6px; max-height: 70vh; overflow: auto; }
-  .tree ul { list-style: none; margin: 0; padding: 0; }
-  .tree li { position: relative; padding-left: calc(var(--d) * 16px); }
-  .tree li:not(.root)::before { content: ''; position: absolute; left: calc(var(--d) * 16px - 9px); top: 0; bottom: 50%; width: 8px; border-left: 1px solid var(--line); border-bottom: 1px solid var(--line); border-bottom-left-radius: 6px; }
-  .tree a { display: flex; gap: 8px; align-items: baseline; padding: 6px 8px; border-radius: 8px; text-decoration: none; font-size: 14px; line-height: 1.35; }
-  .tree a:hover { background: var(--hover); }
-  .tree a.on { background: var(--ink); color: var(--bg); }
-  .tree a.on .fid { color: var(--bg); opacity: 0.8; }
-  .tree li.root a, .tree-root { font-weight: 600; font-size: 15px; }
-  .tree-root { display: block; padding: 6px 8px; }
-  .fid { font: 12px var(--mono); color: var(--amber-ink); flex: none; }
-
-  .note { padding: clamp(16px, 2.4vw, 28px); border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
-  .note h2 { margin-top: 8px; font-size: clamp(22px, 2.6vw, 30px); line-height: 1.15; }
-  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-  .tag { padding: 3px 10px; border-radius: 999px; background: var(--hover); font-size: 12px; }
-  .body { margin-top: 16px; font-size: 17px; line-height: 1.6; }
-  .body > * + * { margin-top: 12px; }
-  .body h3 { font-size: 18px; margin-top: 20px; }
-  .body ul, .body ol { padding-left: 20px; display: grid; gap: 6px; }
-  .body li { margin-left: calc(var(--d) * 18px); }
-  .body blockquote { margin: 0; padding-left: 12px; border-left: 2px solid var(--amber); color: var(--muted); }
-  .muted { color: var(--muted); }
-  .rel { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-  .rel .mono-label { width: 100%; }
-  .chip { padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; text-decoration: none; background: var(--bg); }
-  .chip:hover { border-color: var(--ink); }
-  .chip.book { border-color: var(--amber); }
-  .chip.arc { border-style: dashed; border-color: var(--amber); }
-  .other { color: var(--muted); }
-</style>

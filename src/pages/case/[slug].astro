@@ -4,6 +4,7 @@ import Base from '../../layouts/Base.astro';
 import StatusMeta from '../../components/StatusMeta.astro';
 import Pdo from '../../components/Pdo.astro';
 import DevTodo from '../../components/DevTodo.astro';
+import '../../styles/pages/case.css';
 
 export async function getStaticPaths() {
   const cases = (await getCollection('cases', (c) => c.data.published)).sort((a, b) => a.data.order - b.data.order);
@@ -25,15 +26,15 @@ const nav = [
   ['interviewer', '06', "What I'd tell an interviewer", 'Interviewer notes'],
 ];
 ---
-<Base title={data.title} description={data.tldr.problem}>
+<Base page="case" title={data.title} description={data.tldr.problem}>
   <div class="title-block">
     <p class="mono-meta" data-case-id={data.id}><a href="/" data-back>← Decision log</a> / Case file {data.id}</p>
     <div class="meta"><StatusMeta status={data.status} stack={data.stack} /></div>
     <h1 class="h1">{data.title}</h1>
     <DevTodo items={data.todo} />
     <div class="tldr">
-      <div class="tldr-head"><span class="mono-label" style="color:var(--ink)">TL;DR</span><span class="mono-label">{data.readMinutes} min read</span></div>
-      <div style="margin-top:16px"><Pdo tldr={data.tldr} size={16} /></div>
+      <div class="tldr-head"><span class="mono-label strong">TL;DR</span><span class="mono-label">{data.readMinutes} min read</span></div>
+      <div class="tldr-pdo"><Pdo tldr={data.tldr} size={16} /></div>
       <div class="tldr-facts">
         <span><span class="mono-label">Role</span> {data.role}</span>
         <span><span class="mono-label">Stack</span> {data.stack.join(', ')}</span>
@@ -103,52 +104,3 @@ const nav = [
   addEventListener('resize', update);
   update();
 </script>
-
-<style>
-  .title-block { max-width: 1000px; padding-top: clamp(28px, 5vw, 64px); }
-  .title-block a { text-decoration: none; }
-  .meta { margin-top: clamp(24px, 4vw, 40px); }
-  h1 { margin-top: 14px; max-width: 18em; font-size: clamp(30px, 4.2vw, 50px); line-height: 1.06; }
-  .tldr { margin-top: clamp(28px, 4vw, 44px); padding: clamp(18px, 2.4vw, 28px); border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
-  .tldr-head { display: flex; justify-content: space-between; }
-  .tldr-facts { display: flex; flex-wrap: wrap; gap: 8px 32px; margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 14px; }
-
-  .body { display: flex; gap: 64px; margin-top: clamp(40px, 6vw, 72px); }
-  .rail { width: 200px; flex: none; }
-  .rail-inner { position: sticky; top: 24px; display: flex; flex-direction: column; }
-  .rail-head { color: var(--ink); padding-bottom: 10px; border-bottom: 1px solid var(--ink); margin-bottom: 6px; }
-  .nav-item { display: flex; padding: 8px 10px; border-radius: 6px; font-size: 14px; line-height: 1.35; color: var(--muted); text-decoration: none; }
-  .nav-item .n { width: 22px; flex: none; font: 11px/1.9 var(--mono); }
-  .nav-item.active { background: var(--hover); color: var(--ink); font-weight: 600; }
-  .nav-item.active .n { color: var(--amber-ink); }
-  .top { margin-top: 14px; text-decoration: none; }
-  .back-bottom { margin-top: 24px; }
-  .back-bottom a { text-decoration: none; }
-
-  article { flex: 1; max-width: 720px; min-width: 0; }
-  .chips { display: none; }
-  @media (max-width: 959px) {
-    .rail { display: none; }
-    .chips {
-      display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none;
-      position: sticky; top: 0; z-index: 5; background: var(--bg);
-      margin: 0 calc(-1 * var(--gutter)) 28px; padding: 6px var(--gutter);
-      border-bottom: 1px solid var(--line);
-    }
-    .chip {
-      flex: none; display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px;
-      border: 1px solid var(--line); border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none;
-    }
-    .chip.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-  }
-
-  .next {
-    display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px;
-    margin-top: var(--section); padding: 20px 0; text-decoration: none;
-    border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line);
-  }
-  .next:hover { background: var(--hover); color: var(--ink); }
-  .next > span:first-child { display: flex; flex-direction: column; gap: 6px; }
-  .next-title { font-size: 18px; font-weight: 500; }
-  .arrow { font: 18px var(--mono); color: var(--muted); }
-</style>

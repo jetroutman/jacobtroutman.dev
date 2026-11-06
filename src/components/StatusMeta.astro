@@ -1,6 +1,6 @@
 ---
+import '../styles/components/status-meta.css';
 interface Props { status: string; stack: string[] }
 const { status, stack } = Astro.props;
 ---
-<div class="meta"><span class="pill">{status}</span><span class="mono-meta">{stack.join(' · ')}</span></div>
-<style>.meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }</style>
+<div class="meta c c-status-meta"><span class="pill">{status}</span><span class="mono-meta">{stack.join(' · ')}</span></div>

@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { books as allBooks, favorite, rankedCount, type LibBook } from '../../lib/library';
+import '../../styles/pages/library.css';
 const books = allBooks as LibBook[];
 
 const counts = new Map<string, number>();
@@ -8,7 +9,7 @@ for (const b of books) for (const t of b.tags) counts.set(t, (counts.get(t) || 0
 const topTags = [...counts].filter(([, n]) => n >= 3).sort((a, b) => b[1] - a[1]).slice(0, 14).map(([t]) => t);
 const fav = books.filter(favorite).length;
 ---
-<Base title="Library · Jacob Troutman" description="Books I've read and written up, straight from my Notion catalog.">
+<Base page="library" title="Library · Jacob Troutman" description="Books I've read and written up, straight from my Notion catalog.">
   <div class="intro">
     <p class="mono-meta"><a href="/" data-back>← Decision log</a> / Library</p>
     <h1 class="h1">Library</h1>
@@ -72,32 +73,3 @@ const fav = books.filter(favorite).length;
   kinds.forEach((b) => b.addEventListener('click', () => { kind = b.dataset.kind!; apply(); }));
   tags.forEach((b) => b.addEventListener('click', () => { tag = tag === b.dataset.tag ? null : b.dataset.tag!; apply(); }));
 </script>
-
-<style>
-  .intro { padding-top: clamp(28px, 5vw, 64px); max-width: 720px; }
-  .intro a { text-decoration: none; }
-  h1 { margin-top: 18px; font-size: clamp(34px, 4.4vw, 52px); line-height: 1.02; }
-  .desc { margin-top: 12px; font-size: 17px; line-height: 1.5; color: var(--muted); }
-  .stats { margin-top: 14px; }
-  .filters { position: sticky; top: 0; z-index: 5; display: flex; flex-direction: column; gap: 10px; margin-top: clamp(24px, 4vw, 40px); padding: 12px 0; background: var(--bg); border-bottom: 1px solid var(--line); }
-  .seg { display: inline-flex; align-self: flex-start; padding: 3px; border: 1px solid var(--line); border-radius: 999px; }
-  .seg button { min-height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; font-size: 14px; font-weight: 600; cursor: pointer; }
-  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
-  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
-  .tag { min-height: 32px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: 13px; cursor: pointer; }
-  .tag[aria-pressed="true"] { border-color: var(--amber); background: var(--amber-tint); }
-  .shelf { list-style: none; padding: 0; margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
-  .book { display: flex; flex-direction: column; gap: 6px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
-  .book[hidden] { display: none; }
-  .top { display: flex; align-items: center; gap: 8px; min-height: 22px; }
-  .top .mono-meta { margin-left: auto; }
-  .rank { font: 600 15px var(--mono); color: var(--amber-ink); min-width: 2.6em; }
-  .title { font-size: 18px; line-height: 1.25; font-weight: 600; }
-  .title a { text-decoration: none; }
-  .sub { font-size: 14px; line-height: 1.4; color: var(--muted); }
-  .author { font-size: 14px; }
-  .btags { margin-top: 2px; }
-  .foot { margin-top: auto; padding-top: 8px; display: flex; justify-content: space-between; align-items: center; }
-  .more { font-size: 14px; font-weight: 600; text-decoration: none; }
-  .empty { margin-top: 24px; }
-</style>
