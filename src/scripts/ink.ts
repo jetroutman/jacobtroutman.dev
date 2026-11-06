@@ -39,6 +39,8 @@ export function initInk() {
   let shown = st.wallet, tween = 0, bump = 0;
   const paint = () => {
     walletEl.textContent = String(shown);
+    const here = document.querySelector('[data-earned-here]');
+    if (here) here.textContent = String(st.earned.filter((k) => k.startsWith(`${postId}:`)).reduce((n, k) => n + (k.endsWith(':end') ? cfg.postFinished : cfg.cardReached), 0));
     levelEl.textContent = cfg.levels[levelOf(st.lifetime)].name;
     for (const l of layers) {
       const open = st.unlocked.includes(l.dataset.layer!);
