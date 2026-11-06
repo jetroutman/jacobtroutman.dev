@@ -1,8 +1,31 @@
 {
   "routes": [
-    { "route": "/for/*", "headers": { "X-Robots-Tag": "noindex, nofollow" } }
+    {
+      "route": "/admin*",
+      "allowedRoles": [
+        "admin"
+      ],
+      "headers": {
+        "X-Robots-Tag": "noindex, nofollow",
+        "Cache-Control": "no-store"
+      }
+    },
+    {
+      "route": "/for/*",
+      "headers": {
+        "X-Robots-Tag": "noindex, nofollow"
+      }
+    }
   ],
-  "responseOverrides": { "404": { "rewrite": "/404.html" } },
+  "responseOverrides": {
+    "404": {
+      "rewrite": "/404.html"
+    },
+    "401": {
+      "redirect": "/.auth/login/github?post_login_redirect_uri=.referrer",
+      "statusCode": 302
+    }
+  },
   "globalHeaders": {
     "X-Content-Type-Options": "nosniff",
     "Referrer-Policy": "strict-origin-when-cross-origin"

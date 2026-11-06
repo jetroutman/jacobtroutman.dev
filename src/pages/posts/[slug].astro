@@ -1,0 +1,11 @@
+---
+// A Published post. Drafts never get a public page; they play under /admin/.
+import Base from '../../layouts/Base.astro';
+import PostView from '../../components/PostView.astro';
+import { published, type Post } from '../../lib/posts';
+export function getStaticPaths() { return published.map((post) => ({ params: { slug: post.slug }, props: { post } })); }
+const { post } = Astro.props as { post: Post };
+---
+<Base title={post.title} description={post.hook || undefined}>
+  <PostView post={post} />
+</Base>
