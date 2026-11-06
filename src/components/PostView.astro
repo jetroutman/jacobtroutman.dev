@@ -49,6 +49,7 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
     </span>
   </nav>
 
+  <div class="track" data-track>
   {all.map((s, i) => (
     <section id={s.id} class:list={['slide', s.id === 'intro' && 'intro', s.id === 'end' && 'end']} data-slide data-title={label(s)}>
       <div class="inner">
@@ -75,7 +76,7 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
             <p>Reading earns ink: {INK.cardReached} for every card you reach, {INK.postFinished} for finishing. Spend it to unseal where an idea came from and where it went. Up to {maxInk} ink in this post.</p>
           </div>
         )}
-        {s.id === 'intro' && <p class="mono-meta hint reveal" aria-hidden="true">Scroll down ↓</p>}
+        {s.id === 'intro' && <p class="mono-meta hint reveal" aria-hidden="true"><span class="h-scroll">Scroll down ↓</span><span class="h-swipe">Swipe to start →</span></p>}
         {s.id === 'end' && (
           <div class="end-box" data-post-end>
             <div class="section-head reveal"><span class="num">{pad(i)}</span><h2>That's the post</h2></div>
@@ -91,6 +92,7 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
       </div>
     </section>
   ))}
+  </div>
 </div>
 <div class="ink-toasts" data-ink-toasts aria-live="polite"></div>
 <script type="application/json" data-ink-config set:html={JSON.stringify(INK)} />
@@ -111,6 +113,16 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
 
 <style>
   :global(html:has(.pdeck)) { scroll-snap-type: y proximity; scroll-padding-top: var(--bar-h); --bar-h: 48px; }
+  .h-swipe { display: none; }
+  /* Phones: slides sit side by side and you swipe between them, like stories. Each slide scrolls on its own. */
+  @media (max-width: 700px) {
+    :global(html:has(.pdeck)) { scroll-snap-type: none; }
+    .track { display: flex; height: calc(100svh - var(--bar-h)); overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; margin: 0 calc(-1 * var(--gutter)); }
+    .track::-webkit-scrollbar { display: none; }
+    .track > .slide { flex: 0 0 100%; min-height: 0; height: 100%; overflow-y: auto; overscroll-behavior-y: contain; scroll-snap-align: start; scroll-snap-stop: always; padding: 28px var(--gutter) 48px; align-content: start; box-sizing: border-box; }
+    .track > .slide.intro, .track > .slide.end { align-content: center; }
+    .h-scroll { display: none; } .h-swipe { display: inline; }
+  }
   .deckbar { position: sticky; top: 0; z-index: 30; height: var(--bar-h); display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 16px; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter); background: var(--bg); border-bottom: 1px solid var(--line); }
   .segs { list-style: none; margin: 0; padding: 0; display: flex; gap: 4px; }
   .segs li { flex: 1; }
