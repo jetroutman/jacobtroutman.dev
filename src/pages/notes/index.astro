@@ -1,6 +1,9 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { threads, allNotes, noteById, noteHref } from '../../lib/notes';
+import InkHud from '../../components/InkHud.astro';
+import InkLayer from '../../components/InkLayer.astro';
+import '../../styles/pages/notes.css';
 
 // Idea map: each thread is a radial cluster around its starting question; branches fan out by depth.
 // Dashed arcs are "Related" links, often between threads. Laid out at build time, no client library.
@@ -52,7 +55,7 @@ const arcs = allNotes.flatMap((n) => n.related.filter((r) => noteById.has(r)).ma
 }).filter(Boolean)) as string[];
 const books = new Set(allNotes.flatMap((n) => n.books.map((b) => b.href))).size;
 ---
-<Base title="Notes · Jacob Troutman" description="My Zettelkasten: permanent notes in my own words, grown into threads of ideas.">
+<Base page="notes" title="Notes · Jacob Troutman" description="My Zettelkasten: permanent notes in my own words, grown into threads of ideas.">
   <div class="intro">
     <p class="mono-meta"><a href="/" data-back>← Decision log</a> / Notes</p>
     <h1 class="h1">Idea map</h1>
@@ -72,7 +75,7 @@ const books = new Set(allNotes.flatMap((n) => n.books.map((b) => b.href))).size;
                 const p = n.id === 'loose' ? { x: c.cx, y: c.cy } : pos.get(n.id)!;
                 const hub = n.depth === 0;
                 return (
-                  <a href={n.id === 'loose' ? `/notes/${c.t.slug}/` : noteHref(n)} class:list={['node', { hub }]}>
+                  <a href={n.id === 'loose' ? `/notes/${c.t.slug}/` : noteHref(n)} class:list={['node', { hub }]} data-note={n.id === 'loose' ? undefined : n.id}>
                     <title>{n.fid ? `${n.fid} ${n.label}` : n.label}</title>
                     <circle cx={p.x} cy={p.y} r={hub ? 9 : n.depth === 1 ? 5.5 : 4} />
                   </a>
@@ -85,10 +88,15 @@ const books = new Set(allNotes.flatMap((n) => n.books.map((b) => b.href))).size;
         <figcaption class="mono-meta">Hover a dot for its title; click to read it. Big dots start a thread.</figcaption>
       </figure>
 
+      <section class="mine" data-mine hidden aria-labelledby="mine-h">
+        <div class="mine-head"><h2 id="mine-h" class="mono-label">Notes you've opened</h2><span class="mono-meta" data-mine-n></span></div>
+        <ol class="mine-list" data-mine-list></ol>
+      </section>
+      <div class="thread-tools"><button type="button" class="thread-filter" data-thread-filter aria-pressed="false" hidden>Threads with notes I've opened</button></div>
       <ul class="threads">
         {threads.map((t) => (
-          <li><a href={`/notes/${t.slug}/`}>
-            <span class="mono-meta">{t.root.fid ? `Thread ${t.root.fid}` : 'Thread'} · {t.notes.length - (t.slug === 'loose-notes' ? 1 : 0)} notes</span>
+          <li data-thread-notes={t.notes.filter((n) => n.id !== 'loose').map((n) => n.id).join('|')}><a href={`/notes/${t.slug}/`}>
+            <span class="mono-meta">{t.root.fid ? `Thread ${t.root.fid}` : 'Thread'} · {t.notes.length - (t.slug === 'loose-notes' ? 1 : 0)} notes<span class="opened-n" data-opened-n></span></span>
             <span class="t-title">{t.root.label}</span>
             {t.tags.length > 0 && <span class="mono-meta tags">{t.tags.slice(0, 4).join(' · ')}</span>}
           </a></li>
@@ -96,31 +104,39 @@ const books = new Set(allNotes.flatMap((n) => n.books.map((b) => b.href))).size;
       </ul>
     </>
   )}
+  <InkHud variant="float" /><InkLayer />
+  <script type="application/json" data-note-index set:html={JSON.stringify(Object.fromEntries(allNotes.map((n) => [n.id, { t: n.fid ? `${n.fid} ${n.label}` : n.label, h: noteHref(n) }])))} />
 </Base>
 
 <script>
   import { fromCompany } from '../../scripts/from-company';
+  import { readInk, type InkState } from '../../scripts/ink';
   fromCompany('jt-notes');
+  // What you've opened with ink: amber dots, a count per thread, a filter, and a list, most recent first.
+  const index = JSON.parse(document.querySelector('[data-note-index]')?.textContent || '{}') as Record<string, { t: string; h: string }>;
+  const mine = document.querySelector<HTMLElement>('[data-mine]'), list = document.querySelector<HTMLElement>('[data-mine-list]');
+  const mineN = document.querySelector<HTMLElement>('[data-mine-n]'), filter = document.querySelector<HTMLButtonElement>('[data-thread-filter]');
+  let only = false;
+  const show = (st: InkState) => {
+    const opened = new Map<string, number>();
+    for (const k of st.unlocked) { const m = k.match(/^(.+):note$/); if (m && index[m[1]]) opened.set(m[1], st.at[k] || 0); }
+    for (const d of document.querySelectorAll<SVGAElement>('[data-note]')) d.classList.toggle('opened', opened.has(d.dataset.note!));
+    for (const li of document.querySelectorAll<HTMLElement>('[data-thread-notes]')) {
+      const n = li.dataset.threadNotes!.split('|').filter((id) => opened.has(id)).length;
+      li.querySelector('[data-opened-n]')!.textContent = n ? ` · ${n} opened` : '';
+      li.hidden = only && n === 0;
+    }
+    if (!mine || !list || !mineN || !filter) return;
+    mine.hidden = opened.size === 0; filter.hidden = opened.size === 0;
+    mineN.textContent = `${opened.size}`;
+    list.replaceChildren(...[...opened].sort((a, b) => b[1] - a[1]).map(([id, at]) => {
+      const li = document.createElement('li'), a = document.createElement('a'), when = document.createElement('span');
+      a.href = index[id].h; a.textContent = index[id].t;
+      when.className = 'mono-meta'; when.textContent = at ? new Date(at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+      li.append(a, when); return li;
+    }));
+  };
+  filter?.addEventListener('click', () => { only = !only; filter.setAttribute('aria-pressed', String(only)); show(readInk()); });
+  document.addEventListener('ink:change', (e) => show((e as CustomEvent).detail));
+  show(readInk());
 </script>
-
-<style>
-  .intro { padding-top: clamp(28px, 5vw, 64px); max-width: 760px; }
-  .intro > p a { text-decoration: none; }
-  h1 { margin-top: 18px; font-size: clamp(34px, 4.4vw, 52px); line-height: 1.02; }
-  .desc { margin-top: 12px; font-size: 17px; line-height: 1.5; color: var(--muted); }
-  .stats { margin-top: 14px; }
-  .empty { margin-top: 32px; color: var(--muted); }
-  .map { margin: 28px 0 0; padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
-  .map svg { width: 100%; height: auto; display: block; }
-  .edges line { stroke: var(--line); stroke-width: 1.4; }
-  .arcs path { fill: none; stroke: var(--amber); stroke-width: 1.2; stroke-dasharray: 4 4; opacity: 0.7; }
-  .node circle { fill: var(--muted); transition: r 0.15s, fill 0.15s; }
-  .node.hub circle { fill: var(--ink); }
-  .node:hover circle, .node:focus-visible circle { fill: var(--amber); r: 8; }
-  .hub-label { font: 600 11px var(--sans); fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; }
-  figcaption { margin-top: 8px; padding: 0 4px; }
-  .threads { list-style: none; padding: 0; margin-top: 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
-  .threads a { display: flex; flex-direction: column; gap: 6px; height: 100%; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); text-decoration: none; }
-  .threads a:hover { border-color: var(--ink); }
-  .t-title { font-size: 17px; font-weight: 600; line-height: 1.3; }
-</style>

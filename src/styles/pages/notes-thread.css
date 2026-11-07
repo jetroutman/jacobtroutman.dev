@@ -1,0 +1,56 @@
+/* Page: notes-thread. Moved out of src/pages/notes/[thread].astro; scoped to the page body.pg-notes-thread (inside the site wrapper, outside components). */
+.head:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { padding-top: clamp(28px, 5vw, 64px); max-width: 760px; }
+.crumbs:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.crumbs a:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { text-decoration: none; }
+.back[hidden]:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { display: none; }
+h1:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { margin: 14px 0 8px; font-size: clamp(28px, 3.6vw, 44px); line-height: 1.08; }
+.layout:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { display: grid; gap: 24px; margin-top: 28px; }
+@media (min-width: 900px) { .layout:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { grid-template-columns: minmax(260px, 340px) 1fr; align-items: start; } .reader:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { position: sticky; top: 16px; } }
+
+.tree:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 10px 6px; max-height: 70vh; overflow: auto; }
+.tree ul:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { list-style: none; margin: 0; padding: 0; }
+.tree li:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { position: relative; padding-left: calc(var(--d) * 16px); }
+.tree li:not(.root):where(.pg-notes-thread > .wrap *):not(:where(.c, .c *))::before { content: ''; position: absolute; left: calc(var(--d) * 16px - 9px); top: 0; bottom: 50%; width: 8px; border-left: 1px solid var(--line); border-bottom: 1px solid var(--line); border-bottom-left-radius: 6px; }
+.tree a:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { display: flex; gap: 8px; align-items: baseline; padding: 6px 8px; border-radius: 8px; text-decoration: none; font-size: 14px; line-height: 1.35; }
+.tree a:hover:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { background: var(--hover); }
+.tree a.on:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { background: var(--ink); color: var(--bg); }
+.tree a.on .fid:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { color: var(--bg); opacity: 0.8; }
+.tree li.root a:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)), .tree-root:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { font-weight: 600; font-size: 15px; }
+.tree-root:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { display: block; padding: 6px 8px; }
+.fid:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { font: 12px var(--mono); color: var(--amber-ink); flex: none; }
+
+.note:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { padding: clamp(16px, 2.4vw, 28px); border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.note h2:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { margin-top: 8px; font-size: clamp(22px, 2.6vw, 30px); line-height: 1.15; }
+.tags:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.tag:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { padding: 3px 10px; border-radius: 999px; background: var(--hover); font-size: 12px; }
+.body:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { margin-top: 16px; font-size: 17px; line-height: 1.6; }
+.body > * + *:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { margin-top: 12px; }
+.body h3:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { font-size: 18px; margin-top: 20px; }
+.body ul:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)), .body ol:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { padding-left: 20px; display: grid; gap: 6px; }
+.body li:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { margin-left: calc(var(--d) * 18px); }
+.body blockquote:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { margin: 0; padding-left: 12px; border-left: 2px solid var(--amber); color: var(--muted); }
+.muted:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { color: var(--muted); }
+.rel:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.rel .mono-label:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { width: 100%; }
+.chip:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; text-decoration: none; background: var(--bg); }
+.chip:hover:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { border-color: var(--ink); }
+.chip.book:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { border-color: var(--amber); }
+.chip.arc:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { border-style: dashed; border-color: var(--amber); }
+.other:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { color: var(--muted); }
+
+/* Ink: parent link, sources, and which notes you've opened. */
+.parent:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { margin-top: 8px; }
+.parent a:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { color: var(--ink); text-decoration: none; }
+.parent a:hover:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { text-decoration: underline; }
+.src + .src:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { margin-top: 12px; }
+.src-title:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { font-weight: 600; }
+.src-title a:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { text-decoration: none; }
+.src blockquote:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { margin: 8px 0 0; padding-left: 12px; border-left: 2px solid var(--line); color: var(--muted); }
+.tree-tools:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; min-height: 28px; }
+.tree-filter:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { min-height: 28px; padding: 0 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font: 12px var(--mono); color: var(--muted); cursor: pointer; }
+.tree-filter[aria-pressed="true"]:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { border-color: var(--ink); color: var(--ink); }
+.tree-filter[hidden]:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { display: none; }
+.tree a[data-state="locked"] .lbl:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { color: var(--muted); }
+.tree a[data-state="open"] .fid:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { color: var(--amber-ink); }
+.tree a[data-state="open"]:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *))::after { content: ""; flex: none; width: 6px; height: 6px; margin: 7px 0 0 auto; border-radius: 50%; background: var(--amber); }
+.tree li[hidden]:where(.pg-notes-thread > .wrap *):not(:where(.c, .c *)) { display: none; }

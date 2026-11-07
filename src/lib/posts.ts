@@ -6,14 +6,20 @@ import { books } from './library';
 import { noteById, noteHref, type Note } from './notes';
 
 export const INK = {
-  cardReached: 10,   // a card's claim scrolls into view
-  postFinished: 25,  // the end of a post scrolls into view
-  welcome: 100,      // arriving from a company page
-  starter: 20,       // everyone's first visit to a post or a book page
-  noteCost: 10,      // a card's note (my explanation of the claim)
-  sourceCost: 15,    // where the card came from: the Reference note and book
-  branchesCost: 10,  // where the idea went next
-  refNoteCost: 5,    // one Reference note on a book page
+  // Earning is by effort: roughly one drop of ink per dozen words you actually read (see src/scripts/ink.ts).
+  wordsPerInk: 12,
+  readMin: 2, readMax: 10,      // ink for reading one block (a slide's prose, a note, a source)
+  claimMin: 3, claimMax: 6,     // ink for reaching a claim (claims are short but dense)
+  trail: 4,                     // following a link to a parent, branch or related note, first time
+  visit: 5,                     // first visit to a post, thread or book page
+  postFinished: 20,             // the end of a post
+  welcome: 100,                 // arriving from a company page, once
+  starter: 20,                  // everyone's first visit
+  bonusEvery: 6,                // every 6th time you earn, a bonus of a random size
+  bonusMin: 10, bonusMax: 40,
+  noteCost: 10,                 // a note's text (my explanation of the claim)
+  sourceCost: 15,               // where the note came from: the Reference note and book
+  refNoteCost: 5,               // one Reference note on a book page
   levels: [
     { name: 'Elementary', at: 0, desc: 'You read what the page says.' },
     { name: 'Inspectional', at: 60, desc: 'You skim for the shape of an argument before committing.' },
@@ -21,26 +27,31 @@ export const INK = {
     { name: 'Syntopical', at: 400, desc: 'You connect ideas across books into something new.' },
   ],
 };
+export const wordCount = (...t: (string | null | undefined)[]) => t.join(' ').split(/\s+/).filter(Boolean).length;
+export const claimInk = (claim: string) => Math.max(INK.claimMin, Math.min(INK.claimMax, Math.round(wordCount(claim) / 3)));
 
 type Raw = { id: string; title: string; status: string; hook: string | null; published: string | null; cards: string[]; books: string[]; edited: string | null; body: { k: string; t?: string; id?: string }[] };
 const slugify = (s: string) => s.toLowerCase().replace(/['’$]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60).replace(/-$/, '');
 
 // Every Reference note that made it out of Notion (only those on Published books), with its book.
-const refById = new Map<string, { title: string; type: string | null; quote: string | null; interpretation: string | null; book: string; bookHref: string }>();
+export const refById = new Map<string, { title: string; type: string | null; quote: string | null; interpretation: string | null; book: string; bookHref: string }>();
 for (const b of books) for (const r of b.refNotes) refById.set(r.id, { ...r, book: b.short, bookHref: `/library/${b.slug}/` });
 const bookById = new Map(books.map((b) => [b.id, b]));
 
 export type CardView = {
-  id: string; fid: string | null; label: string; href: string; body: string[];
-  sources: { title: string; quote: string | null; interpretation: string | null; book: string; bookHref: string }[];
-  branches: { fid: string | null; label: string; href: string }[];
+  id: string; fid: string | null; label: string; href: string; body: string[]; depth: number;
+  parent: { fid: string | null; label: string; href: string; id: string } | null;
+  sources: { id: string; title: string; quote: string | null; interpretation: string | null; book: string; bookHref: string }[];
+  branches: { fid: string | null; label: string; href: string; id: string }[];
 };
+const brief = (c: Note) => ({ id: c.id, fid: c.fid, label: c.label, href: noteHref(c) });
 const cardView = (n: Note): CardView => ({
-  id: n.id, fid: n.fid, label: n.label, href: noteHref(n),
+  id: n.id, fid: n.fid, label: n.label, href: noteHref(n), depth: n.depth,
+  parent: n.parent && noteById.has(n.parent) ? brief(noteById.get(n.parent)!) : null,
   body: n.body.filter((b) => b.k !== 'h').map((b) => b.t),
-  sources: n.sources.map((s) => refById.get(s)).filter(Boolean) as CardView['sources'],
+  sources: n.sources.filter((s) => refById.has(s)).map((s) => ({ ...refById.get(s)!, id: s })),
   branches: [...n.children, ...n.related].map((id) => noteById.get(id)).filter(Boolean)
-    .map((c) => ({ fid: c!.fid, label: c!.label, href: noteHref(c!) })),
+    .map((c) => brief(c!)),
 });
 
 export type Block = { k: 'h' | 'p' | 'q' | 'li'; t: string } | { k: 'card'; card: CardView | null; id: string };

@@ -1,0 +1,120 @@
+/* Page: journal. Moved out of src/pages/journal/index.astro; scoped to the page body.pg-journal (inside the site wrapper, outside components). */
+.intro:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { padding-top: clamp(28px, 5vw, 64px); max-width: 760px; }
+.crumbs a:where(.pg-journal > .wrap *):not(:where(.c, .c *)), .stats a:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { text-decoration: none; }
+.crumbs a:hover:where(.pg-journal > .wrap *):not(:where(.c, .c *)), .stats a:hover:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { text-decoration: underline; }
+h1:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { margin-top: 18px; font-size: clamp(34px, 4.4vw, 52px); line-height: 1.02; }
+.desc:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { margin-top: 12px; font-size: 17px; line-height: 1.5; color: var(--muted); }
+.desc a:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { color: var(--ink); }
+.stats:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { margin-top: 14px; }
+.empty:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { margin-top: 32px; color: var(--muted); }
+
+.layout:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: grid; gap: clamp(28px, 4vw, 56px); margin-top: clamp(28px, 4vw, 44px); align-items: start; }
+@media (min-width: 960px) {
+  .layout:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { grid-template-columns: minmax(0, 1fr) 320px; }
+  .side:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { order: 2; position: sticky; top: 16px; }
+}
+.side:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: grid; gap: 16px; }
+@media (max-width: 959px) {
+  .side:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: contents; }
+  .run:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { order: 0; } .feed:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { order: 1; } .mine:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { order: 2; }
+}
+.ach-wrap:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { margin-top: 14px; border-top: 1px solid var(--line); }
+.ach-wrap > summary:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: flex; justify-content: space-between; padding: 10px 0 2px; cursor: pointer; list-style: none; }
+.ach-wrap > summary:where(.pg-journal > .wrap *):not(:where(.c, .c *))::-webkit-details-marker { display: none; }
+.ach-wrap > summary:where(.pg-journal > .wrap *):not(:where(.c, .c *))::after { content: "+"; font: 14px var(--mono); }
+.ach-wrap[open] > summary:where(.pg-journal > .wrap *):not(:where(.c, .c *))::after { content: "−"; }
+.ach-wrap > summary span:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { margin-left: auto; margin-right: 10px; color: var(--ink); }
+.older:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { margin-top: 28px; width: 100%; }
+.older[hidden]:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: none; }
+.card:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.card-head:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.card h2:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { font-weight: 400; }
+.link-btn:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.link-btn:hover:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { color: var(--ink); }
+
+.run-count:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { margin-top: 12px; font: 600 28px/1 var(--mono); letter-spacing: -0.02em; }
+.run-count .of:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { font: 400 13px var(--mono); color: var(--muted); letter-spacing: 0; }
+.bar:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { margin-top: 10px; height: 6px; border-radius: 999px; background: var(--hover); overflow: hidden; }
+.bar span:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: block; height: 100%; width: 0; background: var(--amber); border-radius: inherit; transition: width 0.5s cubic-bezier(.3,1.2,.5,1); }
+.hint:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { margin-top: 10px; font-size: 13px; line-height: 1.45; color: var(--muted); }
+.ach:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { list-style: none; margin: 6px 0 0; padding: 0; }
+.ach li:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.ach-badge:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { width: 18px; height: 18px; margin-top: 1px; border-radius: 50%; border: 1.5px dashed var(--line); display: grid; place-items: center; font: 10px var(--mono); }
+.ach-title:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: block; font-size: 14px; font-weight: 600; color: var(--muted); }
+.ach-desc:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: block; margin-top: 1px; font-size: 12.5px; line-height: 1.4; color: var(--muted); }
+.ach li.got .ach-badge:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { border: 0; background: var(--amber); color: var(--surface); }
+.ach li.got .ach-badge:where(.pg-journal > .wrap *):not(:where(.c, .c *))::after { content: "✓"; }
+.ach li.got .ach-title:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { color: var(--ink); }
+.ach li[data-hidden]:not(.got) .ach-title:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { font-family: var(--mono); font-weight: 400; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
+.endgame:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { margin-top: 12px; padding: 10px 12px; border-radius: 8px; background: var(--amber-tint); color: var(--amber-ink); font-size: 13.5px; line-height: 1.45; }
+.endgame[hidden]:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: none; }
+.game-off .ach-wrap:where(.pg-journal > .wrap *):not(:where(.c, .c *)),.game-off [data-endgame]:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: none; }
+
+.nums:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+.nums div:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: flex; flex-direction: column-reverse; gap: 2px; }
+.nums dt:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { font-size: 12px; color: var(--muted); line-height: 1.3; }
+.nums dd:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { font: 600 22px/1 var(--mono); }
+.heat:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: grid; grid-template-columns: repeat(26, 1fr); gap: 3px; margin-top: 16px; }
+.heat span:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { aspect-ratio: 1; border-radius: 2px; background: var(--hover); outline: 1px solid var(--line); outline-offset: -1px; }
+.heat .l1:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { background: color-mix(in srgb, var(--amber) 30%, var(--surface)); outline: 0; }
+.heat .l2:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { background: color-mix(in srgb, var(--amber) 55%, var(--surface)); outline: 0; }
+.heat .l3:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { background: color-mix(in srgb, var(--amber) 78%, var(--surface)); outline: 0; }
+.heat .l4:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { background: var(--amber); outline: 0; }
+.heat-cap:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { margin-top: 8px; font-size: 11px; }
+
+.filters:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.seg:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: var(--surface); }
+.seg button:where(.pg-journal > .wrap *):not(:where(.c, .c *)), .unread:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { border: 0; background: none; padding: 6px 14px; border-radius: 999px; cursor: pointer; font-size: 14px; color: var(--muted); }
+.seg button[aria-pressed="true"]:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { background: var(--ink); color: var(--bg); }
+.seg button:hover:not([aria-pressed="true"]):where(.pg-journal > .wrap *):not(:where(.c, .c *)) { color: var(--ink); }
+.unread:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { border: 1px solid var(--line); background: var(--surface); font: 12px var(--mono); }
+.unread[aria-pressed="true"]:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { border-color: var(--ink); color: var(--ink); }
+.unread[hidden]:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: none; }
+
+.month:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { margin-top: 36px; }
+.month[hidden]:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: none; }
+.m-title:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+.entries:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { list-style: none; margin: 0; padding: 0; }
+.entries > li:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { border-bottom: 1px solid var(--line); }
+.entries > li:has(> .entry[hidden]):where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: none; }
+.entry:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { position: relative; padding: 22px 0 22px 18px; scroll-margin-top: 24px; }
+.entry:where(.pg-journal > .wrap *):not(:where(.c, .c *))::before { content: ""; position: absolute; left: 0; top: 30px; width: 7px; height: 7px; border-radius: 50%; background: var(--ink); transition: background 0.3s, transform 0.3s; }
+.entry.is-read:where(.pg-journal > .wrap *):not(:where(.c, .c *))::before { background: var(--line); }
+.entry.flash:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { animation: flash 1.4s ease-out; }
+@keyframes flash { 0% { background: var(--amber-tint); } 100% { background: transparent; } }
+@media (prefers-reduced-motion: reduce) { .entry.flash:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { animation: none; outline: 2px solid var(--amber); } }
+.e-meta:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; }
+.kind:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { color: var(--ink); }
+.new[hidden]:where(.pg-journal > .wrap *):not(:where(.c, .c *)), .read-mark[hidden]:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: none; }
+.read-mark:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { color: var(--muted); }
+.e-title:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { margin-top: 8px; font-size: clamp(19px, 1.9vw, 23px); line-height: 1.25; font-weight: 600; letter-spacing: -0.012em; text-wrap: pretty; }
+.e-title a:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { text-decoration: none; }
+.e-title a:hover:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.fid:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { font: 500 0.62em var(--mono); color: var(--amber-ink); margin-right: 10px; vertical-align: 0.18em; }
+.e-sub:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { margin-top: 4px; }
+.e-body:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { margin-top: 10px; max-width: 64ch; font-size: 16.5px; line-height: 1.6; }
+.e-body p + p:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { margin-top: 10px; }
+.idea .e-body:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { font-family: var(--reading); }
+.items:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 6px; max-width: 64ch; }
+.items li:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: grid; grid-template-columns: 96px 1fr; gap: 10px; font-size: 15px; line-height: 1.4; }
+.items .more-n:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: block; padding-left: 106px; }
+@media (max-width: 520px) { .items li:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { grid-template-columns: 1fr; gap: 0; } .items .more-n:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { padding-left: 0; } }
+.e-foot:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin-top: 14px; }
+.go:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { font-size: 14px; font-weight: 600; text-decoration: none; }
+.trail:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.trail .mono-label:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { margin-right: 2px; }
+.chip:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { display: inline-flex; gap: 6px; align-items: baseline; padding: 4px 10px; border: 1px dashed var(--amber); border-radius: 999px; font-size: 13px; text-decoration: none; background: var(--bg); }
+.chip .mono-meta:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { font-size: 10.5px; }
+.chip.done:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { border-style: solid; border-color: var(--line); color: var(--muted); }
+.chip.done:where(.pg-journal > .wrap *):not(:where(.c, .c *))::after { content: "✓"; font: 11px var(--mono); }
+
+.toasts:where(.pg-journal > .wrap *):not(:where(.c, .c *)) { position: fixed; z-index: 60; bottom: 20px; left: 50%; transform: translateX(-50%); width: min(400px, calc(100vw - 24px)); pointer-events: none; display: grid; gap: 8px; }
+.toasts .toast { pointer-events: auto; display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 12px; background: var(--ink); color: var(--bg); box-shadow: 0 10px 30px rgb(0 0 0 / 0.18); animation: toast-in 0.45s cubic-bezier(.3,1.5,.5,1); }
+.toasts .toast.out { animation: toast-out 0.3s ease-in forwards; }
+.toasts .t-badge { width: 40px; height: 40px; border-radius: 50%; background: var(--amber); color: var(--ink); display: grid; place-items: center; font: 600 15px var(--mono); }
+.toasts .t-tag { display: block; font: 10.5px var(--mono); text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.7; }
+.toasts .t-title { display: block; font-weight: 600; font-size: 15px; }
+.toasts .t-desc { display: block; font-size: 13px; opacity: 0.8; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(16px) scale(0.96); } to { opacity: 1; transform: none; } }
+@keyframes toast-out { to { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { .toasts .toast, .toasts .toast.out { animation-duration: 0.01s; } }

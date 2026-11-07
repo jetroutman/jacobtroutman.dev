@@ -1,0 +1,13 @@
+/* Component: admin-list. Moved out of src/components/AdminList.astro; scoped to .c-admin-list. */
+.wrap:where(.c-admin-list, .c-admin-list *) { max-width: 720px; padding-top: clamp(28px, 5vw, 64px); }
+h1:where(.c-admin-list, .c-admin-list *) { margin-top: 14px; }
+.desc:where(.c-admin-list, .c-admin-list *) { margin-top: 10px; color: var(--muted); font-size: 17px; line-height: 1.5; }
+.desc + .mono-meta:where(.c-admin-list, .c-admin-list *) { margin-top: 10px; }
+.empty:where(.c-admin-list, .c-admin-list *) { margin-top: 28px; color: var(--muted); }
+.list:where(.c-admin-list, .c-admin-list *) { list-style: none; padding: 0; margin: 28px 0 0; border-top: 1px solid var(--line); }
+.list a:where(.c-admin-list, .c-admin-list *) { display: grid; gap: 6px; padding: 18px 0; border-bottom: 1px solid var(--line); text-decoration: none; }
+.list a:hover .t:where(.c-admin-list, .c-admin-list *) { text-decoration: underline; }
+.pill:where(.c-admin-list, .c-admin-list *) { justify-self: start; font: 12px var(--mono); padding: 2px 9px; border-radius: 999px; background: var(--hover); color: var(--muted); }
+.pill.pub:where(.c-admin-list, .c-admin-list *) { background: var(--amber-tint); color: var(--amber-ink); }
+.t:where(.c-admin-list, .c-admin-list *) { font-size: 21px; font-weight: 600; letter-spacing: -0.01em; }
+.hook:where(.c-admin-list, .c-admin-list *) { color: var(--muted); line-height: 1.45; }

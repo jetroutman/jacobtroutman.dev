@@ -1,0 +1,27 @@
+/* Component: ink-card. A Slip Box card inside a post. Scoped to .c-ink-card. Its seals: ink-seal.css. */
+.card:where(.c-ink-card) { position: relative; padding: 20px 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); font-family: var(--sans); font-size: 16px; line-height: 1.55; transition: border-color .4s, box-shadow .4s; }
+.card.reached:where(.c-ink-card) { border-color: color-mix(in srgb, var(--amber) 55%, var(--line)); }
+.c-head:where(.c-ink-card *) { display: flex; gap: 14px; align-items: flex-start; justify-content: space-between; }
+.c-title:where(.c-ink-card *) { font-size: 20px; line-height: 1.3; letter-spacing: -0.01em; text-wrap: pretty; }
+.fid:where(.c-ink-card *) { font: 500 0.72em var(--mono); color: var(--amber-ink); margin-right: 8px; }
+.earn:where(.c-ink-card *) { flex: none; display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px 3px 7px; border: 1px dashed var(--amber); border-radius: 999px; font: 600 12px var(--mono); color: var(--amber-ink); white-space: nowrap; transition: background .3s, color .3s, border-color .3s; }
+.earn svg:where(.c-ink-card *) { width: 12px; height: 12px; fill: currentColor; }
+.card.reached .earn:where(.c-ink-card *) { border-style: solid; border-color: var(--amber); background: var(--amber); color: var(--ink); }
+.earn.pop:where(.c-ink-card *) { animation: card-pop .5s cubic-bezier(.3, 1.8, .5, 1); }
+@keyframes card-pop { 40% { transform: scale(1.25); } }
+.c-parent:where(.c-ink-card *) { margin-top: 8px; }
+.c-parent a:where(.c-ink-card *) { color: var(--ink); text-decoration: none; }
+.c-parent a:hover:where(.c-ink-card *) { text-decoration: underline; }
+.c-free:where(.c-ink-card *) { margin-top: 10px; }
+.c-body + .c-body:where(.c-ink-card *) { margin-top: 10px; }
+.src + .src:where(.c-ink-card *) { margin-top: 12px; }
+.src-title:where(.c-ink-card *) { font-weight: 600; }
+.src-title a:where(.c-ink-card *) { text-decoration: none; }
+.src blockquote:where(.c-ink-card *) { margin: 8px 0 0; padding-left: 12px; border-left: 2px solid var(--line); color: var(--muted); }
+.c-went:where(.c-ink-card *) { margin-top: 14px; }
+.br:where(.c-ink-card *) { list-style: none; padding: 0; margin: 6px 0 0; display: grid; gap: 6px; font-size: 15px; }
+.br a:where(.c-ink-card *) { text-decoration: none; }
+.br a:hover:where(.c-ink-card *) { text-decoration: underline; }
+.c-link:where(.c-ink-card *) { display: inline-block; margin-top: 14px; text-decoration: none; }
+.c-link:hover:where(.c-ink-card *) { color: var(--ink); }
+@media (prefers-reduced-motion: reduce) { .earn.pop:where(.c-ink-card *) { animation: none; } }

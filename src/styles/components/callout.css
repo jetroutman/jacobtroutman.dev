@@ -1,0 +1,4 @@
+/* Component: callout. Moved out of src/components/case/Callout.astro; scoped to .c-callout. */
+.callout:where(.c-callout, .c-callout *) { margin-top: 32px; padding-top: 14px; border-top: 2px solid var(--ink); }
+h3:where(.c-callout, .c-callout *) { margin-top: 6px; font-size: 19px; font-weight: 600; }
+div:where(.c-callout, .c-callout *) { margin-top: 8px; font: 18px/1.65 var(--reading); }

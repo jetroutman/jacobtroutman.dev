@@ -1,0 +1,7 @@
+/* Component: parts. Moved out of src/components/case/Parts.astro; scoped to .c-parts. */
+.parts-label:where(.c-parts, .c-parts *) { margin-top: 24px; }
+.parts:where(.c-parts, .c-parts *) { margin-top: 24px; border-top: 1px solid var(--line); }
+.parts-label + .parts:where(.c-parts, .c-parts *) { margin-top: 10px; }
+.parts div:where(.c-parts, .c-parts *) { display: flex; flex-wrap: wrap; gap: 4px 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+dt:where(.c-parts, .c-parts *) { width: 120px; font: 13px var(--mono); }
+dd:where(.c-parts, .c-parts *) { flex: 1 1 240px; font-size: 16px; line-height: 1.5; }

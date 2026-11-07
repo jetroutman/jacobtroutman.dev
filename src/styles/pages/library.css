@@ -1,0 +1,33 @@
+/* Page: library. Moved out of src/pages/library/index.astro; scoped to the page body.pg-library (inside the site wrapper, outside components). */
+.intro:where(.pg-library > .wrap *):not(:where(.c, .c *)) { padding-top: clamp(28px, 5vw, 64px); max-width: 720px; }
+.intro a:where(.pg-library > .wrap *):not(:where(.c, .c *)) { text-decoration: none; }
+h1:where(.pg-library > .wrap *):not(:where(.c, .c *)) { margin-top: 18px; font-size: clamp(34px, 4.4vw, 52px); line-height: 1.02; }
+.desc:where(.pg-library > .wrap *):not(:where(.c, .c *)) { margin-top: 12px; font-size: 17px; line-height: 1.5; color: var(--muted); }
+.stats:where(.pg-library > .wrap *):not(:where(.c, .c *)) { margin-top: 14px; }
+.filters:where(.pg-library > .wrap *):not(:where(.c, .c *)) { position: sticky; top: 0; z-index: 5; display: flex; flex-direction: column; gap: 10px; margin-top: clamp(24px, 4vw, 40px); padding: 12px 0; background: var(--bg); border-bottom: 1px solid var(--line); }
+.seg:where(.pg-library > .wrap *):not(:where(.c, .c *)) { display: inline-flex; align-self: flex-start; padding: 3px; border: 1px solid var(--line); border-radius: 999px; }
+.seg button:where(.pg-library > .wrap *):not(:where(.c, .c *)) { min-height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; font-size: 14px; font-weight: 600; cursor: pointer; }
+.seg button[aria-pressed="true"]:where(.pg-library > .wrap *):not(:where(.c, .c *)) { background: var(--ink); color: var(--bg); }
+.tags:where(.pg-library > .wrap *):not(:where(.c, .c *)) { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag:where(.pg-library > .wrap *):not(:where(.c, .c *)) { min-height: 32px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: 13px; cursor: pointer; }
+.tag[aria-pressed="true"]:where(.pg-library > .wrap *):not(:where(.c, .c *)) { border-color: var(--amber); background: var(--amber-tint); }
+.shelf:where(.pg-library > .wrap *):not(:where(.c, .c *)) { list-style: none; padding: 0; margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.book:where(.pg-library > .wrap *):not(:where(.c, .c *)) { display: flex; flex-direction: column; gap: 6px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.book[hidden]:where(.pg-library > .wrap *):not(:where(.c, .c *)) { display: none; }
+.top:where(.pg-library > .wrap *):not(:where(.c, .c *)) { display: flex; align-items: center; gap: 8px; min-height: 22px; }
+.top .mono-meta:where(.pg-library > .wrap *):not(:where(.c, .c *)) { margin-left: auto; }
+.rank:where(.pg-library > .wrap *):not(:where(.c, .c *)) { font: 600 15px var(--mono); color: var(--amber-ink); min-width: 2.6em; }
+.title:where(.pg-library > .wrap *):not(:where(.c, .c *)) { font-size: 18px; line-height: 1.25; font-weight: 600; }
+.title a:where(.pg-library > .wrap *):not(:where(.c, .c *)) { text-decoration: none; }
+.sub:where(.pg-library > .wrap *):not(:where(.c, .c *)) { font-size: 14px; line-height: 1.4; color: var(--muted); }
+.author:where(.pg-library > .wrap *):not(:where(.c, .c *)) { font-size: 14px; }
+.btags:where(.pg-library > .wrap *):not(:where(.c, .c *)) { margin-top: 2px; }
+.foot:where(.pg-library > .wrap *):not(:where(.c, .c *)) { margin-top: auto; padding-top: 8px; display: flex; justify-content: space-between; align-items: center; }
+.more:where(.pg-library > .wrap *):not(:where(.c, .c *)) { font-size: 14px; font-weight: 600; text-decoration: none; }
+.empty:where(.pg-library > .wrap *):not(:where(.c, .c *)) { margin-top: 24px; }
+
+/* Ink: books whose notes you've opened. */
+.opened-n:where(.pg-library > .wrap *):not(:where(.c, .c *)) { color: var(--amber-ink); }
+.sort:where(.pg-library > .wrap *):not(:where(.c, .c *)) { display: inline-flex; align-items: center; gap: 8px; }
+.sort[hidden]:where(.pg-library > .wrap *):not(:where(.c, .c *)), .seg button[hidden]:where(.pg-library > .wrap *):not(:where(.c, .c *)) { display: none; }
+.sort select:where(.pg-library > .wrap *):not(:where(.c, .c *)) { min-height: 32px; padding: 0 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); font: 12px var(--mono); }

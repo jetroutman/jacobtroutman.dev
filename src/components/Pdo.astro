@@ -1,13 +1,10 @@
 ---
+import '../styles/components/pdo.css';
 interface Props { tldr: { problem: string; decision: string; outcome: string }; size?: number }
 const { tldr, size = 15 } = Astro.props;
 ---
-<div class="pdo-grid" style={`--pdo-size:${size}px`}>
+<div class="pdo-grid c c-pdo" style={`--pdo-size:${size}px`}>
   <div class="pdo"><p class="mono-label">Problem</p><p>{tldr.problem}</p></div>
   <div class="pdo"><p class="mono-label">Decision</p><p>{tldr.decision}</p></div>
   <div class="pdo"><p class="mono-label">Outcome</p><p>{tldr.outcome}</p></div>
 </div>
-<style>
-  .pdo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px 24px; }
-  .pdo-grid p:not(.mono-label) { font-size: var(--pdo-size); line-height: 1.5; }
-</style>

@@ -1,6 +1,11 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { threads, noteById, noteHref, anchor, type Note, type Thread, type Block } from '../../lib/notes';
+import InkSeal from '../../components/InkSeal.astro';
+import InkHud from '../../components/InkHud.astro';
+import InkLayer from '../../components/InkLayer.astro';
+import { INK, refById, wordCount } from '../../lib/posts';
+import '../../styles/pages/notes-thread.css';
 
 export function getStaticPaths() {
   return threads.map((t) => ({ params: { thread: t.slug }, props: { t } }));
@@ -21,9 +26,11 @@ const chunks = (body: Block[]): Chunk[] => {
   return out;
 };
 const notes = t.notes.filter((n) => n.id !== 'loose');
+const words = (n: Note) => wordCount(...n.body.map((b) => b.t));
+const srcs = (n: Note) => n.sources.filter((id) => refById.has(id)).map((id) => ({ id, ...refById.get(id)! }));
 const first = t.slug === 'loose-notes' ? notes[0] : t.root;
 ---
-<Base title={`${t.root.label} · Notes · Jacob Troutman`} description={`A thread from my Zettelkasten: ${t.root.label}`}>
+<Base page="notes-thread" title={`${t.root.label} · Notes · Jacob Troutman`} description={`A thread from my Zettelkasten: ${t.root.label}`}>
   <div class="head">
     <p class="mono-meta crumbs"><a href="/notes/">← Idea map</a> / {t.root.fid ? `Thread ${t.root.fid}` : 'Thread'}<a class="back" href="/" data-back hidden>← Back to your page</a></p>
     <h1 class="h1">{t.root.label}</h1>
@@ -32,12 +39,13 @@ const first = t.slug === 'loose-notes' ? notes[0] : t.root;
 
   <div class="layout">
     <nav class="tree" aria-label="Notes in this thread">
+      <div class="tree-tools"><span class="mono-meta" data-open-count></span><button type="button" class="tree-filter" data-tree-filter aria-pressed="false">Opened only</button></div>
       <ul>
         {t.notes.map((n) => (
           <li style={`--d:${n.depth}`} class:list={{ root: n.depth === 0 }}>
             {n.id === 'loose'
               ? <span class="tree-root">{n.label}</span>
-              : <a href={`#${anchor(n)}`} data-pick={anchor(n)}><span class="fid">{n.fid || '•'}</span><span class="lbl">{n.label}</span></a>}
+              : <a href={`#${anchor(n)}`} data-pick={anchor(n)} data-tree-note={n.id} data-free={n.depth === 0 || n.body.length === 0 ? '1' : undefined}><span class="fid">{n.fid || '•'}</span><span class="lbl">{n.label}</span></a>}
           </li>
         ))}
       </ul>
@@ -49,35 +57,49 @@ const first = t.slug === 'loose-notes' ? notes[0] : t.root;
           <p class="mono-meta">{n.fid ? `${n.fid} · ` : ''}{n.depth === 0 ? 'Starting question' : n.depth === 1 ? 'Branch' : 'Sub-branch'}{n.edited ? ` · edited ${n.edited}` : ''}</p>
           <h2>{n.label}</h2>
           {n.tags.length > 0 && <p class="tags">{n.tags.map((g) => <span class="tag">{g}</span>)}</p>}
-          <div class="body">
-            {n.body.length === 0 && <p class="muted">Just a heading for now; the thinking lives in the branches.</p>}
-            {chunks(n.body).map((c) =>
-              c.k === 'h' ? <h3>{c.t}</h3>
-              : c.k === 'q' ? <blockquote>{c.t}</blockquote>
-              : c.k === 'p' ? <p>{c.t}</p>
-              : c.k === 'ul' ? <ul>{c.items.map((i) => <li style={`--d:${i.d}`}>{i.t}</li>)}</ul>
-              : <ol>{c.items.map((i) => <li style={`--d:${i.d}`}>{i.t}</li>)}</ol>)}
-          </div>
+          {n.parent && link(n.parent) && (
+            <p class="mono-meta parent">Grew from <a href={noteHref(link(n.parent)!)} data-trail={n.parent} data-pick={link(n.parent)!.thread === t.slug ? anchor(link(n.parent)!) : undefined}>{name(link(n.parent)!)}</a></p>
+          )}
+          {n.body.length === 0
+            ? <div class="body"><p class="muted">Just a heading for now; the thinking lives in the branches.</p></div>
+            : n.depth === 0
+              ? <div class="body" data-read={`${n.id}:note:read`} data-words={words(n)}>{chunks(n.body).map((c) => c.k === 'h' ? <h3>{c.t}</h3> : c.k === 'q' ? <blockquote>{c.t}</blockquote> : c.k === 'p' ? <p>{c.t}</p> : c.k === 'ul' ? <ul>{c.items.map((i) => <li style={`--d:${i.d}`}>{i.t}</li>)}</ul> : <ol>{c.items.map((i) => <li style={`--d:${i.d}`}>{i.t}</li>)}</ol>)}</div>
+              : <InkSeal id={`${n.id}:note`} cost={INK.noteCost} label="My note" words={words(n)}>
+                  <div class="body">{chunks(n.body).map((c) => c.k === 'h' ? <h3>{c.t}</h3> : c.k === 'q' ? <blockquote>{c.t}</blockquote> : c.k === 'p' ? <p>{c.t}</p> : c.k === 'ul' ? <ul>{c.items.map((i) => <li style={`--d:${i.d}`}>{i.t}</li>)}</ul> : <ol>{c.items.map((i) => <li style={`--d:${i.d}`}>{i.t}</li>)}</ol>)}</div>
+                </InkSeal>}
+          {srcs(n).length > 0 && (
+            <InkSeal id={`${n.id}:src`} cost={INK.sourceCost} label={`Where this came from · ${[...new Set(srcs(n).map((x) => x.book))].join(', ')}`} after={n.depth > 0 && n.body.length ? `${n.id}:note` : undefined} also={srcs(n).map((x) => `ref:${x.id}`)} words={wordCount(...srcs(n).map((x) => `${x.interpretation || ''} ${x.quote || ''}`))}>
+              {srcs(n).map((x) => (
+                <div class="src">
+                  <p class="src-title"><a href={x.bookHref} tabindex="-1">{x.title}</a></p>
+                  {x.interpretation && <p>{x.interpretation}</p>}
+                  {x.quote && <blockquote>{x.quote}</blockquote>}
+                </div>
+              ))}
+            </InkSeal>
+          )}
           {n.books.length > 0 && (
             <div class="rel"><p class="mono-label">Grew out of</p>{n.books.map((b) => <a class="chip book" href={b.href}>{b.title}</a>)}</div>
           )}
           {n.children.length > 0 && (
-            <div class="rel"><p class="mono-label">Branches</p>{n.children.map((c) => link(c) && <a class="chip" href={`#${anchor(link(c)!)}`} data-pick={anchor(link(c)!)}>{name(link(c)!)}</a>)}</div>
+            <div class="rel"><p class="mono-label">Branches</p>{n.children.map((c) => link(c) && <a class="chip" href={`#${anchor(link(c)!)}`} data-pick={anchor(link(c)!)} data-trail={c}>{name(link(c)!)}</a>)}</div>
           )}
           {n.related.some(link) && (
-            <div class="rel"><p class="mono-label">Connects to</p>{n.related.map((r) => link(r) && <a class="chip arc" href={noteHref(link(r)!)} data-pick={link(r)!.thread === t.slug ? anchor(link(r)!) : undefined}>{name(link(r)!)}{link(r)!.thread !== t.slug && <span class="other"> · other thread</span>}</a>)}</div>
+            <div class="rel"><p class="mono-label">Connects to</p>{n.related.map((r) => link(r) && <a class="chip arc" href={noteHref(link(r)!)} data-trail={r} data-pick={link(r)!.thread === t.slug ? anchor(link(r)!) : undefined}>{name(link(r)!)}{link(r)!.thread !== t.slug && <span class="other"> · other thread</span>}</a>)}</div>
           )}
           {n.next.some((x) => link(x) && !n.children.includes(x)) && (
-            <div class="rel"><p class="mono-label">Next</p>{n.next.map((x) => link(x) && !n.children.includes(x) && <a class="chip" href={noteHref(link(x)!)}>{name(link(x)!)}</a>)}</div>
+            <div class="rel"><p class="mono-label">Next</p>{n.next.map((x) => link(x) && !n.children.includes(x) && <a class="chip" href={noteHref(link(x)!)} data-trail={x}>{name(link(x)!)}</a>)}</div>
           )}
         </article>
       ))}
     </div>
   </div>
+  <InkHud variant="float" /><InkLayer />
 </Base>
 
 <script>
   import { fromCompany } from '../../scripts/from-company';
+  import { readInk } from '../../scripts/ink';
   fromCompany('jt-notes');
   // One note at a time in the reader; the tree and chips pick it, and the URL hash keeps it shareable.
   const arts = [...document.querySelectorAll<HTMLElement>('[data-note]')];
@@ -92,45 +114,24 @@ const first = t.slug === 'loose-notes' ? notes[0] : t.root;
   for (const p of picks) p.addEventListener('click', (e) => { e.preventDefault(); history.replaceState(null, '', `#${p.dataset.pick}`); show(p.dataset.pick!, true); });
   const fromHash = () => { if (location.hash) show(location.hash.slice(1), false); else show(arts.find((a) => !a.hidden)?.id || '', false); };
   addEventListener('hashchange', fromHash); fromHash();
+
+  // Which notes you've opened with ink: marked in the tree, countable, and filterable.
+  const treeLinks = [...document.querySelectorAll<HTMLAnchorElement>('[data-tree-note]')];
+  const filterBtn = document.querySelector<HTMLButtonElement>('[data-tree-filter]')!;
+  const countEl = document.querySelector<HTMLElement>('[data-open-count]')!;
+  let onlyOpen = false, unlocked: string[] = readInk().unlocked;
+  const mark = () => {
+    let open = 0, locked = 0;
+    for (const a of treeLinks) {
+      const free = a.dataset.free === '1', isOpen = unlocked.includes(`${a.dataset.treeNote}:note`);
+      a.dataset.state = free ? 'free' : isOpen ? 'open' : 'locked';
+      if (isOpen) open++; if (!free) locked++;
+      a.closest('li')!.hidden = onlyOpen && !isOpen && !free;
+    }
+    countEl.textContent = locked ? `${open} of ${locked} opened` : '';
+    filterBtn.hidden = locked === 0;
+  };
+  document.addEventListener('ink:change', (e) => { unlocked = (e as CustomEvent).detail.unlocked; mark(); });
+  filterBtn.addEventListener('click', () => { onlyOpen = !onlyOpen; filterBtn.setAttribute('aria-pressed', String(onlyOpen)); mark(); });
+  mark();
 </script>
-
-<style>
-  .head { padding-top: clamp(28px, 5vw, 64px); max-width: 760px; }
-  .crumbs { display: flex; flex-wrap: wrap; gap: 6px 16px; }
-  .crumbs a { text-decoration: none; }
-  .back[hidden] { display: none; }
-  h1 { margin: 14px 0 8px; font-size: clamp(28px, 3.6vw, 44px); line-height: 1.08; }
-  .layout { display: grid; gap: 24px; margin-top: 28px; }
-  @media (min-width: 900px) { .layout { grid-template-columns: minmax(260px, 340px) 1fr; align-items: start; } .reader { position: sticky; top: 16px; } }
-
-  .tree { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 10px 6px; max-height: 70vh; overflow: auto; }
-  .tree ul { list-style: none; margin: 0; padding: 0; }
-  .tree li { position: relative; padding-left: calc(var(--d) * 16px); }
-  .tree li:not(.root)::before { content: ''; position: absolute; left: calc(var(--d) * 16px - 9px); top: 0; bottom: 50%; width: 8px; border-left: 1px solid var(--line); border-bottom: 1px solid var(--line); border-bottom-left-radius: 6px; }
-  .tree a { display: flex; gap: 8px; align-items: baseline; padding: 6px 8px; border-radius: 8px; text-decoration: none; font-size: 14px; line-height: 1.35; }
-  .tree a:hover { background: var(--hover); }
-  .tree a.on { background: var(--ink); color: var(--bg); }
-  .tree a.on .fid { color: var(--bg); opacity: 0.8; }
-  .tree li.root a, .tree-root { font-weight: 600; font-size: 15px; }
-  .tree-root { display: block; padding: 6px 8px; }
-  .fid { font: 12px var(--mono); color: var(--amber-ink); flex: none; }
-
-  .note { padding: clamp(16px, 2.4vw, 28px); border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
-  .note h2 { margin-top: 8px; font-size: clamp(22px, 2.6vw, 30px); line-height: 1.15; }
-  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-  .tag { padding: 3px 10px; border-radius: 999px; background: var(--hover); font-size: 12px; }
-  .body { margin-top: 16px; font-size: 17px; line-height: 1.6; }
-  .body > * + * { margin-top: 12px; }
-  .body h3 { font-size: 18px; margin-top: 20px; }
-  .body ul, .body ol { padding-left: 20px; display: grid; gap: 6px; }
-  .body li { margin-left: calc(var(--d) * 18px); }
-  .body blockquote { margin: 0; padding-left: 12px; border-left: 2px solid var(--amber); color: var(--muted); }
-  .muted { color: var(--muted); }
-  .rel { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-  .rel .mono-label { width: 100%; }
-  .chip { padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; text-decoration: none; background: var(--bg); }
-  .chip:hover { border-color: var(--ink); }
-  .chip.book { border-color: var(--amber); }
-  .chip.arc { border-style: dashed; border-color: var(--amber); }
-  .other { color: var(--muted); }
-</style>

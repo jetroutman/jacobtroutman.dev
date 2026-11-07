@@ -1,34 +1,16 @@
 ---
+import '../styles/components/ink-hud.css';
 // The ink counter. "bar" sits in a post's sticky bar; "float" pins bottom-right (book pages).
 interface Props { variant?: 'bar' | 'float' }
 const { variant = 'bar' } = Astro.props;
 const drop = 'M12 2.5C12 2.5 5.2 10.4 5.2 15.2a6.8 6.8 0 0 0 13.6 0C18.8 10.4 12 2.5 12 2.5Z';
 ---
-<span class:list={['hud', variant]} data-hud aria-label="Your ink">
+<span class:list={['hud', variant, 'c', 'c-ink-hud']} data-hud aria-label="Your ink">
   <span class="hud-gain" data-gain aria-live="polite"></span>
   <span class="hud-pill" data-hud-pill>
     <svg viewBox="0 0 24 24" aria-hidden="true" data-hud-drop><path d={drop} class="hud-drop"></path><path d="M12 10.6V16.4" class="hud-nib"></path><circle cx="12" cy="9.4" r="1.25" class="hud-hole"></circle></svg>
     <span class="hud-n" data-wallet>0</span>
     <span class="hud-lv mono-meta" data-level>Elementary</span>
+    <span class="hud-meter" data-bonus-meter title="Fills toward the next bonus" aria-hidden="true"><span></span></span>
   </span>
 </span>
-<style>
-  .hud { position: relative; display: flex; align-items: center; }
-  .hud.float { position: fixed; z-index: 50; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); }
-  .hud.float .hud-pill { box-shadow: 0 6px 20px rgb(0 0 0 / .1); padding: 7px 14px 7px 10px; }
-  .hud-pill { display: inline-flex; align-items: center; gap: 7px; padding: 4px 11px 4px 8px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
-  .hud-pill svg { width: 18px; height: 18px; }
-  .hud-drop { fill: var(--ink); } .hud-nib { stroke: var(--surface); stroke-width: 1.4; stroke-linecap: round; } .hud-hole { fill: var(--surface); }
-  .hud-n { font: 600 14px var(--mono); color: var(--amber-ink); min-width: 2ch; font-variant-numeric: tabular-nums; }
-  .hud-lv { font-size: 11px; }
-  @media (max-width: 420px) { .bar .hud-lv { display: none; } }
-  .hud-pill:global(.bumpA) { animation: bumpA .5s cubic-bezier(.3, 1.7, .5, 1); } .hud-pill:global(.bumpB) { animation: bumpB .5s cubic-bezier(.3, 1.7, .5, 1); }
-  .hud-pill:global(.drainA) { animation: drainA .45s ease; } .hud-pill:global(.drainB) { animation: drainB .45s ease; }
-  @keyframes bumpA { 35% { transform: scale(1.18); } } @keyframes bumpB { 35% { transform: scale(1.18); } }
-  @keyframes drainA { 40% { transform: scale(.86); } } @keyframes drainB { 40% { transform: scale(.86); } }
-  .hud-gain { position: absolute; right: 0; white-space: nowrap; font: 600 12px var(--mono); color: var(--amber-ink); background: var(--amber-tint); padding: 3px 9px; border-radius: 999px; opacity: 0; pointer-events: none; }
-  .bar .hud-gain { top: calc(100% + 6px); } .float .hud-gain { bottom: calc(100% + 6px); }
-  .hud-gain:global(.show) { animation: gain 1.4s ease-out both; }
-  @keyframes gain { 0% { opacity: 0; transform: translateY(-6px) scale(.9); } 15% { opacity: 1; transform: none; } 75% { opacity: 1; } 100% { opacity: 0; } }
-  @media (prefers-reduced-motion: reduce) { .hud-pill:global(.bumpA), .hud-pill:global(.bumpB), .hud-pill:global(.drainA), .hud-pill:global(.drainB), .hud-gain:global(.show) { animation: none; } }
-</style>

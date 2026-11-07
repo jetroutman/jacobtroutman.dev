@@ -1,20 +1,10 @@
 ---
+import '../../styles/components/case-section.css';
 interface Props { id: string; n: string; title: string; lede?: string }
 const { id, n, title, lede } = Astro.props;
 ---
-<section id={id} class="case-section" data-section>
+<section id={id} class="case-section c-case-section" data-section>
   <div class="section-head"><span class="num">{n}</span><h2>{title}</h2></div>
   {lede && <p class="lede">{lede}</p>}
-  <div class="body"><slot /></div>
+  <div class="section-body"><slot /></div>
 </section>
-<style>
-  .case-section { scroll-margin-top: 24px; }
-  .case-section + :global(.case-section) { margin-top: var(--section); }
-  @media (max-width: 959px) { .case-section { scroll-margin-top: 76px; } }
-  h2 { font-size: clamp(24px, 2.4vw, 30px); line-height: 1.2; font-weight: 600; letter-spacing: -0.015em; }
-  .lede { margin-top: 20px; font-size: clamp(19px, 1.8vw, 22px); line-height: 1.45; font-weight: 500; letter-spacing: -0.005em; }
-  .body :global(> p) { margin-top: 16px; font: 18px/1.65 var(--reading); }
-  .body :global(> ol), .body :global(> ul) { margin-top: 16px; padding-left: 1.4em; font: 18px/1.65 var(--reading); }
-  .body :global(li + li) { margin-top: 6px; }
-  .body :global(pre) { margin-top: 28px; padding: 12px 16px; border: 1px solid var(--line); border-radius: 10px; font: 13px/1.75 var(--mono); overflow-x: auto; }
-</style>

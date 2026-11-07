@@ -1,8 +1,9 @@
 ---
 // Shown in place of a 403 on /admin/: usually the sign-in didn't carry the admin role this time.
 import Base from '../layouts/Base.astro';
+import '../styles/pages/signin.css';
 ---
-<Base title="Sign in again" noindex>
+<Base page="signin" title="Sign in again" noindex>
   <div class="wrap">
     <p class="mono-meta">Admin</p>
     <h1 class="h1">Sign in again</h1>
@@ -11,7 +12,3 @@ import Base from '../layouts/Base.astro';
     <p class="mono-meta">Still here after that? This GitHub account doesn't have the admin role.</p>
   </div>
 </Base>
-<style>
-  .wrap { max-width: 640px; padding-top: clamp(28px, 5vw, 64px); display: grid; gap: 14px; }
-  .desc { color: var(--muted); font-size: 17px; }
-</style>

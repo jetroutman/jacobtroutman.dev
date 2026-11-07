@@ -1,16 +1,10 @@
 ---
+import '../../styles/components/interviewer.css';
 interface Props { points: [string, string][] }
 const { points } = Astro.props;
 ---
-<ol class="points">
+<ol class="points c c-interviewer">
   {points.map(([point, detail], i) => (
     <li><span class="n">{String(i + 1).padStart(2, '0')}</span><div><p class="point">{point}</p><p class="detail">{detail}</p></div></li>
   ))}
 </ol>
-<style>
-  .points { list-style: none; padding: 0; margin-top: 8px; }
-  li { display: grid; grid-template-columns: 28px 1fr; gap: 12px; padding-top: 16px; margin-top: 16px; border-top: 1px solid var(--line); }
-  .n { font: 13px var(--mono); color: var(--amber-ink); padding-top: 4px; }
-  .point { font-size: 19px; font-weight: 600; line-height: 1.35; }
-  .detail { margin-top: 6px; font-size: 17px; line-height: 1.6; }
-</style>

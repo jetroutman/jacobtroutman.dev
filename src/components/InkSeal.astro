@@ -1,0 +1,15 @@
+---
+// One sealed layer: blurred until bought with ink (src/scripts/ink.ts). The slot holds what's inside.
+// `after` names the layer that must be open first. `also` lists other unlock keys this layer covers
+// (a card's source covers its Reference notes on book pages), so buying either opens both. `words` sizes the ink you get back for reading it.
+import '../styles/components/ink-seal.css';
+interface Props { id: string; cost: number; label: string; after?: string; also?: string[]; words?: number; plain?: boolean }
+const { id, cost, label, after, also = [], words = 0, plain = false } = Astro.props;
+const drop = 'M12 2.5C12 2.5 5.2 10.4 5.2 15.2a6.8 6.8 0 0 0 13.6 0C18.8 10.4 12 2.5 12 2.5Z';
+---
+<div class:list={['seal-layer', 'c-ink-seal', plain && 'plain']} data-layer={id} data-cost={cost} data-after={after} data-also={also.length ? also.join(' ') : undefined}>
+  {label && <p class="mono-label seal-label">{label}</p>}
+  <div class="seal-content" data-read={`${id}:read`} data-words={words}><slot /></div>
+  <span class="seal-flood" aria-hidden="true"></span>
+  <button type="button" class="seal-btn" data-unseal><svg viewBox="0 0 24 24" aria-hidden="true"><path d={drop}></path></svg><span data-seal-label>Unseal · {cost}</span></button>
+</div>

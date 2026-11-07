@@ -1,0 +1,4 @@
+/* Page: 404. */
+.nf:where(.pg-404 > .wrap *) { padding-top: clamp(32px, 6vw, 80px); }
+.nf h1:where(.pg-404 > .wrap *) { margin-top: 12px; font-size: clamp(30px, 4vw, 48px); line-height: 1.06; }
+.nf-back:where(.pg-404 > .wrap *) { margin-top: 20px; }

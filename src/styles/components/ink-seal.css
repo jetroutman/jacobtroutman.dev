@@ -1,0 +1,17 @@
+/* Component: ink-seal. A sealed layer: blurred until bought with ink. Scoped to .c-ink-seal (it takes a slot). */
+.seal-layer:where(.c-ink-seal) { position: relative; overflow: hidden; margin-top: 12px; padding: 14px 16px; border-radius: 10px; background: var(--hover); }
+.seal-layer.plain.open:where(.c-ink-seal) { padding: 0; background: none; }
+.seal-layer.locked:where(.c-ink-seal) { opacity: .55; }
+.seal-label:where(.c-ink-seal *) { margin-bottom: 8px; }
+.seal-layer.plain.open .seal-label:where(.c-ink-seal *) { display: none; }
+.seal-content:where(.c-ink-seal *) { transition: filter .5s ease .35s, opacity .5s ease .35s; }
+.seal-layer:not(.open) > .seal-content:where(.c-ink-seal *) { filter: blur(5px); opacity: .5; user-select: none; pointer-events: none; min-height: 44px; max-height: 88px; overflow: hidden; }
+.seal-flood:where(.c-ink-seal *) { position: absolute; inset: 0; background: var(--ink); clip-path: circle(0% at 90% 70%); pointer-events: none; opacity: 0; }
+.seal-layer.flooding > .seal-flood:where(.c-ink-seal *) { animation: seal-flood 1.1s cubic-bezier(.5, 0, .3, 1) both; }
+@keyframes seal-flood { 0% { clip-path: circle(0% at 90% 70%); opacity: 1; } 50% { clip-path: circle(150% at 90% 70%); opacity: 1; } 100% { clip-path: circle(150% at 90% 70%); opacity: 0; } }
+.seal-btn:where(.c-ink-seal *) { position: absolute; right: 12px; bottom: 12px; min-height: 40px; display: inline-flex; align-items: center; gap: 7px; padding: 0 14px 0 10px; border: 1px dashed var(--amber); border-radius: 999px; background: var(--surface); color: var(--amber-ink); font: 600 13px var(--mono); cursor: pointer; transition: transform .15s; }
+.seal-btn svg:where(.c-ink-seal *) { width: 15px; height: 15px; fill: var(--ink); }
+.seal-btn:hover:not(:disabled):where(.c-ink-seal *) { transform: translateY(-2px); }
+.seal-btn:disabled:where(.c-ink-seal *) { cursor: not-allowed; border-style: solid; border-color: var(--line); color: var(--muted); }
+.seal-layer.open > .seal-btn:where(.c-ink-seal *) { display: none; }
+@media (prefers-reduced-motion: reduce) { .seal-layer.flooding > .seal-flood:where(.c-ink-seal *) { animation: none; } .seal-content:where(.c-ink-seal *) { transition: none; } }

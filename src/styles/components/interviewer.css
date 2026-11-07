@@ -1,0 +1,6 @@
+/* Component: interviewer. Moved out of src/components/case/Interviewer.astro; scoped to .c-interviewer. */
+.points:where(.c-interviewer, .c-interviewer *) { list-style: none; padding: 0; margin-top: 8px; }
+li:where(.c-interviewer, .c-interviewer *) { display: grid; grid-template-columns: 28px 1fr; gap: 12px; padding-top: 16px; margin-top: 16px; border-top: 1px solid var(--line); }
+.n:where(.c-interviewer, .c-interviewer *) { font: 13px var(--mono); color: var(--amber-ink); padding-top: 4px; }
+.point:where(.c-interviewer, .c-interviewer *) { font-size: 19px; font-weight: 600; line-height: 1.35; }
+.detail:where(.c-interviewer, .c-interviewer *) { margin-top: 6px; font-size: 17px; line-height: 1.6; }
