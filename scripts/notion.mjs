@@ -52,3 +52,11 @@ export async function relationIds(pageId, prop) {
 }
 
 export const plainId = (id) => id.replace(/-/g, '');
+
+// A page's blocks with `children` attached to tables (their rows) and toggles, which the
+// site-content parsers read. Other nesting isn't used by those pages, so it isn't fetched.
+export async function blockTree(id) {
+  const blocks = await allBlocks(id);
+  for (const b of blocks) if (b.has_children && (b.type === 'table' || b.type === 'toggle')) b.children = await allBlocks(b.id);
+  return blocks;
+}

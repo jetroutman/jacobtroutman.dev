@@ -1,9 +1,10 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import StatusMeta from '../../components/StatusMeta.astro';
 import Pdo from '../../components/Pdo.astro';
 import DevTodo from '../../components/DevTodo.astro';
+import CaseBody from '../../components/case/CaseBody.astro';
 import '../../styles/pages/case.css';
 
 export async function getStaticPaths() {
@@ -16,15 +17,8 @@ export async function getStaticPaths() {
 
 const { entry, next } = Astro.props;
 const { data } = entry;
-const { Content } = await render(entry);
-const nav = [
-  ['context', '01', 'Context', 'Context'],
-  ['problem', '02', 'Problem', 'Problem'],
-  ['options', '03', 'Options', 'Options'],
-  ['decision', '04', 'Decision', 'Decision'],
-  ['outcome', '05', 'Outcome', 'Outcome'],
-  ['interviewer', '06', "What I'd tell an interviewer", 'Interviewer notes'],
-];
+// One nav item per section; the interviewer section gets a short chip label.
+const nav = data.body.map((s) => [s.id, s.n, s.title, s.id === 'interviewer' ? 'Interviewer notes' : s.title]);
 ---
 <Base page="case" title={data.title} description={data.tldr.problem}>
   <div class="title-block">
@@ -54,7 +48,7 @@ const nav = [
       <nav class="chips" aria-label="Sections">
         {nav.map(([id, , , short]) => <a class="chip" href={`#${id}`} data-nav={id}>{short}</a>)}
       </nav>
-      <Content />
+      <CaseBody sections={data.body} />
       {next && next.id !== entry.id && (
         <a class="next" href={`/case/${next.id}/`} data-next>
           <span><span class="mono-label">Next case file · {next.data.id}</span><span class="next-title">{next.data.title}</span></span>

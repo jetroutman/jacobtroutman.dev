@@ -1,0 +1,31 @@
+---
+// Renders a case file's body as synced from Notion (see scripts/site-content.mjs for the conventions).
+import type { CollectionEntry } from 'astro:content';
+import Section from './Section.astro';
+import Parts from './Parts.astro';
+import Options from './Options.astro';
+import Option from './Option.astro';
+import Callout from './Callout.astro';
+import Interviewer from './Interviewer.astro';
+interface Props { sections: CollectionEntry<'cases'>['data']['body'] }
+const { sections } = Astro.props;
+---
+{sections.map((s) => (
+  <Section id={s.id} n={s.n} title={s.title} lede={s.lede}>
+    {s.blocks.map((b) => {
+      switch (b.k) {
+        case 'p': return <p set:html={b.html} />;
+        case 'q': return <blockquote><p set:html={b.html} /></blockquote>;
+        case 'h3': return <h3>{b.text}</h3>;
+        case 'ol': return <ol>{b.items.map((i) => <li set:html={i} />)}</ol>;
+        case 'ul': return <ul>{b.items.map((i) => <li set:html={i} />)}</ul>;
+        case 'parts': return <Parts items={b.rows} />;
+        case 'points': return <Interviewer points={b.rows} />;
+        case 'options': return (
+          <Options>{b.items.map((o) => <Option label={o.label} verdict={o.verdict} chosen={o.chosen} title={o.title}><Fragment set:html={o.body} /></Option>)}</Options>
+        );
+        case 'callout': return <Callout label={b.label} title={b.title}>{b.body.map((p) => <p set:html={p} />)}</Callout>;
+      }
+    })}
+  </Section>
+))}
