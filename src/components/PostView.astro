@@ -27,6 +27,10 @@ const fmt = (d: string | null) => (d ? new Date(`${d.slice(0, 10)}T12:00:00Z`).t
 // Words of prose on each slide (cards earn on their own), for the ink you get for reading the slide.
 const proseWords = (bl: B[]) => wordCount(...bl.map((b) => (b.k === 'card' ? '' : b.t)));
 const others = published.filter((p) => p.id !== post.id).slice(0, 3);
+// The landing shows what's inside: each headed section, so a reader can start at the top or jump in.
+const contents = all.map((s, i) => ({ s, i })).filter(({ s }) => s.title && s.id !== 'end');
+const secNo = new Map(contents.map(({ s }, k) => [s.id, k + 1]));
+secNo.set('end', contents.length + 1);
 ---
 <div class="pdeck c c-post-view" data-post={post.id} data-admin={admin ? '1' : undefined}>
   <nav class="deckbar" aria-label="Sections">
@@ -58,7 +62,7 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
             {post.hook && <p class="p-hook reveal">{post.hook}</p>}
           </>
         )}
-        {s.title && s.id !== 'end' && <div class="section-head reveal"><span class="num">{pad(i)}</span><h2 set:html={inline(s.title)} /></div>}
+        {s.title && s.id !== 'end' && <div class="section-head reveal"><span class="num">{pad(secNo.get(s.id)!)}</span><h2 set:html={inline(s.title)} /></div>}
         {s.blocks.length > 0 && (
           <div class="flow" data-read={proseWords(s.blocks) > 8 ? `${post.id}:${s.id}` : undefined} data-words={proseWords(s.blocks)}>
             {s.blocks.map((b) => b.k === 'card'
@@ -69,15 +73,28 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
           </div>
         )}
         {s.id === 'intro' && (
-          <div class="howto reveal">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d={drop}></path></svg>
-            <p>Reading earns ink: the more you read, the more you get. Spend it to go deeper.</p>
-          </div>
+          <>
+            <div class="start-row reveal">
+              <button type="button" class="start" data-next>Start reading <span aria-hidden="true">→</span></button>
+              <span class="mono-meta hint" aria-hidden="true"><span class="h-scroll">or press →</span><span class="h-swipe">or swipe →</span></span>
+            </div>
+            <div class="howto reveal">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d={drop}></path></svg>
+              <p>Reading earns ink: the more you read, the more you get. Spend it to go deeper.</p>
+            </div>
+            {contents.length > 1 && (
+              <nav class="toc reveal" aria-label="In this post">
+                <p class="mono-label toc-head">In this post · {contents.length} sections{post.cardCount > 0 && ` · ${post.cardCount} claims`}</p>
+                <ol>
+                  {contents.map(({ s: c, i: k }) => <li><a href={`#${c.id}`} data-jump={k}><span class="num">{pad(secNo.get(c.id)!)}</span><span class="t" set:html={inline(c.title!)} /></a></li>)}
+                </ol>
+              </nav>
+            )}
+          </>
         )}
-        {s.id === 'intro' && <p class="mono-meta hint reveal" aria-hidden="true"><span class="h-scroll">Press → or use Next</span><span class="h-swipe">Swipe to start →</span></p>}
         {s.id === 'end' && (
           <div class="end-box" data-post-end>
-            <div class="section-head reveal"><span class="num">{pad(i)}</span><h2>That's the post</h2></div>
+            <div class="section-head reveal"><span class="num">{pad(secNo.get('end')!)}</span><h2>That's the post</h2></div>
             <p class="p-p reveal">You earned <strong data-earned-here>0</strong> ink on this post. Anything you unsealed stays open in my <a href="/library/">library</a> and <a href="/notes/">notes</a>.</p>
             {post.bookLinks.length > 0 && <p class="p-p reveal">This post drew on {post.bookLinks.map((b, k) => <>{k > 0 && ', '}<a href={b.href}><em>{b.title}</em></a></>)}.</p>}
             {others.length > 0 && (
@@ -87,7 +104,7 @@ const others = published.filter((p) => p.id !== post.id).slice(0, 3);
             )}
           </div>
         )}
-        {i < all.length - 1 && <button type="button" class="next reveal" data-next>Next <span>{label(all[i + 1])}</span> →</button>}
+        {i < all.length - 1 && s.id !== 'intro' && <button type="button" class="next reveal" data-next>Next <span>{label(all[i + 1])}</span> →</button>}
       </div>
     </section>
   ))}

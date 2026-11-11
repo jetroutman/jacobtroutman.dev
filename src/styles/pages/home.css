@@ -35,3 +35,26 @@
 .card-title:where(.pg-home > .wrap *):not(:where(.c, .c *)) { margin-top: 18px; font-size: 21px; font-weight: 600; letter-spacing: -0.01em; }
 .card-desc:where(.pg-home > .wrap *):not(:where(.c, .c *)) { font-size: 15px; line-height: 1.5; color: var(--muted); }
 .resume-btn:where(.pg-home > .wrap *):not(:where(.c, .c *)) { padding: 10px 16px; }
+
+/* Latest post: the newest Published post, under the pitch. Leads readers into the reading side. */
+.latest:where(.pg-home > .wrap *):not(:where(.c, .c *)) { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--ink); }
+.latest-top:where(.pg-home > .wrap *):not(:where(.c, .c *)) { display: flex; align-items: center; gap: 8px; }
+.latest-top svg:where(.pg-home > .wrap *):not(:where(.c, .c *)) { width: 12px; height: 12px; fill: var(--amber); flex: none; }
+.latest-link:where(.pg-home > .wrap *):not(:where(.c, .c *)) {
+  display: flex; flex-direction: column; gap: 10px; margin-top: 14px; padding: 20px; text-decoration: none; color: var(--ink);
+  border: 1px solid var(--line); border-radius: 12px; background: var(--surface);
+  transition: border-color 160ms ease-out, transform 160ms ease-out;
+}
+.latest-link:hover:where(.pg-home > .wrap *):not(:where(.c, .c *)) { color: var(--ink); border-color: var(--ink); transform: translateY(-2px); }
+.latest-title:where(.pg-home > .wrap *):not(:where(.c, .c *)) { font-size: clamp(21px, 2vw, 24px); line-height: 1.2; font-weight: 600; letter-spacing: -0.015em; text-wrap: balance; }
+.latest-hook:where(.pg-home > .wrap *):not(:where(.c, .c *)) { font-size: 15px; line-height: 1.5; color: var(--muted); text-wrap: pretty; }
+.latest-foot:where(.pg-home > .wrap *):not(:where(.c, .c *)) { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 6px; }
+.latest-go:where(.pg-home > .wrap *):not(:where(.c, .c *)) { font-size: 15px; font-weight: 600; white-space: nowrap; }
+.latest-go span:where(.pg-home > .wrap *):not(:where(.c, .c *)) { display: inline-block; transition: transform 160ms ease-out; }
+.latest-link:hover .latest-go span:where(.pg-home > .wrap *):not(:where(.c, .c *)) { transform: translateX(3px); }
+.latest-all:where(.pg-home > .wrap *):not(:where(.c, .c *)) { display: inline-block; margin-top: 12px; text-decoration: none; }
+.latest-all:hover:where(.pg-home > .wrap *):not(:where(.c, .c *)) { text-decoration: underline; }
+@media (prefers-reduced-motion: reduce) {
+  .latest-link:where(.pg-home > .wrap *):not(:where(.c, .c *)), .latest-go span:where(.pg-home > .wrap *):not(:where(.c, .c *)) { transition: none; }
+  .latest-link:hover:where(.pg-home > .wrap *):not(:where(.c, .c *)) { transform: none; }
+}
