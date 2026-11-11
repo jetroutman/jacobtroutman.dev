@@ -1,11 +1,30 @@
 import { defineCollection } from 'astro:content';
-import { glob } from 'astro/loaders';
+import { file } from 'astro/loaders';
 import { z } from 'astro/zod';
 
 const pdo = z.object({ problem: z.string(), decision: z.string(), outcome: z.string() });
 
+// Both collections come from Notion (Life HQ → jacobtroutman.dev): scripts/sync-site-pages.mjs writes
+// src/data/cases.json and companies.json before each build. The committed files are the fallback.
+const synced = (name: string) => file(`src/data/${name}.json`, {
+  parser: (text) => Object.fromEntries(JSON.parse(text)[name].map((e: { slug: string }) => [e.slug, e])),
+});
+
+// Case-file body: one entry per `##` section in Notion. `html` fields are escaped inline HTML from the sync.
+const block = z.discriminatedUnion('k', [
+  z.object({ k: z.literal('p'), html: z.string() }),
+  z.object({ k: z.literal('q'), html: z.string() }),
+  z.object({ k: z.literal('h3'), text: z.string() }),
+  z.object({ k: z.enum(['ol', 'ul']), items: z.array(z.string()) }),
+  z.object({ k: z.literal('parts'), rows: z.array(z.tuple([z.string(), z.string()])) }),
+  z.object({ k: z.literal('points'), rows: z.array(z.tuple([z.string(), z.string()])) }),
+  z.object({ k: z.literal('options'), items: z.array(z.object({ label: z.string(), verdict: z.string(), chosen: z.boolean(), title: z.string(), body: z.string() })) }),
+  z.object({ k: z.literal('callout'), label: z.string(), title: z.string(), body: z.array(z.string()) }),
+]);
+const section = z.object({ id: z.string(), n: z.string(), title: z.string(), lede: z.string().optional(), blocks: z.array(block) });
+
 const cases = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/cases' }),
+  loader: synced('cases'),
   schema: z.object({
     id: z.string(),                       // "DR-02"
     title: z.string(),                    // the Home proof line, verbatim
@@ -25,11 +44,12 @@ const cases = defineCollection({
     }).optional(),
     /** Claims to confirm before launch. Shown only in `npm run dev`. */
     todo: z.array(z.string()).default([]),
+    body: z.array(section).default([]),
   }),
 });
 
 const companies = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/companies' }),
+  loader: synced('companies'),
   schema: z.object({
     company: z.string(),
     role: z.string(),

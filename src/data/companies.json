@@ -1,0 +1,341 @@
+{
+ "source": "snapshot",
+ "syncedAt": "2026-11-11T00:00:00.000Z",
+ "companies": [
+  {
+   "notion": "4150596e-1aaa-81cf-8f9b-c473d4c4ed29",
+   "slug": "example-7f3k",
+   "company": "Contoso (example)",
+   "role": "For the Senior .NET Engineer role on your payments platform team.",
+   "date": "Nov 2026",
+   "draft": true,
+   "summary": "You're hiring a senior .NET engineer to build payment services. That's the work I do now: C# services for point-of-sale software, designed around what happens when a step fails.",
+   "requirements": [
+    {
+     "need": "C# and .NET services",
+     "cases": [
+      "DR-01",
+      "DR-02"
+     ]
+    },
+    {
+     "need": "Payment flows that fail safely",
+     "cases": [
+      "DR-02"
+     ]
+    },
+    {
+     "need": "Shipping LLM features",
+     "cases": [
+      "DR-03"
+     ]
+    }
+   ],
+   "evidence": [
+    {
+     "case": "DR-02",
+     "relevance": "payments fail halfway through. This is how I handle a step that fails after the customer has paid."
+    },
+    {
+     "case": "DR-01",
+     "relevance": "your platform sends alerts with very different stakes. This is how I made sure the urgent ones get seen."
+    },
+    {
+     "case": "DR-03",
+     "relevance": "how I ship an LLM feature to real users, and what I keep out of the model."
+    }
+   ],
+   "plan": [
+    {
+     "days": "Days 1–30",
+     "title": "Learn",
+     "items": [
+      "Ship a small fix to production in the first two weeks.",
+      "Read the incident history for the services I'll own."
+     ]
+    },
+    {
+     "days": "Days 31–60",
+     "title": "Contribute",
+     "items": [
+      "Take one feature from design review to release.",
+      "Write a decision record for it that the team can review."
+     ]
+    },
+    {
+     "days": "Days 61–90",
+     "title": "Own",
+     "items": [
+      "Join the on-call rotation for my services.",
+      "Propose one improvement, with the trade-offs written down."
+     ]
+    }
+   ],
+   "questions": [
+    "What does a bad day look like for the services this role owns?",
+    "How does the team write down and review design decisions?",
+    "Where do you plan to use LLMs, and where have you decided not to?",
+    "Six months in, what would tell you this hire worked?"
+   ],
+   "bonus": {
+    "label": "Day-one idea",
+    "title": "The first thing I'd look at in your payments flow",
+    "body": "Replace with one specific, true idea for this company, drawn from the posting and Jacob's own experience. It rewards the reader who finished the tour, so make it worth finding."
+   }
+  },
+  {
+   "notion": "4150596e-1aaa-8146-b188-c2ac7ce066f9",
+   "slug": "opportunity-engine-nmyb",
+   "company": "Opportunity Engine",
+   "role": "For the Full Stack Engineer role on your client's regulatory-AI team.",
+   "date": "Nov 2026",
+   "draft": false,
+   "summary": "I'm Jacob. I read a ridiculous amount and track every book in Notion, using the method from How to Read a Book: skim it, go deep, then compare books on the same question.\n\nYour client's AI does that to regulations all day without getting bored. I'd like to help build it. (Also, I bowl. You'll see.)",
+   "greeting": "Hey there.",
+   "requirements": [
+    {
+     "need": "Production judgment: identify what may break and build durable solutions",
+     "cases": [
+      "DR-02",
+      "DR-01"
+     ]
+    },
+    {
+     "need": "End-to-end features across front-end and back-end systems in C#",
+     "cases": [
+      "DR-01",
+      "DR-02"
+     ]
+    },
+    {
+     "need": "Features that hold up under real customer usage",
+     "cases": [
+      "DR-02"
+     ]
+    }
+   ],
+   "evidence": [
+    {
+     "case": "DR-02",
+     "relevance": "compliance workflows have steps that can fail halfway. This is how I make sure a failed step undoes itself instead of leaving the customer stuck."
+    },
+    {
+     "case": "DR-01",
+     "relevance": "your platform has to tell each business what matters. This is how I made sure urgent messages interrupt and the rest don't."
+    }
+   ],
+   "plan": [
+    {
+     "days": "Days 1–30",
+     "title": "Learn",
+     "items": [
+      "Ship a small fix to production in the first two weeks.",
+      "Pair on the Python services and ship one small change there.",
+      "Read the incident history and the most common customer bugs."
+     ]
+    },
+    {
+     "days": "Days 31–60",
+     "title": "Contribute",
+     "items": [
+      "Take one feature from design to release across the React front end and C# back end.",
+      "Write a short decision record for it that the team can review."
+     ]
+    },
+    {
+     "days": "Days 61–90",
+     "title": "Own",
+     "items": [
+      "Own one workflow end to end, including the AI-powered step and its failure path.",
+      "Propose one reliability improvement, with the trade-offs written down."
+     ]
+    }
+   ],
+   "questions": [
+    "When the model flags a regulation as relevant and it isn't, or misses one, how does the customer find out, and how does the team?",
+    "How do engineers and data scientists split the work when a model update goes to production?",
+    "Which parts of the stack are C# and which are Python, and where does this role spend most of its time?",
+    "Six months in, what would tell you this hire worked?"
+   ],
+   "bonus": {
+    "label": "Day-one idea",
+    "title": "Not every regulatory change should interrupt someone",
+    "body": "Your platform decides which new rules matter to each business. In DR-01 I let severity alone decide whether a notification interrupts or just informs, and kept category cosmetic. I'd start regulatory alerts the same way: one question, does this change require the customer to act before a deadline, decides whether it becomes a task with an owner and a date or a line in a digest. Jurisdiction and topic only shape how it looks. That keeps 'what matters' a product decision you can test, not a side effect of styling."
+   }
+  },
+  {
+   "notion": "4150596e-1aaa-8196-a56a-deb8eef8d792",
+   "slug": "seatgeek-ybbz",
+   "company": "SeatGeek",
+   "role": "For the Senior Software Engineer role on your R&D team.",
+   "date": "Nov 2026",
+   "draft": false,
+   "summary": "I'm Jacob. I read a lot, I bowl in a Monday league, and I main Azucena in Tekken 8.\n\nOne of my favorite books ever is Jerry Weintraub's memoir, When I Stop Talking, You'll Know I'm Dead. He's the guy who took Elvis on tour. Somebody has to get the fans into the building, and I'd like to write that code.",
+   "greeting": "Hey SeatGeek.",
+   "requirements": [
+    {
+     "need": "Business-critical software in a fast-paced environment",
+     "cases": [
+      "DR-01",
+      "DR-02"
+     ]
+    },
+    {
+     "need": "Complex technical challenges with custom solutions",
+     "cases": [
+      "DR-02"
+     ]
+    },
+    {
+     "need": "Well-considered opinions about how software should work",
+     "cases": [
+      "DR-01"
+     ]
+    },
+    {
+     "need": "A product mindset: user experience and business impact",
+     "cases": [
+      "DR-01",
+      "DR-02"
+     ]
+    }
+   ],
+   "evidence": [
+    {
+     "case": "DR-02",
+     "relevance": "a fan pays for a ticket before it's issued. This is how I handled a step that fails after the customer has already paid."
+    },
+    {
+     "case": "DR-01",
+     "relevance": "fans, venues and box offices all get messages with very different stakes. This is how I decided which ones get to interrupt someone."
+    }
+   ],
+   "plan": [
+    {
+     "days": "Days 1–30",
+     "title": "Learn",
+     "items": [
+      "Ship a small change to production in my first two weeks. You ship many times a day, so I want to learn that path early.",
+      "Get productive in the parts of your stack that are new to me, starting with whichever language my team owns.",
+      "Read the write-ups from your biggest onsales."
+     ]
+    },
+    {
+     "days": "Days 31–60",
+     "title": "Contribute",
+     "items": [
+      "Take one feature from design review to release.",
+      "Write a short decision record for it that the team can review."
+     ]
+    },
+    {
+     "days": "Days 61–90",
+     "title": "Own",
+     "items": [
+      "Own a flow end to end, including its dashboards and alerts.",
+      "Propose one improvement, with the trade-offs written down."
+     ]
+    }
+   ],
+   "questions": [
+    "What's the hardest part of a big onsale today: the queue, holding inventory, or what happens after payment?",
+    "Which team would this role join, and which languages does it work in day to day?",
+    "Your posting says no token limits on AI tools. What has the team learned about where they help and where they don't?",
+    "Six months in, what would tell you this hire worked?"
+   ],
+   "phone": "708-705-8858",
+   "bonus": {
+    "label": "Onsale idea",
+    "title": "An onsale has the same shape as a money order",
+    "body": "A money order takes the customer's money for something that hasn't been printed yet, and the printer can fail. A ticket in a high-traffic onsale works the same way: the seat is held, the card is charged, then the ticket is issued, and any step can fail. What I learned at the register carries over. Make each step recover on its own, so a failure releases the hold or refunds the charge without anyone stepping in. And decide up front what the person waiting sees while that happens. I haven't built ticketing, so on day one I'd want to know where your compensating steps live today, and what a fan sees when one runs."
+   }
+  },
+  {
+   "notion": "4150596e-1aaa-8160-b40f-efcb71a0a36e",
+   "slug": "steris-yokg",
+   "company": "STERIS",
+   "role": "For the Senior Software Engineer role on your Digital Workflow Solutions team.",
+   "date": "Nov 2026",
+   "draft": false,
+   "summary": "I'm Jacob: reader, Monday-night bowler, and a guy slowly working toward a planche.\n\nI keep coming back to Kahneman's Noise. Smart people doing the same job make different calls, especially at the end of a long shift. I'd love to write the software that catches the miss before it ever reaches an operating room.",
+   "greeting": "Hey STERIS.",
+   "requirements": [
+    {
+     "need": "C#/.NET Microsoft full stack, desktop to services",
+     "cases": [
+      "DR-01",
+      "DR-02"
+     ]
+    },
+    {
+     "need": "Design patterns; refine the design as requirements change",
+     "cases": [
+      "DR-01",
+      "DR-02"
+     ]
+    },
+    {
+     "need": "Translate product requirements into software design",
+     "cases": [
+      "DR-01"
+     ]
+    },
+    {
+     "need": "Identify bottlenecks and bugs, and devise solutions",
+     "cases": [
+      "DR-02"
+     ]
+    }
+   ],
+   "evidence": [
+    {
+     "case": "DR-01",
+     "relevance": "a workflow like SPM raises alerts with very different stakes. This is how I decided which ones stop a user and wait for an answer, and the team made it the standard."
+    },
+    {
+     "case": "DR-02",
+     "relevance": "this is how I handle a step that fails after the work has moved on, with hardware in the loop and a clean way back."
+    }
+   ],
+   "plan": [
+    {
+     "days": "Days 1–30",
+     "title": "Learn",
+     "items": [
+      "Walk one instrument set through SPM end to end, the way a technician would.",
+      "Ship a small defect fix through your review and verification process.",
+      "Read the design and interface specs for the area I'll own."
+     ]
+    },
+    {
+     "days": "Days 31–60",
+     "title": "Contribute",
+     "items": [
+      "Take one feature from requirements to design review to release, with the estimate written up front.",
+      "Write its design and verification documentation to your standards."
+     ]
+    },
+    {
+     "days": "Days 61–90",
+     "title": "Own",
+     "items": [
+      "Own defect and change requests for that feature area.",
+      "Pair with a junior engineer on their next feature.",
+      "Propose one improvement, with the trade-offs written down."
+     ]
+    }
+   ],
+   "questions": [
+    "How much of SPM still runs on the MFC desktop code, and where is it headed next?",
+    "What does verification and documentation look like for one change, given where SPM runs?",
+    "Which hardware does SPM talk to, and where do those integrations tend to break?",
+    "Where has the team started using AI-assisted tools, and where has it decided not to?"
+   ],
+   "bonus": {
+    "label": "Day-one question",
+    "title": "Where a failed print meets a failed load",
+    "body": "The hard moment in money orders was a print that failed after the customer had paid. The fix was a saga: the failure triggers its own refund, so nothing is quietly edited and every step stays on the record. I'd expect sterile processing to have the same shape, a load that fails after its sets have moved on and has to be pulled back. My first question would be how SPM models that reversal: as edits to the original records, or as its own recall step with its own trail. If it's the first, that's where I'd want to start."
+   }
+  }
+ ]
+}

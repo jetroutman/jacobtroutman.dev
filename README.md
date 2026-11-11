@@ -14,14 +14,14 @@ npm run build    # production build into dist/
 
 | What | Where |
 |---|---|
-| Case files (Home rows + case pages) | `src/content/cases/*.mdx` |
-| Company pages (unlisted) | `src/content/companies/*.md` → `/for/<slug>/` |
+| Case files (Home rows + case pages) | Notion: Life HQ → jacobtroutman.dev → **Decision Log** → `src/data/cases.json` |
+| Company pages (unlisted) | Notion: Life HQ → jacobtroutman.dev → **Company Pages** → `src/data/companies.json` → `/for/<slug>/` |
 | Email, links, "Updated" date | `src/site.ts` |
 | Design tokens | `src/styles/global.css` |
 
-- A case file with `published: false` shows on Home but has no page yet.
-- `todo:` lists claims to confirm. They show only in `npm run dev`.
-- Company pages with `draft: true` build in dev only. Give real ones an unguessable slug. They're `noindex`, left out of the sitemap, and blocked in `robots.txt`.
+- Edit case files and company pages in Notion; the formats are on the jacobtroutman.dev page there. `scripts/sync-site-pages.mjs` pulls them before every CI build (and daily). Without `NOTION_TOKEN` the committed JSON is used, so `npm run dev` works offline.
+- A case file with **Case page** unticked shows on Home but has no page yet. Its `## Before launch` bullets show only in `npm run dev`.
+- Company pages with Status **Draft** build in dev and PR previews only; **Archived** ones aren't built. Give real ones an unguessable slug. They're `noindex`, left out of the sitemap, and blocked in `robots.txt`.
 - The résumé PDF is `public/resume.pdf`, built from `resume/resume.html` (see `resume/README.md`).
 
 ## Deploy
