@@ -8,7 +8,8 @@
  *   - reaching a claim in a post ([data-claim]): a few ink, shown on the claim's badge
  *   - following a link to a parent, branch or related note ([data-trail]) the first time
  *   - the first visit to a post, thread or book page; finishing a post
- *   - a starter gift on the first visit anywhere; a welcome gift when arriving from a company page
+ *   - a starter gift on the first visit anywhere (on a post, once the reader leaves the landing);
+ *     a welcome gift when arriving from a company page
  *   - every Nth time you earn, a bonus of a random size (the meter under the counter shows how close)
  * Spend: sealed layers ([data-layer]). data-after names the layer that must be open first.
  *   Unlocks are per item and site-wide; each records when it happened (for "recently unlocked").
@@ -237,14 +238,15 @@ export function initInk() {
   });
 
   // ---------- gifts ----------
-  const gift = (n: number, tag: string, title: string, desc: string) => {
+  const gift = (n: number, tag: string, title: string, desc: string, cta = 'Start reading') => {
     const wrap = document.createElement('div');
     wrap.className = 'ink-gift'; wrap.setAttribute('role', 'dialog'); wrap.setAttribute('aria-modal', 'true'); wrap.setAttribute('aria-label', title);
     const falls = Array.from({ length: 12 }, (_, i) => `<svg class="g-fall" viewBox="0 0 24 24" style="left:${48 + ((i * 37) % 40)}px;animation-delay:${300 + i * 110}ms"><path d="${DROP}"></path></svg>`).join('');
-    wrap.innerHTML = `<div class="g-card"><div class="g-well" aria-hidden="true">${falls}<span class="g-ripple"></span><svg class="g-big" viewBox="0 0 24 24"><path d="${DROP}"></path><path class="g-nib" d="M12 10.6V16.4"></path><circle class="g-hole" cx="12" cy="9.4" r="1.15"></circle></svg></div><p class="g-tag"></p><p class="g-n">+0</p><p class="g-title"></p><p class="g-desc"></p><button type="button" class="g-go">Start reading</button></div>`;
+    wrap.innerHTML = `<div class="g-card"><div class="g-well" aria-hidden="true">${falls}<span class="g-ripple"></span><svg class="g-big" viewBox="0 0 24 24"><path d="${DROP}"></path><path class="g-nib" d="M12 10.6V16.4"></path><circle class="g-hole" cx="12" cy="9.4" r="1.15"></circle></svg></div><p class="g-tag"></p><p class="g-n">+0</p><p class="g-title"></p><p class="g-desc"></p><button type="button" class="g-go"></button></div>`;
     wrap.querySelector('.g-tag')!.textContent = tag;
     wrap.querySelector('.g-title')!.textContent = title;
     wrap.querySelector('.g-desc')!.textContent = desc;
+    wrap.querySelector('.g-go')!.textContent = cta;
     document.body.append(wrap);
     const nEl = wrap.querySelector('.g-n')!, go = wrap.querySelector<HTMLButtonElement>('.g-go')!;
     const t0 = performance.now(), dur = reduced ? 0 : 1500;
@@ -270,8 +272,22 @@ export function initInk() {
   };
   const from = fromCompany();
   if (!(from && welcome(from)) && !st.started) {
-    st.started = true; save();
-    setTimeout(() => gift(cfg.starter, 'Starter ink', `${cfg.starter} ink to begin`, 'Reading earns more: the more you read, the more you get. Spend it to go deeper than the claim.'), 600);
+    const starter = (cta: string) => {
+      if (st.started || readInk().started) return; // another tab may have handed it out already
+      st.started = true; save();
+      gift(cfg.starter, 'Starter ink', `${cfg.starter} ink to begin`, 'Reading earns more: the more you read, the more you get. Spend it to go deeper than the claim.', cta);
+    };
+    // On a post's landing, the title and contents make their pitch first: the starter ink arrives
+    // as a surprise once the reader moves on to the first section (Slip Box 12G).
+    const onLanding = !!document.querySelector('[data-track]') && (!location.hash || location.hash === '#intro');
+    if (onLanding) {
+      const wait = (e: Event) => {
+        if ((e as CustomEvent<number>).detail < 1) return;
+        document.removeEventListener('deck:slide', wait);
+        setTimeout(() => starter('Keep reading'), reduced ? 0 : 500);
+      };
+      document.addEventListener('deck:slide', wait);
+    } else setTimeout(() => starter('Start reading'), 600);
   } else if (!document.querySelector('[data-admin]') && !st.earned.includes(`visit:${page}`)) {
     setTimeout(() => earn(`visit:${page}`, cfg.visit, 'first visit', document.querySelector('h1')), 1200);
   }

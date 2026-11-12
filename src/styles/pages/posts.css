@@ -4,6 +4,8 @@
 h1:where(.pg-posts > .wrap *):not(:where(.c, .c *)) { margin-top: 14px; }
 .desc:where(.pg-posts > .wrap *):not(:where(.c, .c *)) { margin-top: 12px; color: var(--muted); font-size: 17px; line-height: 1.5; }
 .desc a:where(.pg-posts > .wrap *):not(:where(.c, .c *)) { color: var(--ink); }
+.more:where(.pg-posts > .wrap *):not(:where(.c, .c *)) { margin-top: 12px; }
+.more a:where(.pg-posts > .wrap *):not(:where(.c, .c *)) { color: var(--ink); }
 .empty:where(.pg-posts > .wrap *):not(:where(.c, .c *)) { margin-top: 28px; color: var(--muted); }
 .list:where(.pg-posts > .wrap *):not(:where(.c, .c *)) { list-style: none; padding: 0; margin: 28px 0 0; border-top: 1px solid var(--line); }
 .list a:where(.pg-posts > .wrap *):not(:where(.c, .c *)) { display: grid; gap: 6px; padding: 20px 0; border-bottom: 1px solid var(--line); text-decoration: none; }

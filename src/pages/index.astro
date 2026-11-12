@@ -4,9 +4,14 @@ import Base from '../layouts/Base.astro';
 import StatusMeta from '../components/StatusMeta.astro';
 import Pdo from '../components/Pdo.astro';
 import { site } from '../site';
+import { published } from '../lib/posts';
 import '../styles/pages/home.css';
 
 const cases = (await getCollection('cases')).sort((a, b) => a.data.order - b.data.order);
+// The newest Published post leads readers from here into the reading side of the site.
+const latest = published[0] || null;
+const fmt = (d: string | null) => (d ? new Date(`${d.slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : '');
+const drop = 'M12 2.5C12 2.5 5.2 10.4 5.2 15.2a6.8 6.8 0 0 0 13.6 0C18.8 10.4 12 2.5 12 2.5Z';
 ---
 <Base page="home" title={site.name}>
   <main class="panes">
@@ -23,6 +28,18 @@ const cases = (await getCollection('cases')).sort((a, b) => a.data.order - b.dat
         <a class="btn btn-primary resume-btn" href={site.resume}>Résumé (PDF)</a>
         <a class="btn btn-secondary" href={`mailto:${site.email}`}>Email me</a>
       </div>
+
+      {latest && (
+        <section class="latest" aria-labelledby="latest-title">
+          <p class="latest-top mono-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d={drop}></path></svg>Latest post{latest.published && <> · {fmt(latest.published)}</>}</p>
+          <a class="latest-link" href={`/posts/${latest.slug}/`}>
+            <span class="latest-title" id="latest-title">{latest.title}</span>
+            {latest.hook && <span class="latest-hook">{latest.hook}</span>}
+            <span class="latest-foot"><span class="mono-meta">{latest.minutes} min{latest.cardCount > 0 && ` · ${latest.cardCount} claims`}</span><span class="latest-go">Read it <span aria-hidden="true">→</span></span></span>
+          </a>
+          <a class="latest-all mono-meta" href="/posts/">All posts →</a>
+        </section>
+      )}
     </div>
 
     <div class="pane-main">

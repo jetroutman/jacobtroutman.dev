@@ -47,7 +47,18 @@ html:has(.pdeck) { --bar-h: 48px; }
 .p-hook:where(.c-post-view, .c-post-view *) { margin-top: 20px; max-width: 32em; font-size: clamp(20px, 2.2vw, 25px); line-height: 1.4; font-weight: 500; }
 .howto:where(.c-post-view, .c-post-view *) { margin-top: 32px; display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: start; max-width: 36em; padding: 14px 16px; border: 1px dashed var(--amber); border-radius: 12px; color: var(--muted); font-size: 15px; line-height: 1.5; }
 .howto svg:where(.c-post-view, .c-post-view *) { width: 20px; height: 20px; fill: var(--ink); margin-top: 1px; }
-.hint:where(.c-post-view, .c-post-view *) { margin-top: clamp(28px, 5vh, 56px); }
+/* Landing: start button, ink line, then what's inside. */
+.start-row:where(.c-post-view, .c-post-view *) { margin-top: 28px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
+.start:where(.c-post-view, .c-post-view *) { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 22px; border: 0; border-radius: 999px; background: var(--ink); color: var(--bg); font: 600 16px var(--sans); cursor: pointer; }
+.start span:where(.c-post-view, .c-post-view *) { display: inline-block; transition: transform 160ms ease-out; }
+.start:hover:where(.c-post-view, .c-post-view *) { opacity: .88; } .start:hover span:where(.c-post-view, .c-post-view *) { transform: translateX(3px); }
+.intro .howto:where(.c-post-view, .c-post-view *) { margin-top: 16px; }
+.toc:where(.c-post-view, .c-post-view *) { margin-top: clamp(24px, 4vh, 40px); max-width: 36em; }
+.toc ol:where(.c-post-view, .c-post-view *) { list-style: none; margin: 10px 0 0; padding: 0; border-top: 1px solid var(--line); }
+.toc a:where(.c-post-view, .c-post-view *) { display: grid; grid-template-columns: 32px 1fr; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--ink); }
+.toc .num:where(.c-post-view, .c-post-view *) { font: 12px var(--mono); color: var(--muted); padding-top: 3px; }
+.toc .t:where(.c-post-view, .c-post-view *) { font-size: 16px; line-height: 1.4; }
+.toc a:hover .t:where(.c-post-view, .c-post-view *) { text-decoration: underline; }
 
 .section-head h2:where(.c-post-view, .c-post-view *) { font-size: clamp(26px, 3vw, 38px); font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; text-wrap: balance; }
 .flow:where(.c-post-view, .c-post-view *) { margin-top: 24px; display: grid; gap: 18px; font-family: var(--reading); font-size: clamp(17px, 1.6vw, 19px); line-height: 1.6; }
@@ -64,5 +75,6 @@ html:has(.pdeck) { --bar-h: 48px; }
 
 
 @media (prefers-reduced-motion: reduce) {
+  .start span:where(.c-post-view, .c-post-view *) { transition: none; }
   .deck-js .reveal:where(.c-post-view, .c-post-view *) { transform: none; transition: opacity 200ms linear; transition-delay: 0ms !important; }
 }

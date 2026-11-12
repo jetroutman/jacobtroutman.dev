@@ -27,6 +27,7 @@ export function initPostDeck() {
     if (prev) prev.disabled = i === 0;
     if (nextBar) nextBar.disabled = i === slides.length - 1;
     history.replaceState(null, '', i === 0 ? location.pathname + location.search : `#${slides[i].id}`);
+    document.dispatchEvent(new CustomEvent('deck:slide', { detail: i })); // ink.ts waits for this to hand out starter ink
   };
 
   let pinned = false;
@@ -47,6 +48,8 @@ export function initPostDeck() {
   prev?.addEventListener('click', () => go(cur - 1));
   nextBar?.addEventListener('click', () => go(cur + 1));
   for (const b of track.querySelectorAll<HTMLButtonElement>('[data-next]')) b.addEventListener('click', () => go(cur + 1));
+  // The landing's contents list jumps straight to a section.
+  for (const a of track.querySelectorAll<HTMLAnchorElement>('[data-jump]')) a.addEventListener('click', (e) => { e.preventDefault(); go(Number(a.dataset.jump)); });
   document.addEventListener('keydown', (e) => {
     if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
     const t = e.target as HTMLElement;
