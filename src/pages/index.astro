@@ -62,7 +62,7 @@ const drop = 'M12 2.5C12 2.5 5.2 10.4 5.2 15.2a6.8 6.8 0 0 0 13.6 0C18.8 10.4 12
                 {data.published
                   ? <a class="btn btn-primary open" href={`/case/${id}/`}>Open the case file →</a>
                   : <span class="mono-meta">Case file coming soon</span>}
-                {data.app && <a class="btn btn-secondary open" href={data.app}>Try the app</a>}
+                {data.app && <a class="btn btn-secondary open" href={data.app}>{/^https?:/.test(data.app) ? 'Visit the site' : 'Try the app'}</a>}
                 {data.published && <span class="mono-meta">{data.readMinutes} min read</span>}
               </div>
             </div>
