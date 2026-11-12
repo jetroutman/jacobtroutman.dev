@@ -25,7 +25,8 @@
 .row-actions:where(.pg-home > .wrap *):not(:where(.c, .c *)) { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 20px; }
 .open:where(.pg-home > .wrap *):not(:where(.c, .c *)) { padding: 9px 14px; font-size: 14px; }
 
-.cards:where(.pg-home > .wrap *):not(:where(.c, .c *)) { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 48px; }
+.cards:where(.pg-home > .wrap *):not(:where(.c, .c *)) { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 48px; }
+.cards > .card:where(.pg-home > .wrap *):not(:where(.c, .c *)) { flex: 1 1 240px; }
 .card:where(.pg-home > .wrap *):not(:where(.c, .c *)) {
   display: flex; flex-direction: column; gap: 6px; padding: 20px; text-decoration: none;
   border: 1px solid var(--line); border-radius: 12px; background: var(--surface);

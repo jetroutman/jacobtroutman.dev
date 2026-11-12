@@ -10,10 +10,11 @@ const fmt = (d: string | null) => (d ? new Date(`${d.slice(0, 10)}T12:00:00Z`).t
     <p class="mono-meta"><a href="/" data-back>← Decision log</a> / Posts</p>
     <h1 class="h1">Posts</h1>
     <p class="desc">Essays built from the claims in my <a href="/notes/">Zettelkasten</a>. Reading them earns ink, and ink opens what I wrote underneath: my notes, the books they came from, and where each idea went.</p>
+    <p class="mono-meta more">More to read: <a href="/library/" data-from-link>Library</a> · <a href="/notes/" data-from-link>Idea map</a></p>
     {published.length === 0 ? <p class="empty">The first post is on its way.</p> : (
       <ul class="list">
         {published.map((p) => (
-          <li><a href={`/posts/${p.slug}/`}><span class="mono-meta">{fmt(p.published)} · {p.minutes} min · {p.cardCount} claims</span><span class="t">{p.title}</span>{p.hook && <span class="hook">{p.hook}</span>}</a></li>
+          <li><a href={`/posts/${p.slug}/`}><span class="mono-meta">{[fmt(p.published), `${p.minutes} min`, p.cardCount > 0 && `${p.cardCount} claims`].filter(Boolean).join(' · ')}</span><span class="t">{p.title}</span>{p.hook && <span class="hook">{p.hook}</span>}</a></li>
         ))}
       </ul>
     )}

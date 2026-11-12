@@ -37,7 +37,7 @@ const drop = 'M12 2.5C12 2.5 5.2 10.4 5.2 15.2a6.8 6.8 0 0 0 13.6 0C18.8 10.4 12
             {latest.hook && <span class="latest-hook">{latest.hook}</span>}
             <span class="latest-foot"><span class="mono-meta">{latest.minutes} min{latest.cardCount > 0 && ` · ${latest.cardCount} claims`}</span><span class="latest-go">Read it <span aria-hidden="true">→</span></span></span>
           </a>
-          {published.length > 1 && <a class="latest-all mono-meta" href="/posts/">All posts →</a>}
+          <a class="latest-all mono-meta" href="/posts/">All posts →</a>
         </section>
       )}
     </div>
