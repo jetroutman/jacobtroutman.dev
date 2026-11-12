@@ -5,6 +5,7 @@ import StatusMeta from '../components/StatusMeta.astro';
 import Pdo from '../components/Pdo.astro';
 import { site } from '../site';
 import { published } from '../lib/posts';
+import { allNotes, threads } from '../lib/notes';
 import '../styles/pages/home.css';
 
 const cases = (await getCollection('cases')).sort((a, b) => a.data.order - b.data.order);
@@ -76,15 +77,20 @@ const drop = 'M12 2.5C12 2.5 5.2 10.4 5.2 15.2a6.8 6.8 0 0 0 13.6 0C18.8 10.4 12
           <span class="card-title">Pocket Log</span>
           <span class="card-desc">My bowling analytics app, built on my own league data. Browse it read-only, or try the sandbox.</span>
         </a>
-        <a class="card" href="/library/">
-          <span class="card-top"><span class="mono-label">Library</span><span aria-hidden="true">→</span></span>
-          <span class="card-title">What I'm reading</span>
-          <span class="card-desc">Books I've read, my reviews, and the notes I took in my Zettelkasten. Synced from Notion.</span>
-        </a>
         <a class="card" href="#">
           <span class="card-top"><span class="mono-label">Notes · coming soon</span><span aria-hidden="true">→</span></span>
           <span class="card-title">How I build with AI</span>
           <span class="card-desc">Where AI speeds me up, where I don't trust it, and how I check its work.</span>
+        </a>
+        <a class="card" href="/library/">
+          <span class="card-top"><span class="mono-label">Library</span><span aria-hidden="true">→</span></span>
+          <span class="card-title">What I'm reading</span>
+          <span class="card-desc">Books I've read, ranked, with my reviews and notes.</span>
+        </a>
+        <a class="card" href="/notes/">
+          <span class="card-top"><span class="mono-label">Zettelkasten</span><span aria-hidden="true">→</span></span>
+          <span class="card-title">Idea map</span>
+          <span class="card-desc">{allNotes.length > 0 ? `${allNotes.length} notes in my own words, grown into ${threads.length} threads of ideas.` : 'Notes in my own words, grown into threads of ideas.'}</span>
         </a>
       </div>
     </div>

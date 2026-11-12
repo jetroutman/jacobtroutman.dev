@@ -2,7 +2,13 @@
 // Published posts, newest first.
 import Base from '../../layouts/Base.astro';
 import { published } from '../../lib/posts';
+import { books } from '../../lib/library';
+import { allNotes, threads } from '../../lib/notes';
+import IdeaMapMini from '../../components/IdeaMapMini.astro';
 import '../../styles/pages/posts.css';
+// Where the posts come from: the Library and the idea map, each with a taste of what's inside.
+const top = books.filter((b) => b.rank != null).slice(0, 3);
+const reviews = books.filter((b) => b.review).length;
 const fmt = (d: string | null) => (d ? new Date(`${d.slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : '');
 ---
 <Base page="posts" title="Posts · Jacob Troutman" description="Essays built from my reading notes. Reading them earns ink; ink opens my notes.">
@@ -10,7 +16,6 @@ const fmt = (d: string | null) => (d ? new Date(`${d.slice(0, 10)}T12:00:00Z`).t
     <p class="mono-meta"><a href="/" data-back>← Decision log</a> / Posts</p>
     <h1 class="h1">Posts</h1>
     <p class="desc">Essays built from the claims in my <a href="/notes/">Zettelkasten</a>. Reading them earns ink, and ink opens what I wrote underneath: my notes, the books they came from, and where each idea went.</p>
-    <p class="mono-meta more">More to read: <a href="/library/" data-from-link>Library</a> · <a href="/notes/" data-from-link>Idea map</a></p>
     {published.length === 0 ? <p class="empty">The first post is on its way.</p> : (
       <ul class="list">
         {published.map((p) => (
@@ -18,6 +23,26 @@ const fmt = (d: string | null) => (d ? new Date(`${d.slice(0, 10)}T12:00:00Z`).t
         ))}
       </ul>
     )}
+
+    <section class="sources" aria-labelledby="sources-h">
+      <h2 id="sources-h" class="mono-label">Where these come from</h2>
+      <div class="tiles">
+        <a class="tile" href="/library/" data-from-link>
+          <span class="tile-top"><span class="mono-label">Library</span><span aria-hidden="true">→</span></span>
+          <span class="tile-title">What I'm reading</span>
+          {top.length > 0 && (
+            <ol class="top">{top.map((b) => <li><span class="mono-meta">#{b.rank}</span><span>{b.short}</span></li>)}</ol>
+          )}
+          <span class="mono-meta tile-foot">{books.length} books{reviews > 0 && ` · ${reviews} reviews`}</span>
+        </a>
+        <a class="tile" href="/notes/" data-from-link>
+          <span class="tile-top"><span class="mono-label">Zettelkasten</span><span aria-hidden="true">→</span></span>
+          <span class="tile-title">Idea map</span>
+          {allNotes.length > 0 && <span class="mini"><IdeaMapMini /></span>}
+          <span class="mono-meta tile-foot">{allNotes.length > 0 ? `${allNotes.length} notes · ${threads.length} threads` : 'Every note I keep, as a map'}</span>
+        </a>
+      </div>
+    </section>
   </div>
 </Base>
 <script>
