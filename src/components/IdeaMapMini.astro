@@ -1,18 +1,29 @@
 ---
-// A small, decorative copy of the idea map (/notes/), used to advertise it. Cropped to fill its box.
-import { W, H, pos, placed, edges, arcs } from '../lib/idea-map';
+// A small, decorative copy of the idea map (/notes/), used to advertise it. Without a trail it is cropped
+// to fill its box; with one (a post's cards, see trailFor) it zooms to that path and fades the rest.
+import { W, H, pos, placed, edges, arcs, type Trail } from '../lib/idea-map';
 import '../styles/components/idea-map-mini.css';
+interface Props { trail?: Trail | null }
+const { trail = null } = Astro.props;
 const ok = Number.isFinite(H) && H > 0;
+const on = new Set(trail?.ids || []);
+const vb = trail ? `${trail.box.x.toFixed(0)} ${trail.box.y.toFixed(0)} ${trail.box.w.toFixed(0)} ${trail.box.h.toFixed(0)}` : `-10 -10 ${W + 20} ${H + 20}`;
 ---
 {ok && (
-  <svg class="c c-idea-map-mini" viewBox={`-10 -10 ${W + 20} ${H + 20}`} preserveAspectRatio="xMidYMin slice" aria-hidden="true" focusable="false">
+  <svg class:list={['c', 'c-idea-map-mini', trail && 'with-trail']} viewBox={vb} preserveAspectRatio={trail ? 'xMidYMid meet' : 'xMidYMin slice'} aria-hidden="true" focusable="false">
     <g class="edges">{edges.map((e) => <line x1={e.a.x} y1={e.a.y} x2={e.b.x} y2={e.b.y} />)}</g>
     <g class="arcs">{arcs.map((d) => <path d={d} />)}</g>
     <g class="dots">
       {placed.flatMap((c) => c.t.notes.map((n) => {
         const p = n.id === 'loose' ? { x: c.cx, y: c.cy } : pos.get(n.id)!;
-        return <circle class:list={{ hub: n.depth === 0 }} cx={p.x} cy={p.y} r={n.depth === 0 ? 11 : n.depth === 1 ? 7 : 5} />;
+        return <circle class:list={{ hub: n.depth === 0, on: on.has(n.id) }} cx={p.x} cy={p.y} r={n.depth === 0 ? 11 : n.depth === 1 ? 7 : 5} />;
       }))}
     </g>
+    {trail && (
+      <g class="trail">
+        <path d={trail.d} />
+        {trail.pts.map((q, k) => <g class="stop"><circle cx={q.x} cy={q.y} r="8" /><text x={q.x} y={q.y + 3.2} text-anchor="middle">{k + 1}</text></g>)}
+      </g>
+    )}
   </svg>
 )}

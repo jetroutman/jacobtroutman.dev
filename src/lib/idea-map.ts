@@ -50,3 +50,25 @@ export const arcs = allNotes.flatMap((n) => n.related.filter((r) => noteById.has
   return `M${a.x.toFixed(1)},${a.y.toFixed(1)} Q${mx.toFixed(1)},${my.toFixed(1)} ${b.x.toFixed(1)},${b.y.toFixed(1)}`;
 }).filter(Boolean)) as string[];
 export const books = new Set(allNotes.flatMap((n) => n.books.map((b) => b.href))).size;
+
+// A post as a path through the map: its cards in reading order. Consecutive cards are joined by a
+// gentle curve; a post that crosses threads jumps between clusters, and that jump is the link.
+export type Trail = { ids: string[]; pts: P[]; d: string; threads: number; box: { x: number; y: number; w: number; h: number } };
+export function trailFor(cardIds: string[]): Trail | null {
+  const ids = [...new Set(cardIds.filter((id) => pos.has(id)))];
+  if (!ids.length) return null;
+  const pts = ids.map((id) => pos.get(id)!);
+  const d = pts.map((q, i) => {
+    if (!i) return `M${q.x.toFixed(1)},${q.y.toFixed(1)}`;
+    const a = pts[i - 1], len = Math.hypot(q.x - a.x, q.y - a.y), bend = Math.min(60, len * 0.18);
+    const mx = (a.x + q.x) / 2 + ((a.y - q.y) / (len || 1)) * bend, my = (a.y + q.y) / 2 + ((q.x - a.x) / (len || 1)) * bend;
+    return `Q${mx.toFixed(1)},${my.toFixed(1)} ${q.x.toFixed(1)},${q.y.toFixed(1)}`;
+  }).join(' ');
+  const threads = new Set(ids.map((id) => noteById.get(id)!.thread)).size;
+  // Crop for small maps: the path's extent plus room for the clusters around it, at least 2:1 wide.
+  const xs = pts.map((p) => p.x), ys = pts.map((p) => p.y), pad = 70;
+  let x = Math.min(...xs) - pad, y = Math.min(...ys) - pad, w = Math.max(...xs) - x + pad, h = Math.max(...ys) - y + pad;
+  if (w < h * 2) { x -= (h * 2 - w) / 2; w = h * 2; } else { y -= (w / 2 - h) / 2; h = w / 2; }
+  if (w < 420) { x -= (420 - w) / 2; y -= (210 - h) / 2; w = 420; h = 210; }
+  return { ids, pts, d, threads, box: { x, y, w, h } };
+}

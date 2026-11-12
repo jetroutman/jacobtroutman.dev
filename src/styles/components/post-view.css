@@ -78,3 +78,14 @@ html:has(.pdeck) { --bar-h: 48px; }
   .start span:where(.c-post-view, .c-post-view *) { transition: none; }
   .deck-js .reveal:where(.c-post-view, .c-post-view *) { transform: none; transition: opacity 200ms linear; transition-delay: 0ms !important; }
 }
+
+/* End slide: where this post's cards live, as a path on a small idea map. */
+.trail-map:where(.c-post-view, .c-post-view *) { margin: 24px 0 0; }
+.trail-link:where(.c-post-view, .c-post-view *) { display: block; text-decoration: none; color: var(--ink); border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; transition: border-color 160ms ease-out; }
+.trail-link:hover:where(.c-post-view, .c-post-view *) { border-color: var(--ink); color: var(--ink); }
+.trail-box:where(.c-post-view, .c-post-view *) { display: block; aspect-ratio: 2 / 1; max-height: 260px; width: 100%; padding: 8px; }
+.trail-cap:where(.c-post-view, .c-post-view *) { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px 16px; padding: 12px 16px; border-top: 1px solid var(--line); }
+.trail-go:where(.c-post-view, .c-post-view *) { font-size: 15px; font-weight: 600; }
+.trail-go span:where(.c-post-view, .c-post-view *) { display: inline-block; transition: transform 160ms ease-out; }
+.trail-link:hover .trail-go span:where(.c-post-view, .c-post-view *) { transform: translateX(3px); }
+@media (prefers-reduced-motion: reduce) { .trail-link:where(.c-post-view, .c-post-view *), .trail-go span:where(.c-post-view, .c-post-view *) { transition: none; } }

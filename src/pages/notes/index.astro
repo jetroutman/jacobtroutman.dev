@@ -5,7 +5,11 @@ import InkHud from '../../components/InkHud.astro';
 import InkLayer from '../../components/InkLayer.astro';
 import '../../styles/pages/notes.css';
 
-import { W, H, pos, placed, edges, arcs, related, books } from '../../lib/idea-map';
+import { W, H, pos, placed, edges, arcs, related, books, trailFor } from '../../lib/idea-map';
+import { published } from '../../lib/posts';
+// Each published post as a path through the map (its cards in reading order).
+const trails = published.map((p) => ({ p, t: trailFor(p.body.flatMap((b) => (b.k === 'card' && b.card ? [b.id] : []))) }))
+  .filter((x): x is { p: typeof x.p; t: NonNullable<typeof x.t> } => !!x.t);
 ---
 <Base page="notes" title="Notes · Jacob Troutman" description="My Zettelkasten: permanent notes in my own words, grown into threads of ideas.">
   <div class="intro">
@@ -17,7 +21,20 @@ import { W, H, pos, placed, edges, arcs, related, books } from '../../lib/idea-m
 
   {allNotes.length === 0 ? <p class="empty">The notes sync from Notion on the next build.</p> : (
     <>
-      <figure class="map">
+      {trails.length > 0 && (
+        <div class="follow" data-follow>
+          <p class="mono-label">Follow a post through the map</p>
+          <div class="follow-chips">
+            {trails.map(({ p }) => <button type="button" class="follow-chip" data-follow-post={p.slug} aria-pressed="false">{p.title}</button>)}
+          </div>
+          {trails.map(({ p, t }) => (
+            <p class="mono-meta follow-info" data-follow-info={p.slug} hidden>
+              {t.ids.length} cards · {t.threads > 1 ? `crosses ${t.threads} threads` : 'one thread'} · <a href={`/posts/${p.slug}/`}>Read the post →</a>
+            </p>
+          ))}
+        </div>
+      )}
+      <figure class="map" data-map>
         <svg viewBox={`-10 -10 ${W + 20} ${H + 20}`} role="img" aria-label="Map of my notes, grouped by thread">
           <g class="edges">{edges.map((e) => <line x1={e.a.x} y1={e.a.y} x2={e.b.x} y2={e.b.y} />)}</g>
           <g class="arcs">{arcs.map((d) => <path d={d} />)}</g>
@@ -36,6 +53,14 @@ import { W, H, pos, placed, edges, arcs, related, books } from '../../lib/idea-m
               <text x={c.cx} y={c.cy - 16} class="hub-label" text-anchor="middle">{c.t.root.fid ? `${c.t.root.fid} · ` : ''}{c.t.root.label.length > 34 ? `${c.t.root.label.slice(0, 33)}…` : c.t.root.label}</text>
             </g>
           ))}
+          <g class="trails" aria-hidden="true">
+            {trails.map(({ p, t }) => (
+              <g class="trail" data-trail-post={p.slug} data-trail-ids={t.ids.join(' ')} visibility="hidden">
+                <path d={t.d} />
+                {t.pts.map((q, k) => <g class="stop"><circle cx={q.x} cy={q.y} r="7" /><text x={q.x} y={q.y + 3} text-anchor="middle">{k + 1}</text></g>)}
+              </g>
+            ))}
+          </g>
         </svg>
         <figcaption class="mono-meta">Hover a dot for its title; click to read it. Big dots start a thread.</figcaption>
       </figure>
@@ -88,6 +113,28 @@ import { W, H, pos, placed, edges, arcs, related, books } from '../../lib/idea-m
       li.append(a, when); return li;
     }));
   };
+  // Follow a post: dim everything but its cards and draw them as a numbered path. ?post=<slug> preselects.
+  const map = document.querySelector<HTMLElement>('[data-map]');
+  const follow = (slug: string | null) => {
+    let ids = new Set<string>();
+    for (const g of document.querySelectorAll<SVGGElement>('[data-trail-post]')) {
+      const on = g.dataset.trailPost === slug;
+      g.setAttribute('visibility', on ? 'visible' : 'hidden');
+      if (on) ids = new Set(g.dataset.trailIds!.split(' '));
+    }
+    for (const b of document.querySelectorAll<HTMLButtonElement>('[data-follow-post]')) b.setAttribute('aria-pressed', String(b.dataset.followPost === slug));
+    for (const p of document.querySelectorAll<HTMLElement>('[data-follow-info]')) p.hidden = p.dataset.followInfo !== slug;
+    map?.classList.toggle('following', !!slug && ids.size > 0);
+    for (const d of document.querySelectorAll<SVGAElement>('[data-note]')) d.classList.toggle('on-trail', ids.has(d.dataset.note!));
+    const url = new URL(location.href);
+    if (slug) url.searchParams.set('post', slug); else url.searchParams.delete('post');
+    history.replaceState(null, '', url);
+  };
+  for (const b of document.querySelectorAll<HTMLButtonElement>('[data-follow-post]')) {
+    b.addEventListener('click', () => follow(b.getAttribute('aria-pressed') === 'true' ? null : b.dataset.followPost!));
+  }
+  const want = new URLSearchParams(location.search).get('post');
+  if (want && document.querySelector(`[data-trail-post="${CSS.escape(want)}"]`)) follow(want);
   filter?.addEventListener('click', () => { only = !only; filter.setAttribute('aria-pressed', String(only)); show(readInk()); });
   document.addEventListener('ink:change', (e) => show((e as CustomEvent).detail));
   show(readInk());
