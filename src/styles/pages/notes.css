@@ -9,7 +9,7 @@ h1:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { margin-top: 18px; font-siz
 .map svg:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { width: 100%; height: auto; display: block; }
 .edges line:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { stroke: var(--line); stroke-width: 1.4; }
 .arcs path:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { fill: none; stroke: var(--amber); stroke-width: 1.2; stroke-dasharray: 4 4; opacity: 0.7; }
-.node circle:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { fill: var(--muted); transition: r 0.15s, fill 0.15s; }
+.node circle:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { fill: var(--muted); transition: r 0.15s, fill 0.15s, opacity 200ms ease-out; }
 .node.hub circle:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { fill: var(--ink); }
 .node:hover circle:where(.pg-notes > .wrap *):not(:where(.c, .c *)), .node:focus-visible circle:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { fill: var(--amber); r: 8; }
 .hub-label:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { font: 600 11px var(--sans); fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; }
@@ -34,3 +34,22 @@ figcaption:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { margin-top: 8px; p
 .thread-filter[aria-pressed="true"]:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { border-color: var(--ink); color: var(--ink); }
 .thread-filter[hidden]:where(.pg-notes > .wrap *):not(:where(.c, .c *)), .threads li[hidden]:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { display: none; }
 .opened-n:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { color: var(--amber-ink); }
+
+/* Follow a post: its cards as a numbered path; everything else fades back. */
+.follow:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { margin-top: 28px; }
+.follow-chips:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.follow-chip:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { min-height: 36px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); font: 500 14px var(--sans); cursor: pointer; }
+.follow-chip:hover:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { border-color: var(--ink); }
+.follow-chip[aria-pressed="true"]:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.follow-info:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { margin-top: 10px; }
+.follow + .map:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { margin-top: 16px; }
+.trails:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { pointer-events: none; }
+.trail path:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: round; }
+.stop circle:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { fill: var(--ink); stroke: var(--surface); stroke-width: 2; }
+.stop text:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { font: 600 8px var(--mono); fill: var(--surface); }
+.stop circle:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { stroke-width: 1.5; }
+.map .edges:where(.pg-notes > .wrap *):not(:where(.c, .c *)), .map .arcs:where(.pg-notes > .wrap *):not(:where(.c, .c *)), .hub-label:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { transition: opacity 200ms ease-out; }
+.following .edges:where(.pg-notes > .wrap *):not(:where(.c, .c *)), .following .arcs:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { opacity: 0.3; }
+.following .node:not(.on-trail) circle:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { opacity: 0.2; }
+.following .hub-label:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { opacity: 0.45; }
+@media (prefers-reduced-motion: reduce) { .map .edges:where(.pg-notes > .wrap *):not(:where(.c, .c *)), .map .arcs:where(.pg-notes > .wrap *):not(:where(.c, .c *)), .node circle:where(.pg-notes > .wrap *):not(:where(.c, .c *)), .hub-label:where(.pg-notes > .wrap *):not(:where(.c, .c *)) { transition: none; } }

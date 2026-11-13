@@ -5,6 +5,8 @@
 import InkCard from './InkCard.astro';
 import InkHud from './InkHud.astro';
 import InkLayer from './InkLayer.astro';
+import IdeaMapMini from './IdeaMapMini.astro';
+import { trailFor } from '../lib/idea-map';
 import { INK, inline, published, wordCount, type Post } from '../lib/posts';
 import '../styles/components/post-view.css';
 interface Props { post: Post; admin?: string | false } // admin = the list's base path, e.g. /admin/
@@ -27,6 +29,9 @@ const fmt = (d: string | null) => (d ? new Date(`${d.slice(0, 10)}T12:00:00Z`).t
 // Words of prose on each slide (cards earn on their own), for the ink you get for reading the slide.
 const proseWords = (bl: B[]) => wordCount(...bl.map((b) => (b.k === 'card' ? '' : b.t)));
 const others = published.filter((p) => p.id !== post.id).slice(0, 3);
+// Where this post's cards live in the Slip Box: a path through the idea map, shown on the end slide.
+const trail = trailFor(post.body.flatMap((b) => (b.k === 'card' && b.card ? [b.id] : [])));
+const isPublished = published.some((p) => p.id === post.id);
 // The landing shows what's inside: each headed section, so a reader can start at the top or jump in.
 const contents = all.map((s, i) => ({ s, i })).filter(({ s }) => s.title && s.id !== 'end');
 const secNo = new Map(contents.map(({ s }, k) => [s.id, k + 1]));
@@ -96,6 +101,14 @@ secNo.set('end', contents.length + 1);
           <div class="end-box" data-post-end>
             <div class="section-head reveal"><span class="num">{pad(secNo.get('end')!)}</span><h2>That's the post</h2></div>
             <p class="p-p reveal">You earned <strong data-earned-here>0</strong> ink on this post. Anything you unsealed stays open in my <a href="/library/">library</a> and <a href="/notes/">notes</a>.</p>
+            {trail && (
+              <figure class="trail-map reveal">
+                <a class="trail-link" href={isPublished ? `/notes/?post=${post.slug}` : '/notes/'}>
+                  <span class="trail-box"><IdeaMapMini trail={trail} /></span>
+                  <span class="trail-cap"><span class="mono-meta">{trail.ids.length} cards · {trail.threads > 1 ? `${trail.threads} threads` : 'one thread'} in my Slip Box</span><span class="trail-go">See where these ideas live <span aria-hidden="true">→</span></span></span>
+                </a>
+              </figure>
+            )}
             {post.bookLinks.length > 0 && <p class="p-p reveal">This post drew on {post.bookLinks.map((b, k) => <>{k > 0 && ', '}<a href={b.href}><em>{b.title}</em></a></>)}.</p>}
             {others.length > 0 && (
               <ul class="more reveal">

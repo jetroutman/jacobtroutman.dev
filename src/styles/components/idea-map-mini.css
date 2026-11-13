@@ -4,3 +4,9 @@
 .arcs path:where(.c-idea-map-mini, .c-idea-map-mini *) { fill: none; stroke: var(--amber); stroke-width: 2; stroke-dasharray: 6 6; opacity: 0.7; }
 .dots circle:where(.c-idea-map-mini, .c-idea-map-mini *) { fill: var(--muted); }
 .dots circle.hub:where(.c-idea-map-mini, .c-idea-map-mini *) { fill: var(--ink); }
+/* With a post's trail: fade the rest, draw the path and numbered stops. */
+.with-trail .edges:where(.c-idea-map-mini, .c-idea-map-mini *), .with-trail .arcs:where(.c-idea-map-mini, .c-idea-map-mini *) { opacity: 0.35; }
+.with-trail .dots circle:not(.on):where(.c-idea-map-mini, .c-idea-map-mini *) { opacity: 0.25; }
+.trail path:where(.c-idea-map-mini, .c-idea-map-mini *) { fill: none; stroke: var(--ink); stroke-width: 2.5; stroke-linecap: round; }
+.stop circle:where(.c-idea-map-mini, .c-idea-map-mini *) { fill: var(--ink); stroke: var(--surface); stroke-width: 2.5; }
+.stop text:where(.c-idea-map-mini, .c-idea-map-mini *) { font: 600 9px var(--mono); fill: var(--surface); }
