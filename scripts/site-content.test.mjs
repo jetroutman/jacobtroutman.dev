@@ -81,3 +81,19 @@ test('Archived company pages are dropped; incomplete ones report what is missing
   assert.deepEqual(parseCompany(page('Archived'), []), { entry: null });
   assert.match(parseCompany(page('Live'), []).error, /missing Intro, Wishlist, Exhibits, First 90 days, My questions/);
 });
+
+test('a case mention resolves by page id when the API gives it no title', () => {
+  const companyPage = (c) => ({ properties: props({ Company: ['title', c.company], Status: ['select', c.draft ? 'Draft' : 'Live'], Slug: ['text', c.slug], 'Role line': ['text', c.role],
+    Greeting: ['text', c.greeting ?? ''], Prepared: ['date', '2026-11-04'], Phone: ['phone', c.phone] }) });
+  const c = companies.find((x) => x.evidence.length) ?? companies[0];
+  const ids = Object.fromEntries(cases.map((k, i) => [k.id, `4150596e1aaa81${String(i).padStart(2, '0')}9447d46550d6915c`]));
+  const byPage = new Map(Object.entries(ids).map(([id, pid]) => [pid, id]));
+  const untitled = (id) => ({ type: 'mention', plain_text: 'Untitled', href: `https://www.notion.so/${ids[id]}`, mention: { type: 'page', page: { id: ids[id].replace(/^(.{8})(.{4})(.{4})(.{4})/, '$1-$2-$3-$4-') } }, annotations: { bold: false } });
+  const blocks = companyBlocks(c).map((b) => b.type !== 'table' ? b : { ...b, children: b.children.map((r, i) => i === 0 ? r : { ...r, table_row: { cells: r.table_row.cells.map((cell) => cell.map((t) => t.type === 'mention' ? untitled(Object.keys(names).find((k) => names[k] === t.plain_text)) : t)) } }) });
+  const without = parseCompany(companyPage(c), blocks);
+  assert.match(without.error ?? '', /Exhibits/);
+  const { entry, error } = parseCompany(companyPage(c), blocks, () => {}, byPage);
+  assert.equal(error, undefined);
+  assert.deepEqual(entry.evidence.map((e) => e.case), c.evidence.map((e) => e.case));
+  assert.deepEqual(entry.requirements.map((r) => r.cases), c.requirements.map((r) => r.cases));
+});

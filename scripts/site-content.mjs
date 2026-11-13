@@ -169,11 +169,27 @@ export function parseCase(page, blocks, warn = () => {}) {
 
 // ---------- Company pages ----------
 
-const caseIds = (rich) => [...new Set(plain(rich).toUpperCase().match(/DR-\d+/g) ?? [])];
+// A cell's case ids, in order: typed "DR-02", or a mention of a Decision Log page. The API doesn't
+// always give a mention the page's title as its text, so a mention also resolves by its page id
+// through `byPage` (Notion page id without dashes → "DR-02"), which the sync builds from the cases.
+const pageId = (t) => {
+  const m = t.mention;
+  const raw = m?.page?.id ?? m?.link_mention?.href ?? m?.link_preview?.url ?? t.href ?? '';
+  return raw.replace(/-/g, '').match(/[0-9a-f]{32}/i)?.[0].toLowerCase();
+};
+const caseIds = (rich, byPage = new Map()) => {
+  const ids = [];
+  for (const t of live(rich)) {
+    const typed = (t.plain_text ?? '').toUpperCase().match(/DR-\d+/g) ?? [];
+    const byId = t.type === 'mention' && !typed.length ? byPage.get(pageId(t)) : undefined;
+    ids.push(...typed, ...(byId ? [byId] : []));
+  }
+  return [...new Set(ids)];
+};
 const monthYear = (iso) => new Date(`${iso.slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 
 /** One Company Pages page → a `companies` entry (plus `slug`), null for Archived, or an error. */
-export function parseCompany(page, blocks, warn = () => {}) {
+export function parseCompany(page, blocks, warn = () => {}, byPage = new Map()) {
   const P = page.properties;
   const company = prop.text(P.Company);
   const status = prop.select(P.Status) ?? 'Draft';
@@ -186,9 +202,9 @@ export function parseCompany(page, blocks, warn = () => {}) {
     if (key.startsWith('intro')) {
       for (const b of s.blocks) if (b.type === 'paragraph' && plain(rtOf(b))) summary.push(plain(rtOf(b)));
     } else if (/wish|asked/.test(key)) {
-      for (const [need, proof] of tables) requirements.push({ need: plain(need), cases: caseIds(proof) });
+      for (const [need, proof] of tables) requirements.push({ need: plain(need), cases: caseIds(proof, byPage) });
     } else if (/exhibit|evidence/.test(key)) {
-      for (const [c, why] of tables) { const id = caseIds(c)[0]; if (id) evidence.push({ case: id, relevance: plain(why) }); else warn(`an Exhibits row names no DR-nn`); }
+      for (const [c, why] of tables) { const id = caseIds(c, byPage)[0]; if (id) evidence.push({ case: id, relevance: plain(why) }); else warn(`an Exhibits row names no DR-nn`); }
     } else if (/90|plan/.test(key)) {
       for (const b of s.blocks) {
         if (isHeading(b, 3)) { const [days, title] = splitLabel(plain(rtOf(b))); plan.push({ days, title, items: [] }); }

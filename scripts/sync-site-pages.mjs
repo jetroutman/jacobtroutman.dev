@@ -17,6 +17,9 @@ const SOURCES = [
 
 if (!TOKEN) { console.log('[cases] [companies] NOTION_TOKEN not set; keeping the committed files.'); process.exit(0); }
 
+// Decision Log page id (no dashes) → "DR-02", so company pages can resolve case mentions by id.
+const caseByPage = new Map();
+
 for (const { tag, db, parse, sort, describe } of SOURCES) {
   const out = new URL(`../src/data/${tag}.json`, import.meta.url);
   try {
@@ -25,7 +28,7 @@ for (const { tag, db, parse, sort, describe } of SOURCES) {
     for (const page of await queryAll(db)) {
       if (page.archived || page.in_trash) continue;
       const warn = (m) => console.warn(`[${tag}] ${page.url}: ${m}`);
-      let { entry, error } = parse(page, await blockTree(page.id), warn);
+      let { entry, error } = parse(page, await blockTree(page.id), warn, caseByPage);
       if (entry === null) continue; // Archived company page
       if (error) {
         const old = committed.find((c) => c.notion === page.id);
@@ -39,10 +42,15 @@ for (const { tag, db, parse, sort, describe } of SOURCES) {
       console.log(`[${tag}] ${describe(entry)}`);
     }
     entries.sort(sort);
+    if (tag === 'cases') for (const c of entries) caseByPage.set(c.notion.replace(/-/g, '').toLowerCase(), c.id);
     await writeFile(out, JSON.stringify({ source: 'notion', syncedAt: new Date().toISOString(), [tag]: entries }, null, 1) + '\n');
     console.log(`[${tag}] Synced ${entries.length}.`);
   } catch (e) {
     console.warn(`[${tag}] Notion sync failed; keeping the committed file. ${e.message}`);
+    if (tag === 'cases') {
+      const committed = JSON.parse(await readFile(new URL('../src/data/cases.json', import.meta.url), 'utf8')).cases ?? [];
+      for (const c of committed) if (c.notion) caseByPage.set(c.notion.replace(/-/g, '').toLowerCase(), c.id);
+    }
     if (/404|object_not_found/.test(e.message)) console.warn(`[${tag}] Share the "jacobtroutman.dev" page in Notion with the integration (••• → Connections).`);
   }
 }
