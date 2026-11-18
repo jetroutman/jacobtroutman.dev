@@ -395,7 +395,7 @@ export function initDeck(deck: HTMLElement) {
   if (st.visits >= 2) setTimeout(() => unlock('return'), 1200);
 
   // Distance: cursor on mouse/pen; scroll distance on touch screens.
-  let lastX: number | null = null, lastY: number | null = null, lastScroll = scrollY, lastStrike = got.has('strike');
+  let lastX: number | null = null, lastY: number | null = null, lastStrike = got.has('strike');
   const addDist = (px: number) => {
     st.dist += px;
     if (!lastStrike && lanes() >= 1) { lastStrike = true; unlock('strike'); }
@@ -407,7 +407,14 @@ export function initDeck(deck: HTMLElement) {
   }, { passive: true });
   if (matchMedia('(pointer: coarse)').matches) {
     for (const el of $$('[data-dist-label]')) el.textContent = 'Scroll';
-    addEventListener('scroll', () => { addDist(Math.abs(scrollY - lastScroll)); lastScroll = scrollY; }, { passive: true });
+    // Captured, because swiping scrolls the slides and their track rather than the window.
+    const lastScroll = new WeakMap<Element, [number, number]>();
+    addEventListener('scroll', (e) => {
+      const el = e.target instanceof Element ? e.target : document.scrollingElement!;
+      const [x, y] = lastScroll.get(el) ?? [el.scrollLeft, el.scrollTop];
+      addDist(Math.abs(el.scrollLeft - x) + Math.abs(el.scrollTop - y));
+      lastScroll.set(el, [el.scrollLeft, el.scrollTop]);
+    }, { capture: true, passive: true });
   }
 
   // Time on page (visible tab only) + periodic save/render
