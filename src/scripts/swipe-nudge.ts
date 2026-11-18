@@ -19,7 +19,7 @@ export function initSwipeNudge({ track, slides, index, go, name }: Options) {
   el.type = 'button';
   el.className = 'swipe-nudge';
   el.hidden = true;
-  el.innerHTML = '<span class="sn-arrow" aria-hidden="true">←</span><span class="sn-text"><strong>Swipe left to continue</strong><span class="sn-next"></span></span>';
+  el.innerHTML = '<span class="sn-text"><strong>Swipe to continue</strong><span class="sn-next"></span></span><span class="sn-arrow" aria-hidden="true"><span>→</span></span>';
   document.body.append(el);
   const next = el.querySelector('.sn-next')!;
 
