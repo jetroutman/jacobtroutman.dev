@@ -8,6 +8,8 @@ const { base, note } = Astro.props;
 const fmt = (d: string | null) => (d ? new Date(`${d.slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : '—');
 ---
 <Base title="Admin · Posts" noindex>
+  {/* /admin/ is locked to Jacob, so opening it marks this browser as his: company-page tracking skips it. */}
+  <script is:inline>if (location.pathname.startsWith('/admin')) try { localStorage.setItem('jt-owner', '1'); } catch {}</script>
   <div class="wrap c c-admin-list">
     <p class="mono-meta">{note}</p>
     <h1 class="h1">Posts</h1>

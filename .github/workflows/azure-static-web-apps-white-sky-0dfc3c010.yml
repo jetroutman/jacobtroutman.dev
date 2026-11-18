@@ -42,6 +42,10 @@ jobs:
       - run: node scripts/sync-site-pages.mjs
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+      # Tracking API: tested here so a broken API never reaches the deploy step.
+      - run: node scripts/write-api-companies.mjs
+      - run: npm ci && npm test && npm run build
+        working-directory: api
       - run: npm run build
         env:
           # PR previews also build draft company pages and "Before launch" notes. Production never does.
@@ -57,9 +61,21 @@ jobs:
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           app_location: "dist" # Prebuilt site (staticwebapp.config.json is copied in from public/)
-          api_location: "" # Add "api" when the Azure Functions API exists
+          api_location: "api" # Azure reinstalls and rebuilds it; there's no input to skip that
           output_location: ""
           ###### End of Repository/Build Configurations ######
+      # The API answers 204 to anything once it's up, and 404 if the deploy didn't bring it up.
+      - name: Check the tracking API
+        env:
+          SITE_URL: ${{ steps.builddeploy.outputs.static_web_app_url }}
+        run: |
+          for i in $(seq 1 12); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' -m 20 -X POST -d '{}' "$SITE_URL/api/track" || true)
+            echo "[api] attempt $i: $code"
+            [ "$code" = 204 ] && exit 0
+            sleep 10
+          done
+          exit 1
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'

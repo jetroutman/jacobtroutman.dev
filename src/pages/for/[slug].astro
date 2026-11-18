@@ -236,7 +236,7 @@ const roleName = data.role.match(/the (.+?) role/i)?.[1] ?? data.role;
               <a class="btn btn-primary" data-mail={site.email} href={`mailto:${site.email}`} data-reach>Send me your score</a>
               <button type="button" class="btn btn-secondary" data-copy>Copy score</button>
             </div>
-            <p class="mono-meta privacy">I can't see any of this. It's counted in your browser and only reaches me if you send it.</p>
+            <p class="mono-meta privacy">I can see when this page gets opened, how far people get and how long they stay. What you type and your score stay in your browser unless you send them.</p>
           </div>
         </div>
       </section>
@@ -270,6 +270,7 @@ const roleName = data.role.match(/the (.+?) role/i)?.[1] ?? data.role;
 <script>
   import { initDeck } from '../../scripts/deck-game';
   import { initDeckSwipe } from '../../scripts/deck-swipe';
+  import { initDeckTrack } from '../../scripts/deck-track';
   const deck = document.querySelector<HTMLElement>('[data-deck]');
-  if (deck) { initDeck(deck); initDeckSwipe(deck); }
+  if (deck) { initDeck(deck); initDeckSwipe(deck); initDeckTrack(deck); }
 </script>
