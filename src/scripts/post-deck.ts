@@ -1,5 +1,7 @@
 // Post deck: slides side by side, one at a time. Swipe, the bar's arrows and segments, Next buttons, or ← →.
 // The deck pins under the bar on first move; content rises in as each slide arrives.
+import { initSwipeNudge } from './swipe-nudge';
+
 export function initPostDeck() {
   document.documentElement.classList.add('deck-js');
   const track = document.querySelector<HTMLElement>('[data-track]');
@@ -44,6 +46,8 @@ export function initPostDeck() {
   };
 
   track.addEventListener('scroll', () => { pin(); update(Math.round(track.scrollLeft / track.clientWidth)); }, { passive: true });
+  track.addEventListener('touchmove', pin, { passive: true }); // otherwise a slide's last lines sit below the screen until the first swipe
+  initSwipeNudge({ track, slides, index: () => cur, go, name: (i) => slides[i].dataset.title || '' });
   segs.forEach((a, i) => a.addEventListener('click', (e) => { e.preventDefault(); go(i); }));
   prev?.addEventListener('click', () => go(cur - 1));
   nextBar?.addEventListener('click', () => go(cur + 1));

@@ -23,9 +23,10 @@ if (appCase && !evidence.some((e) => e.case === appCase.data.id)) {
 
 /*
  * The page is a deck: one section per screen, snapped with native CSS scroll-snap
- * (no scroll hijacking). Gamification: a progress bar pinned to the top, sections
- * that reveal as they arrive, and a final note that unlocks once every slide is seen.
- * Without JS it is a plain, fully visible page.
+ * (no scroll hijacking). On touch screens the slides sit side by side and swipe, like
+ * posts (src/scripts/deck-swipe.ts). Gamification: a progress bar pinned to the top,
+ * sections that reveal as they arrive, and a final note that unlocks once every slide
+ * is seen. Without JS it is a plain, fully visible page.
  */
 const slides = [
   { id: 'intro', label: 'Intro' },
@@ -60,7 +61,10 @@ const roleName = data.role.match(/the (.+?) role/i)?.[1] ?? data.role;
   noindex
   footerNote={`Unlisted page for ${data.company}. Not linked from the rest of the site.`}
 >
-  <script is:inline>document.documentElement.classList.add('deck-js');</script>
+  <script is:inline>
+    document.documentElement.classList.add('deck-js');
+    if (matchMedia('(pointer: coarse)').matches) document.documentElement.classList.add('deck-swipe');
+  </script>
 
   <div class="deck" data-deck={slug} data-company={data.company} data-role={roleName}>
     <nav class="deckbar" aria-label="Sections">
@@ -77,6 +81,7 @@ const roleName = data.role.match(/the (.+?) role/i)?.[1] ?? data.role;
       </div>
     </nav>
 
+    <div class="track" data-track>
     <section id="intro" class="slide intro" data-slide>
       <div class="inner">
         <p class="mono-meta reveal"><span class="chip">Unlisted</span> Prepared for {data.company} · {data.date}</p>
@@ -90,7 +95,11 @@ const roleName = data.role.match(/the (.+?) role/i)?.[1] ?? data.role;
           {data.phone && <a class="btn btn-secondary" href={`tel:+1${data.phone.replace(/\D/g, '')}`} data-reach>Call {data.phone}</a>}
           <a class="btn btn-secondary" href={site.resume}>Résumé (PDF)</a>
         </div>
-        <p class="mono-meta hint reveal" aria-hidden="true">Scroll down, I'll walk you through it ↓</p>
+        <p class="mono-meta hint reveal scroll-only" aria-hidden="true">Scroll down, I'll walk you through it ↓</p>
+        <div class="start-row reveal swipe-only">
+          <button type="button" class="next" data-next>Walk me through it <span aria-hidden="true">→</span></button>
+          <span class="mono-meta" aria-hidden="true">or swipe →</span>
+        </div>
         <p class="game-note reveal">Fair warning: I turned this page into a small game. There are achievements, a few secrets, and a note at the end that only opens once you've seen everything. <button type="button" class="link-btn" data-game-toggle aria-pressed="true">Turn the game <span data-game-flip>off</span></button></p>
       </div>
     </section>
@@ -232,7 +241,13 @@ const roleName = data.role.match(/the (.+?) role/i)?.[1] ?? data.role;
         </div>
       </section>
     )}
+    </div>
   </div>
+
+  <script is:inline>
+    // Swiping: the site header rides on the intro slide, so every slide gets the full screen.
+    if (document.documentElement.classList.contains('deck-swipe')) document.getElementById('intro').prepend(document.querySelector('.site-header'));
+  </script>
 
   <div class="toasts" data-toasts aria-live="polite"></div>
   <div class="ach-panel" id="ach-panel" data-ach-panel hidden role="dialog" aria-label="Achievements">
@@ -254,6 +269,7 @@ const roleName = data.role.match(/the (.+?) role/i)?.[1] ?? data.role;
 
 <script>
   import { initDeck } from '../../scripts/deck-game';
+  import { initDeckSwipe } from '../../scripts/deck-swipe';
   const deck = document.querySelector<HTMLElement>('[data-deck]');
-  if (deck) initDeck(deck);
+  if (deck) { initDeck(deck); initDeckSwipe(deck); }
 </script>
