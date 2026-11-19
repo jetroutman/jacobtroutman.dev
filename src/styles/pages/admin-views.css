@@ -1,0 +1,14 @@
+/* Page: admin-views (/admin/views/). */
+.views:where(.pg-admin-views > .wrap *):not(:where(.c, .c *)) { max-width: 760px; padding-top: clamp(28px, 5vw, 64px); }
+h1:where(.pg-admin-views > .wrap *):not(:where(.c, .c *)) { margin-top: 14px; }
+.desc:where(.pg-admin-views > .wrap *):not(:where(.c, .c *)) { margin: 10px 0 14px; color: var(--muted); font-size: 17px; line-height: 1.5; }
+.h2:where(.pg-admin-views > .wrap *):not(:where(.c, .c *)) { margin-top: 40px; font-size: 21px; }
+table:where(.pg-admin-views > .wrap *):not(:where(.c, .c *)) { width: 100%; margin-top: 12px; border-collapse: collapse; table-layout: fixed; font-size: 15px; }
+th:where(.pg-admin-views > .wrap *):not(:where(.c, .c *)) { text-align: left; font: 12px var(--mono); color: var(--muted); padding: 8px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td:where(.pg-admin-views > .wrap *):not(:where(.c, .c *)) { padding: 10px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th + th:where(.pg-admin-views > .wrap *):not(:where(.c, .c *)), .n:where(.pg-admin-views > .wrap *):not(:where(.c, .c *)) { text-align: right; padding-left: 16px; }
+.n:where(.pg-admin-views > .wrap *):not(:where(.c, .c *)) { white-space: nowrap; font-variant-numeric: tabular-nums; }
+td a:where(.pg-admin-views > .wrap *):not(:where(.c, .c *)) { text-decoration: none; }
+td a:hover:where(.pg-admin-views > .wrap *):not(:where(.c, .c *)) { text-decoration: underline; }
+th + th:where(.pg-admin-views > .wrap *):not(:where(.c, .c *)) { width: 5.2em; }
+th:last-child:where(.pg-admin-views > .wrap *):not(:where(.c, .c *)) { width: 6.6em; }

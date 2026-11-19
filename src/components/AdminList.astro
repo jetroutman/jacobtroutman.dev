@@ -11,7 +11,7 @@ const fmt = (d: string | null) => (d ? new Date(`${d.slice(0, 10)}T12:00:00Z`).t
   {/* /admin/ is locked to Jacob, so opening it marks this browser as his: company-page tracking skips it. */}
   <script is:inline>if (location.pathname.startsWith('/admin')) try { localStorage.setItem('jt-owner', '1'); } catch {}</script>
   <div class="wrap c c-admin-list">
-    <p class="mono-meta">{note}</p>
+    <p class="mono-meta">{note}{base === '/admin/' && <> · <a href="/admin/views/">Page views →</a></>}</p>
     <h1 class="h1">Posts</h1>
     <p class="desc">Play a draft exactly as a reader would. When it feels right, set its Status to <strong>Published</strong> in Notion; it goes live on the next build.</p>
     <p class="mono-meta">Last sync: {syncedAt ? new Date(syncedAt).toLocaleString('en-US', { timeZone: 'America/Chicago', dateStyle: 'medium', timeStyle: 'short' }) : 'never (no Notion data in this build)'}</p>

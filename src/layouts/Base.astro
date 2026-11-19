@@ -15,7 +15,7 @@ interface Props {
   footerNote?: string;
 }
 const { title, description = site.description, noindex = false, footerNote, page } = Astro.props;
-const fullTitle = title === site.name ? title : `${title} · ${site.name}`;
+const fullTitle = title === site.name || title.endsWith(` · ${site.name}`) ? title : `${title} · ${site.name}`;
 ---
 <!doctype html>
 <html lang="en">
@@ -60,7 +60,13 @@ const fullTitle = title === site.name ? title : `${title} · ${site.name}`;
           <a href={site.resume}>Résumé (PDF)</a>
         </nav>
         {!footerNote && <span>Updated {site.updated}</span>}
+        {!footerNote && <p class="count-note">I count page views to see what gets read. Nothing I keep says who you are.</p>}
       </footer>
+
+      <script>
+        import { initPageViews } from '../scripts/page-views';
+        initPageViews();
+      </script>
     </div>
 
     <script is:inline>

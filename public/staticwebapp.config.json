@@ -4,6 +4,15 @@
   },
   "routes": [
     {
+      "route": "/api/view-stats",
+      "allowedRoles": [
+        "admin"
+      ],
+      "headers": {
+        "Cache-Control": "no-store"
+      }
+    },
+    {
       "route": "/admin*",
       "allowedRoles": [
         "admin"
