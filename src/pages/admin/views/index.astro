@@ -1,0 +1,54 @@
+---
+// Admin: page views from /api/view-stats (src/scripts/page-views.ts counts them). Locked to the admin role.
+import Base from '../../../layouts/Base.astro';
+import '../../../styles/pages/admin-views.css';
+---
+<Base title="Admin · Page views" page="admin-views" noindex>
+  <script is:inline>try { localStorage.setItem('jt-owner', '1'); } catch {}</script>
+  <div class="views">
+    <p class="mono-meta">Admin · only you can see this · <a href="/admin/">Posts</a></p>
+    <h1 class="h1">Page views</h1>
+    <p class="desc">One view per page per browser tab, counted after someone scrolls, taps or moves the mouse. Your own browsers aren't counted. Company pages are tracked in Notion instead.</p>
+    <p class="mono-meta" data-status>Loading…</p>
+    <div data-sections></div>
+  </div>
+</Base>
+
+<script>
+  type Row = { path: string; title: string; section: string; thisMonth: number; lastMonth: number; total: number; lastAt: string };
+  const status = document.querySelector<HTMLElement>('[data-status]')!;
+  const out = document.querySelector<HTMLElement>('[data-sections]')!;
+  const ORDER = ['Posts', 'Library', 'Notes', 'Other'];
+  const when = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/Chicago' });
+  const cell = (tag: string, text: string, cls = '') => { const c = document.createElement(tag); c.textContent = text; if (cls) c.className = cls; return c; };
+
+  try {
+    const res = await fetch('/api/view-stats', { cache: 'no-store' });
+    if (!res.ok) throw new Error(String(res.status));
+    const { rows, months } = (await res.json()) as { rows: Row[]; months: [string, string] };
+    const total = rows.reduce((n, r) => n + r.total, 0);
+    status.textContent = rows.length ? `${total} views across ${rows.length} pages` : 'No views counted yet.';
+    for (const section of ORDER) {
+      const list = rows.filter((r) => r.section === section).sort((a, b) => b.total - a.total || b.lastAt.localeCompare(a.lastAt));
+      if (!list.length) continue;
+      out.append(cell('h2', section, 'h2'));
+      const table = document.createElement('table');
+      const head = table.createTHead().insertRow();
+      for (const h of ['Page', months[0], months[1], 'All time', 'Last viewed']) head.append(cell('th', h));
+      const body = table.createTBody();
+      for (const r of list) {
+        const tr = body.insertRow();
+        const link = cell('a', r.title || r.path) as HTMLAnchorElement;
+        link.href = r.path;
+        const page = document.createElement('td'); page.append(link);
+        tr.append(page, cell('td', String(r.thisMonth), 'n'), cell('td', String(r.lastMonth), 'n'), cell('td', String(r.total), 'n'), cell('td', when(r.lastAt), 'n'));
+      }
+      out.append(table);
+    }
+  } catch (e) {
+    const code = (e as Error).message;
+    status.textContent = code === '403' ? 'Sign in with the admin account to see the numbers.'
+      : code === '503' ? 'Counting is off: the API needs TRACKING_STORAGE set.'
+      : `Couldn't load the numbers (${code}).`;
+  }
+</script>

@@ -42,14 +42,14 @@ jobs:
       - run: node scripts/sync-site-pages.mjs
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-      # Tracking API: tested here so a broken API never reaches the deploy step.
-      - run: node scripts/write-api-companies.mjs
-      - run: npm ci && npm test && npm run build
-        working-directory: api
       - run: npm run build
         env:
           # PR previews also build draft company pages and "Before launch" notes. Production never does.
           PUBLIC_DRAFTS: ${{ github.event_name == 'pull_request' }}
+      # Tracking API: told which pages are real, then tested, so a broken API never reaches the deploy step.
+      - run: node scripts/write-api-data.mjs
+      - run: npm ci && npm test && npm run build
+        working-directory: api
       - name: Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -65,6 +65,7 @@ jobs:
           output_location: ""
           ###### End of Repository/Build Configurations ######
       # The API answers 204 to anything once it's up, and 404 if the deploy didn't bring it up.
+      # (Checks /api/track only; /api/view lives in the same deployment.)
       - name: Check the tracking API
         env:
           SITE_URL: ${{ steps.builddeploy.outputs.static_web_app_url }}

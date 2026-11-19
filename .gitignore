@@ -4,3 +4,5 @@ dist/
 .env
 .env.*
 .DS_Store
+api/companies.json
+api/pages.json

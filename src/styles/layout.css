@@ -25,6 +25,7 @@
 }
 .site-footer nav:where(.site-header, .site-header *, .site-footer, .site-footer *) { display: flex; flex-wrap: wrap; gap: 6px 20px; }
 .site-footer a:where(.site-header, .site-header *, .site-footer, .site-footer *) { text-decoration: none; }
+.count-note:where(.site-header, .site-header *, .site-footer, .site-footer *) { flex-basis: 100%; margin: 0; opacity: 0.8; }
 /* Small phones: tighter nav, and the theme toggle becomes a single glyph (its text stays for screen readers). */
 @media (max-width: 560px) {
   .header-right:where(.site-header, .site-header *, .site-footer, .site-footer *), .site-nav:where(.site-header, .site-header *, .site-footer, .site-footer *) { gap: 12px; }

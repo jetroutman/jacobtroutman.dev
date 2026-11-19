@@ -1,16 +1,14 @@
 // Tells Jacob's tracking API that a real person opened this company page and how far they got.
 // Sends: this page, a random browser id, a random visit id, slides reached, active time, touch or mouse.
 // Never sends what's typed here, the game score, or anything that names the reader.
-// Link scanners load pages too, so nothing is sent until someone actually scrolls, taps, types or moves a mouse.
-const SITE = 'jacobtroutman.dev';
-const VISIT_GAP = 30 * 60 * 1000; // a new visit after this long away
-const SETTLE = 800, DWELL = 700;
+// Nothing is sent until someone actually scrolls, taps, types or moves a mouse (presence.ts).
+import { beacon, onHuman, read, trackingAllowed, write } from './presence';
 
-const read = (s: Storage, k: string) => { try { return s.getItem(k); } catch { return null; } };
-const write = (s: Storage, k: string, v: string) => { try { s.setItem(k, v); } catch {} };
+const VISIT_GAP = 30 * 60 * 1000; // a new visit after this long away
+const DWELL = 700;
 
 export function initDeckTrack(deck: HTMLElement) {
-  if (location.hostname !== SITE || read(localStorage, 'jt-owner')) return; // set by opening /admin/
+  if (!trackingAllowed()) return;
 
   const slides = [...deck.querySelectorAll<HTMLElement>('[data-slide]')];
   const visitor = read(localStorage, 'jt-visitor') ?? crypto.randomUUID();
@@ -36,30 +34,11 @@ export function initDeckTrack(deck: HTMLElement) {
     if (body === sent) return;
     sent = body;
     write(sessionStorage, 'jt-visit', JSON.stringify({ id: visit, at: Date.now() }));
-    const blob = new Blob([body], { type: 'application/json' });
-    if (!navigator.sendBeacon?.('/api/track', blob))
-      fetch('/api/track', { method: 'POST', body: blob, keepalive: true }).catch(() => {});
+    beacon('/api/track', JSON.parse(body));
   };
   const soon = () => { clearTimeout(timer); timer = window.setTimeout(send, 1000); };
 
-  // ---------- is someone there? ----------
-  const SIGNS = ['pointerdown', 'keydown', 'wheel', 'touchstart'] as const;
-  let moved = 0, lastX: number | null = null, lastY = 0;
-  const confirm = (e: Event) => {
-    if (!e.isTrusted || document.hidden || performance.now() < SETTLE) return;
-    human = true;
-    for (const s of SIGNS) removeEventListener(s, confirm);
-    removeEventListener('pointermove', onMove);
-    send();
-  };
-  const onMove = (e: PointerEvent) => {
-    if (e.pointerType !== 'mouse') return;
-    if (lastX !== null) moved += Math.hypot(e.clientX - lastX, e.clientY - lastY);
-    lastX = e.clientX; lastY = e.clientY;
-    if (moved > 40) confirm(e);
-  };
-  for (const s of SIGNS) addEventListener(s, confirm, { passive: true });
-  addEventListener('pointermove', onMove, { passive: true });
+  onHuman(() => { human = true; send(); });
 
   // ---------- how far? A slide counts once it has held the middle of the screen. ----------
   const dwell = new Map<Element, number>();
