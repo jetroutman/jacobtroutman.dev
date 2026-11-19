@@ -61,13 +61,10 @@ const nav = data.body.map((s) => [s.id, s.n, s.title, s.id === 'interviewer' ? '
 </Base>
 
 <script>
-  // Back links: a company page passes ?from=/for/<slug>/#<slide> so readers return to the slide they left.
-  const from = new URLSearchParams(location.search).get('from');
-  if (from && /^\/for\/[a-z0-9-]+\/(#[a-z0-9-]+)?$/.test(from)) {
-    for (const a of document.querySelectorAll<HTMLAnchorElement>('[data-back]')) {
-      a.href = from;
-      a.textContent = '← Back to your page';
-    }
+  // Back links: readers who came from a company page return to the slide they left (from-company.ts).
+  import { fromCompany } from '../../scripts/from-company';
+  const from = fromCompany();
+  if (from) {
     // Tell that company page this case file was read; its deck plays "Deep diver" when the reader returns.
     const slug = from.split('/')[2];
     const id = document.querySelector<HTMLElement>('[data-case-id]')?.dataset.caseId;

@@ -39,6 +39,7 @@ const fullTitle = title === site.name || title.endsWith(` · ${site.name}`) ? ti
   <body class={page ? `pg-${page}` : undefined}>
     <div class="wrap">
       <header class="site-header c">
+        <a class="back-global" href="/" data-back-global hidden></a>
         <a class="name" href="/">{site.name}</a>
         <div class="header-right">
           <nav class="site-nav" aria-label="Site">
@@ -64,7 +65,9 @@ const fullTitle = title === site.name || title.endsWith(` · ${site.name}`) ? ti
       </footer>
 
       <script>
+        import { fromCompany } from '../scripts/from-company';
         import { initPageViews } from '../scripts/page-views';
+        if (!/^\/(for|admin)\//.test(location.pathname)) fromCompany();
         initPageViews();
       </script>
     </div>
