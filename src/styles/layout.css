@@ -3,6 +3,11 @@
   display: flex; justify-content: space-between; align-items: center; gap: 16px;
   padding: 16px 0; border-bottom: 1px solid var(--line);
 }
+/* Shown above the name on pages without their own back link, when the reader came from a company page. */
+.back-global:where(.site-header, .site-header *, .site-footer, .site-footer *) { flex-basis: 100%; font: 500 13px var(--mono); color: var(--amber-ink); text-decoration: none; }
+.back-global:hover:where(.site-header, .site-header *, .site-footer, .site-footer *) { text-decoration: underline; }
+.back-global[hidden]:where(.site-header, .site-header *, .site-footer, .site-footer *) { display: none; }
+.site-header:has(> .back-global:not([hidden])):where(.site-header, .site-header *, .site-footer, .site-footer *) { flex-wrap: wrap; row-gap: 12px; }
 .name:where(.site-header, .site-header *, .site-footer, .site-footer *) { font-size: 15px; font-weight: 600; letter-spacing: -0.005em; text-decoration: none; }
 .header-right:where(.site-header, .site-header *, .site-footer, .site-footer *) { display: flex; align-items: center; gap: clamp(12px, 2.5vw, 24px); }
 .site-nav:where(.site-header, .site-header *, .site-footer, .site-footer *) { display: flex; gap: clamp(12px, 2.5vw, 20px); }

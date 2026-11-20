@@ -257,14 +257,9 @@ const roleName = data.role.match(/the (.+?) role/i)?.[1] ?? data.role;
 </Base>
 
 <script>
-  // Case-file and app links carry this page and the current slide, so the case file's back link returns here.
-  for (const a of document.querySelectorAll<HTMLAnchorElement>('[data-case-link], [data-app-link], [data-lib-link], [data-from-link]')) {
-    a.addEventListener('click', () => {
-      const slide = a.closest<HTMLElement>('[data-slide]')?.id;
-      const from = location.pathname + (slide ? `#${slide}` : '');
-      a.href = `${a.pathname}?from=${encodeURIComponent(from)}`;
-    });
-  }
+  // Every page opened from here gets a "← Back to your page" link to the slide the reader left.
+  import { rememberCompanyPage } from '../../scripts/from-company';
+  rememberCompanyPage();
 </script>
 
 <script>
